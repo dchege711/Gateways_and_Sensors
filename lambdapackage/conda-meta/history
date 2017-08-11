@@ -1,0 +1,14 @@
+==> 2017-08-10 20:16:59 <==
+# cmd: /Users/dchege711/anaconda/bin/conda create virtualenv -n awslambda
++defaults::openssl-1.0.2l-0
++defaults::pip-9.0.1-py36_1
++defaults::python-3.6.2-0
++defaults::readline-6.2-2
++defaults::setuptools-27.2.0-py36_0
++defaults::sqlite-3.13.0-0
++defaults::tk-8.5.18-0
++defaults::virtualenv-15.1.0-py36_0
++defaults::wheel-0.29.0-py36_0
++defaults::xz-5.2.2-1
++defaults::zlib-1.2.8-3
+# create specs: virtualenv

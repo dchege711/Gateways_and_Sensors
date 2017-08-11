@@ -1,0 +1,56 @@
+# Gateways and Sensors Experiment
+* This repository houses the code used to test out a fog setup with Raspberry Pis.
+    * [Replicating the Experiment](#replicating-the-experiment)
+    * [Description of Files](#description-of-files)
+
+----
+
+## Replicating the Experiment
+* Perform the following steps for initialization (once only for every AWS account):
+    * `$ python3 InitializeAllDBTables.py`
+    * Upload the .zip file that contains LinearRegressionLambda.py to AWS Lambda. ([Instructions on creating a python .zip deployment package](http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html))
+
+
+---
+
+## Description of Files
+
+### SensorPi.py
+* Executed in the Pis that act as sensors (data collectors).
+* Collects temperature, pressure and humidity data and pushes it to the corresponding Gateway Pi via Bluetooth.
+
+### TriggerLambda.py
+* Can be ran on any device in the setup (sensor, gateway or laptop)
+* Checks whether all three Gateway Pis have completed their transmission to AWS.
+* It then updates a DynamoDB table that has been specified as a trigger for an AWS Lambda function.
+
+### Button.py
+* Can be ran on any device in the setup (sensor, gateway or laptop)
+* Sets the number of data samples to be taken and stores this number in a DynamoDB table.
+* Once the sensors and gateways detect this change, they'll escape their while loops and start performing their respective roles.
+
+### DemoPlot.py
+* Can be ran on any device in the setup (sensor, gateway or laptop)
+* Fetches data from DynamoDB and presents it as a matplotlib visualization.
+
+### GatewayPi.py
+* Executed in the Pis that act as gateways (data aggregators and pre-processors).
+* Gateway 1 and 2 calculate features from Sensor Pi data, and transmits them to DynamoDB, bearing higher computational latency.
+* Gateway 3 transmits sensor data that it collects, bearing higher transmission latency.
+
+### InitializeAllDBTables.py
+* Can be ran on any device in the setup (sensor, gateway or laptop)
+* Creates all the DynamoDB tables needed by the experiment, with the expected pre-filled data.
+
+### LEDManager.py
+* This is not executed, but must exist in the Raspberry Pis. Other scripts import it.
+* A helper script for adjusting the patterns on the sense hat LEDs.
+
+### LinearRegressionLambda.py
+* A linear regression model that runs on AWS Lambda.
+* It is triggered by the DynamoDB table that is updated by TriggerLambda.py
+
+### requirements.txt
+* Contains a list of all the packages needed to run the experiment.
+* You can use `$ pip install -r requirements.txt` to ensure that you have everything that's needed.
+    * As of 11th Aug 2017, pybluez is unstable on OS X. But it installs in the Pi (Debian).

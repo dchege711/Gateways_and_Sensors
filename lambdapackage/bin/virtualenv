@@ -1,0 +1,6 @@
+#!/Users/dchege711/anaconda/envs/awslambda/bin/python
+if __name__ == '__main__':
+    import sys
+    import virtualenv
+
+    sys.exit(virtualenv.main())

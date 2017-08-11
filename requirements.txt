@@ -1,0 +1,11 @@
+pybluez
+boto3
+botocore
+cPickle
+matplotlib
+numpy
+os
+pickle
+sense_hat
+time
+tkinter
