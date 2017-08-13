@@ -7,10 +7,17 @@
 
 ## Replicating the Experiment
 * Perform the following steps for initialization (once only for every AWS account):
-    * `$ python3 InitializeAllDBTables.py`
+    * `$ python3 InitializeAllDBTables.py` to set up all DynamoDB tables.
     * Upload the .zip file that contains LinearRegressionLambda.py to AWS Lambda. ([Instructions on creating a python .zip deployment package](http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html))
-
-
+* Run the following scripts in the order below:
+    * `$ python3 SensorPi.py` on the Pis designated as sensors.
+    * `$ python3 GatewayPi.py` on the Pis designated as gateways.
+    * `$ python3 Button.py` on your laptop. Enter the number of data points to be collected.
+        * This triggers the sensors and the gateways.
+    * `$ python3 TriggerLambda.py` on your laptop.
+        * This triggers AWS Lambda as soon as all gateways are done.
+    * `$ python3 DemoPlot.py` on your laptop.
+        * The table will update itself with the experiment's results.
 ---
 
 ## Description of Files
@@ -53,4 +60,4 @@
 ### requirements.txt
 * Contains a list of all the packages needed to run the experiment.
 * You can use `$ pip install -r requirements.txt` to ensure that you have everything that's needed.
-    * As of 11th Aug 2017, pybluez is unstable on OS X. But it installs in the Pi (Debian).
+    * As of 11th Aug 2017, pybluez is unstable on OS X. But it installs in the Pi (Debian). You'll only need pybluez on the Pi for Bluetooth data transfer.
