@@ -7,35 +7,35 @@
 * This table is used mainly as a trigger for the sensors and gateways.
 ```shell
 'forum'         --> (String)*
-                        Set by InitializeAllDBTables.py
-                        Button.py searches for '1'
+                        InitializeAllDBTables.py sets a value of 1
+                        Button.py searches for 1
 
 'subject'       --> (String)*
-                        Set by InitializeAllDBTables.py
-                        Button.py searches for 'PC1'
+                        InitializeAllDBTables.py sets a value of PC1
+                        Button.py searches for PC1
 
-'timeStamp'     -->
-                        Set by Button.py
-                        Queried by GatewayPi.py to escape loop
-                        Queried by SensorPi.py to escape loop
+'timeStamp'     --> (1, PC1)
+                        Button.py sets it to the time when sample size was set.
+                        GatewayPi.py escapes loop if cached time does not equal this timeStamp
+                        SensorPi.py escapes loop if cached time does not equal this timeStamp
 
-'sampleSize'    -->
-                        Set by Button.py
-                        Queried by LinearRegressionLambda.py
-                        Queried by SensorPi.py
-                        Queried by GatewayPi.py
+'sampleSize'    --> (1, PC1)
+                        Button.py sets it to the number of samples specified.
+                        LinearRegressionLambda.py queries it before computation.
+                        SensorPi.py queries it before collecting data.
+                        GatewayPi.py queries it before listening to data.
 ```
 
-## TABLE : 'sensingdata_A'   √
+## TABLE : 'sensingdata_A'
 * This table is used to store features calculated by Gateway A.
 ```shell
 'forum'             --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         GatewayPi.py searches for 'roomA'
                         TriggerLambda.py searches for 'roomA'
 
 'subject'           --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         GatewayPi.py searches for 'sensorA'
                         TriggerLambda.py searches for 'sensorA'
 
@@ -52,11 +52,11 @@
 * This table is used to store features calculated by Gateway B.
 ```shell
 'forum'             --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         TriggerLambda.py searches for 'roomA'
 
 'subject'           --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         TriggerLambda.py searches for 'sensorB'
 
 'feature_A'         --> Set by GatewayPi.py, Queried by LinearRegressionLambda.py
@@ -75,11 +75,11 @@
     `('roomA', '22', 'X_1', 'X_2', ...), ('roomA', '23', 'X_1', 'X_2', ...)`
 ```shell
 'forum'             --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         DemoPlot.py queries for 'roomA'
 
 'subject'           --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         DemoPlot.py queries for '199'
 
 'data_bytes'        --> Set by GatewayPi.py, Queried by LinearRegressionLambda.py
@@ -95,12 +95,12 @@
 * Honestly, I don't know the function of this table. Stores latency data, but why in a new table?
 ```shell
 'forum'             --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         TriggerLambda.py searches for 'roomA'
                         DemoPlot.py queries for 'roomA'
 
 'subject'           --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         TriggerLambda.py searches for 'sensorC'
                         DemoPlot.py queries for 'sensorC'
 
@@ -114,12 +114,12 @@
 * Stores the results of the AWS Lambda computations.
 ```shell
 'environment'       --> (String)*
-                            Set by InitializeAllDBTables.py
+                            InitializeAllDBTables.py sets a value of
                             Set by LinearRegressionLambda.py
                             DemoPlot.py queries for 'roomA'
 
 'sensor'            --> (String)*
-                            Set by InitializeAllDBTables.py
+                            InitializeAllDBTables.py sets a value of
                             Set by LinearRegressionLambda.py
                             DemoPlot.py queries for 'sensorA&B&C'
 
@@ -139,11 +139,11 @@
 * If the table gets updated, the function will start running.
 ```shell
 'forum'             --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         TriggerLambda.py searches for 'roomA',
 
 'subject'           --> (String)*
-                        Set by InitializeAllDBTables.py
+                        InitializeAllDBTables.py sets a value of
                         TriggerLambda.py searches for '1'
 
 'timeStamp'         --> Set by TriggerLambda.py

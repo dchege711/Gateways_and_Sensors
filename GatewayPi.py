@@ -49,7 +49,7 @@ def main(tableLetter):
     '''
 
     while True:
-        oldSizeTime = 0
+        oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
 
         # Establish a connection to the 'SampleSize' table
         table = Table('SampleSize')
@@ -64,7 +64,7 @@ def main(tableLetter):
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
         oldSizeTime = timeStamp
 
-        numDataPoints = int(table.getItem(key)['SampleSize']) / 2
+        numDataPoints = int(table.getItem(key)['sampleSize'])
         numFeatures = 3
 
         # Listen for incoming bluetooth data on port 1
@@ -79,20 +79,22 @@ def main(tableLetter):
         # Aggregate the bluetooth data, with data collected from the Gateway Pi
         targetMatrix, designMatrix = collectData(targetMatrix, designMatrix, numDataPoints)
 
-        # Calculate and transmit the features for the designated gateways
+        # Calculate the features if the gateway has permission to do so
         if calculateFeatures[tableLetter]:
             features = gradientDescent(targetMatrix, designMatrix, numFeatures)
-            timeThree = time.time()
 
-            # Upload the results to DynamoDB
-            sense.set_pixels(LED.arrow)
-            btTime = timeTwo - timeOne
-            compTime = timeThree - timeTwo
+        timeThree = time.time()
+        btTime = timeTwo - timeOne
+        compTime = timeThree - timeTwo
+
+        # Upload data to DynamoDB
+        sense.set_pixels(LED.arrow)
+        
+        if calculateFeatures[tableLetter]:
             uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
 
-        # Otherwise transmit the aggregated data (without calculating features)
         else:
-
+            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime)
 
         # Reset the state of the LED
         sense.set_pixels(LED.xCross)

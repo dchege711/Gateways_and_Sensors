@@ -122,7 +122,7 @@ def main():
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
-        numberOfDataPoints = int(table.getItem(key)['SampleSize']) / 2
+        numberOfDataPoints = int(table.getItem(key)['SampleSize'])
         feature = 3
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
