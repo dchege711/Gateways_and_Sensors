@@ -277,7 +277,6 @@ def main(tableLetter):
     6)  Visualizes these results using an animated matplotlib figure.
 
     '''
-    tableLetter = sys.argv[1]   # The letter is used to distinguish tables
 
     while True:
         oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
@@ -333,3 +332,9 @@ def main(tableLetter):
         # Visualize the results
         while True:
             visualizeData(btTime, compTime, uploadTime)
+
+#_______________________________________________________________________________
+
+if __name__ == '__main__':
+    tableLetter = sys.argv[1]   # The letter is used to distinguish tables
+    main(tableLetter)
