@@ -43,7 +43,7 @@ def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
 
     Param(s):
         (num)
-    ''''
+    '''
 
     designMatrix = np.zeros((numDataPoints * 2, numFeatures))
     targetMatrix = np.zeros((numDataPoints * 2, 1))
