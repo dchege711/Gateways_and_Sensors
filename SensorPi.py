@@ -22,6 +22,11 @@ from DynamoDBUtility import Table
 
 sense = SenseHat()
 
+# Obtain the bluetooth addresses by running `$ hciconfig` in the terminal
+gatewayBRAddresses = {
+    'B' : 'B8:27:EB:1D:9D:BF'
+}
+
 #_______________________________________________________________________________
 
 def sendDataByBluetooth(data, bd_addr, port):
@@ -93,7 +98,7 @@ def collectData(numberOfDataPoints, feature):
 
 #_______________________________________________________________________________
 
-def main():
+def main(gatewayLetter):
     '''
     Handles the experiment flow. When ran:
     1)  It listens for a trigger from the 'SampleSize' table on DynamoDB
@@ -130,10 +135,11 @@ def main():
         print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
 
         # Transmit the data via bluetooth to the Gateway Pi
-        sendDataByBluetooth(collectedData, "XX:XX:EB:57:29:XX", 1)
+        sendDataByBluetooth(collectedData, gatewayBRAddresses['gatewayLetter'], 1)
 
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
-    main()
+    gatewayLetter = sys.argv[1]
+    main(gatewayLetter)
 #_______________________________________________________________________________
