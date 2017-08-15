@@ -18,6 +18,7 @@
         export aws_secret_access_key="XXXXX"
         ```
     * To avail these variables within the same command prompt session without restarting the command prompt, run the command `$ source ~/.bashrc`
+* Clone the repository using `$ git clone https://github.com/dchege711/Gateways_and_Sensors.git`. Navigate to the created directory using `$ cd Gateways_and_Sensors`
 
 ----
 
