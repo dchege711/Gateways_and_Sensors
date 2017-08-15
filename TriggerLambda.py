@@ -34,7 +34,7 @@ queryC = {
 
 tableA = Table('sensingdata_A')
 tableB = Table('sensingdata_B')
-tableC = Table('latency_C')
+tableC = Table('sensingdata_C') # I changed this since I don't see latency_C's purpose
 
 while True:
 

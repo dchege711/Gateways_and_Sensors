@@ -35,74 +35,6 @@ calculateFeatures = {
     'C' : False
 }
 
-def main(tableLetter):
-    '''
-    Runs the experiment as indicated below:
-
-    1)  Listens for a trigger on the 'SampleSize' table on DynamoDB
-    2)  On the trigger, starts listening and reading from bluetooth (port 1)
-    3)  Collects additional data from its sensors
-    4)  Calculates the features of the data
-    5)  Uploads the features to DynamoDB
-    6)  Visualizes these results using an animated matplotlib figure.
-
-    '''
-
-    while True:
-        oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
-
-        # Establish a connection to the 'SampleSize' table
-        table = Table('SampleSize')
-
-        # Break out of the inner while-loop only when the table has been updated
-        stayInLoop = True
-        key = {
-            'forum'     : '1',
-            'subject'   : 'PC1'
-        }
-        while stayInLoop:
-            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-        oldSizeTime = timeStamp
-
-        numDataPoints = int(table.getItem(key)['sampleSize'])
-        numFeatures = 3
-
-        # Listen for incoming bluetooth data on port 1
-        sense.set_pixels
-        timeOne = time.time()
-        dataFromBT = listenOnBluetooth(1)
-        timeTwo = time.time()
-
-        # Transform the received bluetooth data to numpy arrays
-        targetMatrix, designMatrix = bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures)
-
-        # Aggregate the bluetooth data, with data collected from the Gateway Pi
-        targetMatrix, designMatrix = collectData(targetMatrix, designMatrix, numDataPoints)
-
-        # Calculate the features if the gateway has permission to do so
-        if calculateFeatures[tableLetter]:
-            features = gradientDescent(targetMatrix, designMatrix, numFeatures)
-
-        timeThree = time.time()
-        btTime = timeTwo - timeOne
-        compTime = timeThree - timeTwo
-
-        # Upload data to DynamoDB
-        sense.set_pixels(LED.arrow)
-        
-        if calculateFeatures[tableLetter]:
-            uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
-
-        else:
-            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime)
-
-        # Reset the state of the LED
-        sense.set_pixels(LED.xCross)
-
-        # Visualize the results
-        while True:
-            visualizeData(btTime, compTime, uploadTime)
-
 #_______________________________________________________________________________
 
 def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
@@ -206,24 +138,24 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
     startTime = time.time()
     table = Table('sensingdata_' + tableLetter)
+    room = 'roomA'
+    sensor = 'sensor' + tableLetter
     sizeOfDataInBytes = 0
 
-    # If the Gateway was designated to calculate features, upload the features
-    if calculateFeatures[tableLetter]:
-        item = table.getItem({
-            'forum'     : 'roomA',
-            'subject'   : 'sensor' + tableLetter
-        })
+    # Prepare the upload payload
+    item = table.getItem({
+        'forum'     : room,
+        'subject'   : sensor
+    })
 
+    # If the Gateway was designated to calculate features...
+    if calculateFeatures[tableLetter]:
         item['feature_A'] = float(data[0][0])
         item['feature_B'] = float(data[1][0])
         item['feature_C'] = float(data[2][0])
-        item['Comm_pi_pi'] = btTime
-        item['Compu_pi'] = compTime
-        item.addItem(item)
         sizeOfDataInBytes = data.nbytes
 
-    # Otherwise, the Gateway was meant to dump the aggregated data to DynamoDB
+    # Otherwise, the Gateway was meant to aggregate data without calculations
     else:
         designMatrix = data[0]
         targetMatrix = data[1]
@@ -231,30 +163,29 @@ def uploadToDB(tableLetter, data, btTime, compTime):
         # ndarray.shape returns the dimensions as a (#OfRows, #OfColumns)
         # Both of our matrices have the same number of rows, hence one measure is enough
         numOfRows = designMatrix.shape[0]
+        aggregatedItems = []
         for i in numOfRows:
             item = {}
-            item['forum']   = 'roomA'
-            item['subject'] = str(i)
             item['X_1']     = designMatrix[i][0]    # Time
             item['X_2']     = designMatrix[i][1]    # Pressure
             item['X_3']     = designMatrix[i][2]    # Humidity
             item['Y']       = targetMatrix[i][0]    # Temperature
-            table.addItem(item)
-
-        # Reset 'item' to the header item so that we can attach a timeStamp
-        item = table.getItem({
-            'forum'     : 'roomA',
-            'subject'   : 'sensor' + tableLetter
-        })
+            aggregatedItems.append(item)
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
+        item['aggregated_data'] = aggregatedItems
+
+    # Upload this document to DynamoDB
+    item['Comm_pi_pi'] = btTime
+    item['Compu_pi'] = compTime
+    item['data_bytes'] = sizeOfDataInBytes
+    table.addItem(item)
 
     # Attach a time stamp and the size of the file to the header item in DynamoDB
     endTime = time.time()
     uploadDuration = endTime - startTime
-    item['data_bytes'] = sizeOfDataInBytes
     item['Comm_pi_lambda'] = uploadDuration
     item['timeStamp'] = endTime
-    item.addItem(item)
+    table.addItem(item)
 
     return uploadDuration
 
@@ -333,3 +264,72 @@ def listenOnBluetooth(port):
     return pickle.loads(''.join(total_data))
 
 #_______________________________________________________________________________
+
+def main(tableLetter):
+    '''
+    Runs the experiment as indicated below:
+
+    1)  Listens for a trigger on the 'SampleSize' table on DynamoDB
+    2)  On the trigger, starts listening and reading from bluetooth (port 1)
+    3)  Collects additional data from its sensors
+    4)  Calculates the features of the data
+    5)  Uploads the features to DynamoDB
+    6)  Visualizes these results using an animated matplotlib figure.
+
+    '''
+    tableLetter = sys.argv[1]   # The letter is used to distinguish tables
+
+    while True:
+        oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
+
+        # Establish a connection to the 'SampleSize' table
+        table = Table('SampleSize')
+
+        # Break out of the inner while-loop only when the table has been updated
+        stayInLoop = True
+        key = {
+            'forum'     : '1',
+            'subject'   : 'PC1'
+        }
+        while stayInLoop:
+            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+        oldSizeTime = timeStamp
+
+        numDataPoints = int(table.getItem(key)['sampleSize'])
+        numFeatures = 3
+
+        # Listen for incoming bluetooth data on port 1
+        sense.set_pixels
+        timeOne = time.time()
+        dataFromBT = listenOnBluetooth(1)
+        timeTwo = time.time()
+
+        # Transform the received bluetooth data to numpy arrays
+        targetMatrix, designMatrix = bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures)
+
+        # Aggregate the bluetooth data, with data collected from the Gateway Pi
+        targetMatrix, designMatrix = collectData(targetMatrix, designMatrix, numDataPoints)
+
+        # Calculate the features if the gateway has permission to do so
+        if calculateFeatures[tableLetter]:
+            features = gradientDescent(targetMatrix, designMatrix, numFeatures)
+
+        timeThree = time.time()
+        btTime = timeTwo - timeOne
+        compTime = timeThree - timeTwo
+
+        # Upload data to DynamoDB
+        sense.set_pixels(LED.arrow)
+
+        if calculateFeatures[tableLetter]:
+            uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
+
+        else:
+            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime)
+
+        # Reset the state of the LED
+        sense.set_pixels(LED.xCross)
+
+        # Visualize the results
+        while True:
+            visualizeData(btTime, compTime, uploadTime)

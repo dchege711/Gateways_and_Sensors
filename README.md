@@ -1,7 +1,14 @@
 # Gateways and Sensors Experiment
 * This repository houses the code used to test out a fog setup with Raspberry Pis.
+    * [Getting Started Notes](#getting-started-notes)
     * [Replicating the Experiment](#replicating-the-experiment)
     * [Description of Files](#description-of-files)
+
+----
+
+## Getting Started Notes
+* I'm using python3 on the Pi. To check the default python version, use `$ python --version`
+    * If you need to change to python3, see the instructions on this [site](https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux#h2-change-python-version-system-wide).
 
 ----
 
