@@ -39,6 +39,7 @@ class Table:
         # Else return a table resource corresponding to an existing table
         else:
             self.table = dynamodb.Table(nameOfTable)
+            print("Fetched the table '", table.table_name, "' created at", table.creation_date_time)
 
     def createTable(self, nameOfTable, hashKey, rangeKey, readCapUnits = 10, writeCapUnits = 10):
         '''
@@ -98,6 +99,7 @@ class Table:
         table.meta.client.get_waiter('table_exists').wait(TableName = nameOfTable)
 
         # Return a reference to the table
+        print("Table'", table.table_name, "' created at", table.creation_date_time)
         return table
 
     def tableExists(self, nameOfTable):
