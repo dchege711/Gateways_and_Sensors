@@ -30,9 +30,9 @@ sense = SenseHat()
 # Some Gateways aggregate data, calculate features and transmit only the features to DynamoDB.
 # Some Gateways aggregate data and send all this data to DynamoDB
 calculateFeatures = {
-    'A' : True,
-    'B' : True,
-    'C' : False
+'A' : True,
+'B' : True,
+'C' : False
 }
 
 #_______________________________________________________________________________
@@ -42,7 +42,7 @@ def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
     Transcribes the data received via bluetooth to numpy arrays.
 
     Param(s):
-        (num)
+    (num)
     '''
 
     designMatrix = np.zeros((numDataPoints * 2, numFeatures))
@@ -88,6 +88,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures):
 
     Returns a numpy array of features that approximate the mapping
     '''
+
     count = 0
     w_old = np.zeros((numFeatures, 1))
     w_new = np.zeros((numFeatures, 1))
@@ -97,24 +98,25 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures):
     learning_rate = 0.001
 
     while True:
-		w_old = w_new
-		for i in range(numDataPoints * 2):
-			delta_E[i,:] = delta_E[i,:] + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i,:]),np.matrix(w_old)))*designMatrix[i,:]
+        w_old = w_new
 
-		w_new = w_old + learning_rate * np.matrix(delta_E[i, :] / (numDataPoints * 2)).T
-		E_old = E_new
+        for i in range(numDataPoints * 2):
 
-		for i in range(numDataPoints * 2):
-			E_new = E_new + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i, :]), np.matrix(w_new))) ** 2
-			E_new = E_new / 2
+            delta_E[i,:] = delta_E[i,:] + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i,:]),np.matrix(w_old)))*designMatrix[i,:]
 
-		if E_new > E_old:
-			learning_rate = learning_rate/2
+            w_new = w_old + learning_rate * np.matrix(delta_E[i, :] / (numDataPoints * 2)).T
+            E_old = E_new
 
-		count = count + 1
+            for i in range(numDataPoints * 2):
+                E_new = E_new + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i, :]), np.matrix(w_new))) ** 2
+                E_new = E_new / 2
 
-		if E_new == E_old:
-			break
+            if E_new > E_old:
+                learning_rate = learning_rate/2
+
+            count = count + 1
+
+            if E_new == E_old:
 
     return w_new
 
@@ -134,13 +136,10 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
     '''
 
-    # Modify this for each Gateway 1 and 2
-
     startTime = time.time()
     table = Table('sensingdata_' + tableLetter)
     room = 'roomA'
     sensor = 'sensor' + tableLetter
-    sizeOfDataInBytes = 0
 
     # Prepare the upload payload
     item = table.getItem({
@@ -159,11 +158,13 @@ def uploadToDB(tableLetter, data, btTime, compTime):
     else:
         designMatrix = data[0]
         targetMatrix = data[1]
+
         # Numpy indexes follow the [row][column] convention
         # ndarray.shape returns the dimensions as a (#OfRows, #OfColumns)
         # Both of our matrices have the same number of rows, hence one measure is enough
         numOfRows = designMatrix.shape[0]
         aggregatedItems = []
+
         for i in numOfRows:
             item = {}
             item['X_1']     = designMatrix[i][0]    # Time
@@ -171,6 +172,7 @@ def uploadToDB(tableLetter, data, btTime, compTime):
             item['X_3']     = designMatrix[i][2]    # Humidity
             item['Y']       = targetMatrix[i][0]    # Temperature
             aggregatedItems.append(item)
+
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
         item['aggregated_data'] = aggregatedItems
 
@@ -223,10 +225,10 @@ def listenOnBluetooth(port):
     Listens to incoming data on the Bluetooth Interface
 
     Param(s):
-        (int)       Port that we going to listen to
+    (int)       Port that we going to listen to
 
     Return(s)
-        (pickle)    ???
+    (pickle)    ???
 
     '''
     # Setup the Bluetooth connection
@@ -238,17 +240,22 @@ def listenOnBluetooth(port):
     try:
         client_sock, address = server_sock.accept()
         print("Accepted connection from", address)
+
         startTime = time.time()
         total_data = []
+
         while True:
             data_1 = client_sock.recv(1)
-            # If there's no more data to receive, escape the loop
-            if len(data_1) == 0:
-                break
-            # Else append the received data to the helper variable
-            total_data.append(data_1)
+
+        # If there's no more data to receive, escape the loop
+        if len(data_1) == 0:
+            break
+        # Else append the received data to the helper variable
+        total_data.append(data_1)
+
     except IOError:
         pass    # Sincere apologies to all who told me passing is poor practice
+
     except KeyboardInterrupt:
         stop_advertising(server_sock)
         # sys.exit()    Why do we need an exit before we're actually done?
@@ -287,12 +294,13 @@ def main(tableLetter):
         # Break out of the inner while-loop only when the table has been updated
         stayInLoop = True
         key = {
-            'forum'     : '1',
-            'subject'   : 'PC1'
+        'forum'     : '1',
+        'subject'   : 'PC1'
         }
+
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-        oldSizeTime = timeStamp
+            oldSizeTime = timeStamp
 
         numDataPoints = int(table.getItem(key)['sampleSize'])
         numFeatures = 3
