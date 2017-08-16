@@ -75,7 +75,7 @@ def collectData(targetMatrix, designMatrix, numDataPoints):
 
 #_______________________________________________________________________________
 
-def gradientDescent(targetMatrix, designMatrix, numFeatures):
+def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     '''
     Runs the gradient descent algorithm.
 
@@ -275,7 +275,7 @@ def main(tableLetter):
 
         # Calculate the features if the gateway has permission to do so
         if calculateFeatures[tableLetter]:
-            features = gradientDescent(targetMatrix, designMatrix, numFeatures)
+            features = gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints)
 
         timeThree = time.time()
         btTime = timeTwo - timeOne

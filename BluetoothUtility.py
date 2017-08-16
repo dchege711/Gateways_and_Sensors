@@ -64,6 +64,7 @@ def listenOnBluetooth(port):
         server_sock.close()
 
     except IOError:
+        print("Ran into IOError")
         pass    # Sincere apologies to all who told me passing is poor practice
 
     except KeyboardInterrupt:
@@ -89,9 +90,11 @@ def sendDataByBluetooth(data, gatewayLetter, port):
 
     '''
     bd_addr = gatewayBRAddresses[gatewayLetter]
+
     # Establish the bluetooth connection
     sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     sock.connect((bd_addr, port))
+
     # Send the data
     startTime = time.time()
     sock.send(cPickle.dumps(data))
