@@ -109,12 +109,14 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
             E_new = E_new / 2
 
         if E_new > E_old:
-            learning_rate = learning_rate/2
+            learning_rate = learning_rate / 2
 
         count = count + 1
         print("E_new", E_new, "E_old", E_old)
 
-        if E_new == E_old:
+        # I'm running into an infinite loop at this point
+        # if E_new == E_old:
+        if E_new < E_old:
             break
 
     return w_new
