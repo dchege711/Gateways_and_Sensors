@@ -113,7 +113,7 @@ def main(gatewayLetter):
     '''
 
     table = Table('SampleSize')
-    old_size_time = 0
+    oldSizeTime = 0
 
     while True:
 

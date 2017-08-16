@@ -301,7 +301,7 @@ def main(tableLetter):
 
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-            oldSizeTime = timeStamp
+        oldSizeTime = timeStamp
 
         numDataPoints = int(table.getItem(key)['sampleSize'])
         numFeatures = 3
