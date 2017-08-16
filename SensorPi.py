@@ -14,6 +14,7 @@ import cPickle
 import numpy as np
 from sense_hat import SenseHat
 import time
+import sys
 
 import LEDManager as LED
 from DynamoDBUtility import Table
