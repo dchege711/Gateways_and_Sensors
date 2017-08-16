@@ -11,11 +11,15 @@ import pickle
 
 # Obtain the bluetooth addresses by running `$ hciconfig` in the terminal
 gatewayBRAddresses = {
-    'B' : 'B8:27:EB:1D:9D:BF'
+    'A' : 'B8:27:EB:3F:84:11',
+    'B' : 'B8:27:EB:1D:9D:BF',
+    'C' : 'B8:27:EB:57:29:09'
 }
 
 sensorBRAddresses = {
-    'B' : 'B8:27:EB:E7:5E:3C'
+    'A' : 'B8:27:EB:C3:A3:C5',
+    'B' : 'B8:27:EB:E7:5E:3C',
+    'C' : 'B8:27:EB:6C:16:BA'
 }
 
 #_______________________________________________________________________________

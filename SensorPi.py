@@ -31,32 +31,6 @@ gatewayBRAddresses = {
 
 #_______________________________________________________________________________
 
-def sendDataByBluetooth(data, bd_addr, port):
-    '''
-    Param(s):
-        (String)    Destination Address
-        (int)       Destination Port
-
-    Sends data over bluetooth to the designated address and port.
-    Run "$ hciconfig dev" on the Pi to identify the address
-
-    '''
-    # Communicate status to the outside world
-    sense.set_pixels(LED.arrow)
-    # Establish the bluetooth connection
-    sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    sock.connect((bd_addr, port))
-    # Send the data
-    startTime = time.time()
-    sock.send(cPickle.dumps(data))
-    endTime = time.time()
-    sock.close()
-    # Communicate status to the outside world
-    sense.set_pixels(LED.xCross)
-    print("Sensor : Sent data over bluetooth in", str(endTime - startTime), "seconds")
-
-#_______________________________________________________________________________
-
 def collectData(numberOfDataPoints, feature):
     '''
     Param(s):
