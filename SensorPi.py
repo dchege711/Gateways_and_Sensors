@@ -107,19 +107,21 @@ def main(gatewayLetter):
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
-        sense.set_pixels(LED.threeDots('green'))
-
+        sense.set_pixels(LED.pluses('green'))
+        
         numberOfDataPoints = int(table.getItem(key)['sampleSize'])
         feature = 3
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
         endTime = time.time()
-        print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
+        # print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
 
         # Transmit the data via bluetooth to the Gateway Pi
-        sense.set_pixels(LED.arrow)
+        sense.set_pixels(LED.arrow('blue'))
         BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
-        sense.set_pixels(LED.xCross)
+
+        # Show that the Pi has completed it's work
+        sense.set_pixels(LED.xCross('red'))
 
 #_______________________________________________________________________________
 
