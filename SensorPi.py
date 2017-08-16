@@ -124,6 +124,7 @@ def main(gatewayLetter):
         }
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+            print("Still in the while loop!")
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
