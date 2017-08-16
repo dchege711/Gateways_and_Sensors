@@ -112,6 +112,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
             learning_rate = learning_rate/2
 
         count = count + 1
+        print("E_new", E_new, "E_old", E_old)
 
         if E_new == E_old:
             break
