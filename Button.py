@@ -12,6 +12,7 @@ running the experiment.
 import tkinter as tk
 import time
 import os
+from decimal import Decimal
 
 from DynamoDBUtility import Table
 
@@ -40,9 +41,9 @@ def sample_size():
 		'forum'		: '1',
 		'subject'	: 'PC1'
 	})
-
-	item['timeStamp'] = tStart
-	item['sampleSize'] = e.get() # e.get is the number you entered in the window
+	item['timeStamp'] = Decimal(tStart)
+	# item['sampleSize'] = e.get() # e.get is the number you entered in the window
+	item['sampleSize'] = Decimal(e.get())
 	table.addItem(item)
 
 #_______________________________________________________________________________
