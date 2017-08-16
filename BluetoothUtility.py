@@ -6,6 +6,7 @@ Handles all the operations involving Bluetooth data transfer.
 
 import bluetooth
 import pickle
+import cPickle
 import time
 
 #_______________________________________________________________________________
@@ -41,9 +42,10 @@ def listenOnBluetooth(port):
     server_sock.bind(("", port))
     server_sock.listen(port)
 
-    # Listen for incoming data, while watching for the keyboard interrupt
     startTime = time.time()
     total_data = []
+
+    # Listen for incoming data, while watching for the keyboard interrupt
     try:
         client_sock, address = server_sock.accept()
         print("Accepted connection from", address)
