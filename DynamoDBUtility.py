@@ -180,7 +180,7 @@ class Table:
         Returns a boolean and a copy of the data found at the key of interest.
 
         '''
-        item = self.getItem(query)
+        item = self.getItem(itemKey)
         booleanResult = expectedValue == item[keyToLookUp]
         if testForEquality:
             return booleanResult, item[keyToLookUp]
