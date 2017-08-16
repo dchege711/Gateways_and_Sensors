@@ -40,8 +40,7 @@ def collectData(numberOfDataPoints, feature):
     measurements.
 
     '''
-    # Communicate status via the LED lights
-    sense.set_pixels(LED.diamond)
+
     # Initialize the helper variable
     data_all = np.zeros((numberOfDataPoints, feature + 1))
 
@@ -108,7 +107,7 @@ def main(gatewayLetter):
 
         # Collect the required number of data points
         sense.set_pixels(LED.pluses('green'))
-        
+
         numberOfDataPoints = int(table.getItem(key)['sampleSize'])
         feature = 3
         startTime = time.time()
