@@ -42,15 +42,15 @@ def listenOnBluetooth(port):
     server_sock.listen(port)
 
     # Listen for incoming data, while watching for the keyboard interrupt
+    startTime = time.time()
     try:
         client_sock, address = server_sock.accept()
         print("Accepted connection from", address)
 
-        startTime = time.time()
         total_data = []
 
         while True:
-            data_1 = client_sock.recv(1)
+            data_1 = client_sock.recv(port)
 
             # If there's no more data to receive, escape the loop
             if len(data_1) == 0:
