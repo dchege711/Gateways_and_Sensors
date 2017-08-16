@@ -15,6 +15,7 @@ import numpy as np
 import sys
 from sense_hat import SenseHat
 import matplotlib.pylab as plt
+from decimal import Decimal
 
 import LEDManager as LED
 from DynamoDBUtility import Table
@@ -150,9 +151,9 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
     # If the Gateway was designated to calculate features...
     if calculateFeatures[tableLetter]:
-        item['feature_A'] = float(data[0][0])
-        item['feature_B'] = float(data[1][0])
-        item['feature_C'] = float(data[2][0])
+        item['feature_A'] = Decimal(float(data[0][0]))
+        item['feature_B'] = Decimal(float(data[1][0]))
+        item['feature_C'] = Decimal(float(data[2][0]))
         sizeOfDataInBytes = data.nbytes
 
     # Otherwise, the Gateway was meant to aggregate data without calculations
@@ -168,26 +169,26 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
         for i in numOfRows:
             item = {}
-            item['X_1']     = designMatrix[i][0]    # Time
-            item['X_2']     = designMatrix[i][1]    # Pressure
-            item['X_3']     = designMatrix[i][2]    # Humidity
-            item['Y']       = targetMatrix[i][0]    # Temperature
+            item['X_1']     = Decimal(designMatrix[i][0])    # Time
+            item['X_2']     = Decimal(designMatrix[i][1])    # Pressure
+            item['X_3']     = Decimal(designMatrix[i][2])    # Humidity
+            item['Y']       = Decimal(targetMatrix[i][0])    # Temperature
             aggregatedItems.append(item)
 
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
         item['aggregated_data'] = aggregatedItems
 
     # Upload this document to DynamoDB
-    item['Comm_pi_pi'] = btTime
-    item['Compu_pi'] = compTime
+    item['Comm_pi_pi'] = Decimal(btTime)
+    item['Compu_pi'] = Decimal(compTime)
     item['data_bytes'] = sizeOfDataInBytes
     table.addItem(item)
 
     # Attach a time stamp and the size of the file to the header item in DynamoDB
     endTime = time.time()
     uploadDuration = endTime - startTime
-    item['Comm_pi_lambda'] = uploadDuration
-    item['timeStamp'] = endTime
+    item['Comm_pi_lambda'] = Decimal(uploadDuration)
+    item['timeStamp'] = Decimal(endTime)
     table.addItem(item)
 
     return uploadDuration
