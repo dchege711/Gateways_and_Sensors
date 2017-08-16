@@ -125,8 +125,9 @@ def main(gatewayLetter):
             'subject'   : 'PC1'
         }
         while stayInLoop:
-            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, False)
             print("Still in the while loop!")
+            
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
@@ -140,7 +141,7 @@ def main(gatewayLetter):
         # Transmit the data via bluetooth to the Gateway Pi
         sense.set_pixels(LED.arrow)
         BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
-        sense.set_pixels(LED.xCross)       
+        sense.set_pixels(LED.xCross)
 
 #_______________________________________________________________________________
 
