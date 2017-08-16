@@ -118,7 +118,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures):
 
         if E_new == E_old:
             break
-                
+
     return w_new
 
 #_______________________________________________________________________________
@@ -248,11 +248,11 @@ def listenOnBluetooth(port):
         while True:
             data_1 = client_sock.recv(1)
 
-        # If there's no more data to receive, escape the loop
-        if len(data_1) == 0:
-            break
-        # Else append the received data to the helper variable
-        total_data.append(data_1)
+            # If there's no more data to receive, escape the loop
+            if len(data_1) == 0:
+                break
+            # Else append the received data to the helper variable
+            total_data.append(data_1)
 
     except IOError:
         pass    # Sincere apologies to all who told me passing is poor practice
