@@ -68,7 +68,7 @@ def collectData(numberOfDataPoints, feature):
     # Communicate status via the LED lights
     sense.set_pixels(LED.diamond)
     # Initialize the helper variable
-    data_all = np.zeros((datanum, feature + 1))
+    data_all = np.zeros((numberOfDataPoints, feature + 1))
 
     for i in range(numberOfDataPoints):
         # Record several parameters of interest
