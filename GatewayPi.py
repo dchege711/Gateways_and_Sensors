@@ -238,6 +238,8 @@ def main(tableLetter):
         table = Table('SampleSize')
 
         # Break out of the inner while-loop only when the table has been updated
+        sense.set_pixels(LED.threeDots('green'))
+
         stayInLoop = True
         key = {
         'forum'     : '1',
@@ -252,17 +254,24 @@ def main(tableLetter):
         numFeatures = 3
 
         # Listen for incoming bluetooth data on port 1
-        sense.set_pixels(LED.orangeArrow)
+        sense.set_pixels(LED.arrow('orange'))
+
         timeOne = time.time()
         dataFromBT = BT.listenOnBluetooth(1)
         timeTwo = time.time()
-        sense.set_pixels(LED.diamond)
+
+        # Signify the computation state
+        sense.set_pixels(LED.diamond('blue'))
 
         # Transform the received bluetooth data to numpy arrays
         targetMatrix, designMatrix = bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures)
 
         # Aggregate the bluetooth data, with data collected from the Gateway Pi
+        sense.set_pixels(LED.pluses('green'))
         targetMatrix, designMatrix = collectData(targetMatrix, designMatrix, numDataPoints)
+
+        # Signify the computation state
+        sense.set_pixels(LED.diamond('blue'))
 
         # Calculate the features if the gateway has permission to do so
         if calculateFeatures[tableLetter]:
@@ -273,7 +282,7 @@ def main(tableLetter):
         compTime = timeThree - timeTwo
 
         # Upload data to DynamoDB
-        sense.set_pixels(LED.arrow)
+        sense.set_pixels(LED.arrow('blue'))
 
         if calculateFeatures[tableLetter]:
             uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
@@ -282,7 +291,7 @@ def main(tableLetter):
             uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime)
 
         # Reset the state of the LED
-        sense.set_pixels(LED.xCross)
+        sense.set_pixels(LED.xCross('red'))
 
         # Visualize the results
         while True:
