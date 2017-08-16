@@ -43,11 +43,10 @@ def listenOnBluetooth(port):
 
     # Listen for incoming data, while watching for the keyboard interrupt
     startTime = time.time()
+    total_data = []
     try:
         client_sock, address = server_sock.accept()
         print("Accepted connection from", address)
-
-        total_data = []
 
         while True:
             data_1 = client_sock.recv(port)
@@ -57,6 +56,10 @@ def listenOnBluetooth(port):
                 break
             # Else append the received data to the helper variable
             total_data.append(data_1)
+
+        # Close the bluetooth connection
+        client_sock.close()
+        server_sock.close()
 
     except IOError:
         pass    # Sincere apologies to all who told me passing is poor practice
@@ -68,10 +71,6 @@ def listenOnBluetooth(port):
     # Log the results of the bluetooth data to the console
     endTime = time.time()
     print("Bluetooth Transmission Time :", str(endTime - startTime))
-
-    # Close the bluetooth connection
-    client_sock.close()
-    server_sock.close()
 
     return pickle.loads(''.join(total_data))
 
