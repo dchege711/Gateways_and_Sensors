@@ -124,10 +124,13 @@ def main(gatewayLetter):
             'forum'     : '1',
             'subject'   : 'PC1'
         }
+        countTime = 1
         while stayInLoop:
-            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, False)
-            print("Still in the while loop!")
-            
+            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+            print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
+            time.sleep(10)
+            countTime += 1
+
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
