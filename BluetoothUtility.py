@@ -83,8 +83,6 @@ def sendDataByBluetooth(data, gatewayLetter, port):
 
     '''
     bd_addr = gatewayBRAddresses[gatewayLetter]
-    # Communicate status to the outside world
-    sense.set_pixels(LED.arrow)
     # Establish the bluetooth connection
     sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     sock.connect((bd_addr, port))
@@ -93,8 +91,6 @@ def sendDataByBluetooth(data, gatewayLetter, port):
     sock.send(cPickle.dumps(data))
     endTime = time.time()
     sock.close()
-    # Communicate status to the outside world
-    sense.set_pixels(LED.xCross)
     print("Sensor : Sent data over bluetooth in", str(endTime - startTime), "seconds")
 
 #_______________________________________________________________________________

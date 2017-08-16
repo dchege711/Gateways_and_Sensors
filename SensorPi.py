@@ -138,7 +138,9 @@ def main(gatewayLetter):
         print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
 
         # Transmit the data via bluetooth to the Gateway Pi
-        BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)        
+        sense.set_pixels(LED.arrow)
+        BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
+        sense.set_pixels(LED.xCross)       
 
 #_______________________________________________________________________________
 
