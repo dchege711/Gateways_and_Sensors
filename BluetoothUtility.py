@@ -6,6 +6,7 @@ Handles all the operations involving Bluetooth data transfer.
 
 import bluetooth
 import pickle
+import time
 
 #_______________________________________________________________________________
 
