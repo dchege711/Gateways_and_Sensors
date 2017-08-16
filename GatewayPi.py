@@ -10,12 +10,9 @@ Gateway 3 transmits the data (hence Transmission Latency)
 '''
 #_______________________________________________________________________________
 
-import bluetooth
 import time
-import pickle
 import numpy as np
 import sys
-import os
 from sense_hat import SenseHat
 import matplotlib.pylab as plt
 
