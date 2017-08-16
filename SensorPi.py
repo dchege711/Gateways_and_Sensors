@@ -129,7 +129,7 @@ def main(gatewayLetter):
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
-        numberOfDataPoints = int(table.getItem(key)['SampleSize'])
+        numberOfDataPoints = int(table.getItem(key)['sampleSize'])
         feature = 3
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
