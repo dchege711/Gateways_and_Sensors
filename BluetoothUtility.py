@@ -61,7 +61,7 @@ def listenOnBluetooth(port):
         pass    # Sincere apologies to all who told me passing is poor practice
 
     except KeyboardInterrupt:
-        stop_advertising(server_sock)
+        bluetooth.stop_advertising(server_sock)
         # sys.exit()    Why do we need an exit before we're actually done?
 
     # Log the results of the bluetooth data to the console

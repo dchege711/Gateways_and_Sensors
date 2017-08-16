@@ -8,59 +8,61 @@ Stores various LED patterns.
 #_______________________________________________________________________________
 
 # Set up helper variables for the colors
-black   = (  0,   0,   0)
-red     = (255,   0,   0)
-green   = (  0, 255,   0)
-blue    = (  0,   0, 255)
-orange  = (255, 165,   0)
-magenta = (255,   0, 255)
+ledColors = {
+    'black'   = (  0,   0,   0)
+    'red'     = (255,   0,   0)
+    'green'   = (  0, 255,   0)
+    'blue'    = (  0,   0, 255)
+    'orange'  = (255, 165,   0)
+    'magenta' = (255,   0, 255)
+}
 
-O = black
+#_______________________________________________________________________________
 
-X = green
-diamond = [
-    O, O, O, X, X, O, O, O,
-    O, O, X, O, O, X, O, O,
-    O, X, O, O, O, O, X, O,
-    X, O, O, O, O, O, O, X,
-    X, O, O, O, O, O, O, X,
-    O, X, O, O, O, O, X, O,
-    O, O, X, O, O, X, O, O,
-    O, O, O, X, X, O, O, O
-]
+def diamond(color):
+    X = ledColors[color]
+    diamond = [
+        O, O, O, X, X, O, O, O,
+        O, O, X, O, O, X, O, O,
+        O, X, O, O, O, O, X, O,
+        X, O, O, O, O, O, O, X,
+        X, O, O, O, O, O, O, X,
+        O, X, O, O, O, O, X, O,
+        O, O, X, O, O, X, O, O,
+        O, O, O, X, X, O, O, O
+    ]
+    return diamond
 
-X = red
-xCross = [
-    X, O, O, O, O, O, O, X,
-    O, X, O, O, O, O, X, O,
-    O, O, X, O, O, X, O, O,
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    O, O, X, O, O, X, O, O,
-    O, X, O, O, O, O, X, O,
-    X, O, O, O, O, O, O, X
-]
+#_______________________________________________________________________________
 
-X = blue
-arrow = [
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    X, O, O, X, X, O, O, X,
-    O, X, O, X, X, O, X, O,
-    O, O, X, X, X, X, O, O,
-    O, O, O, X, X, O, O, O
-]
+def xCross(color):
+    X = ledColors[color]
+    xCross = [
+        X, O, O, O, O, O, O, X,
+        O, X, O, O, O, O, X, O,
+        O, O, X, O, O, X, O, O,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        O, O, X, O, O, X, O, O,
+        O, X, O, O, O, O, X, O,
+        X, O, O, O, O, O, O, X
+    ]
+    return xCross
 
-X = orange
-orangeArrow = [
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    O, O, O, X, X, O, O, O,
-    X, O, O, X, X, O, O, X,
-    O, X, O, X, X, O, X, O,
-    O, O, X, X, X, X, O, O,
-    O, O, O, X, X, O, O, O
-]
+#_______________________________________________________________________________
+
+def arrow(color):
+    X = ledColors[color]
+    arrow = [
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        X, X, X, X, X, X, X, X,
+        O, X, X, X, X, X, X, O,
+        O, O, X, X, X, X, O, O,
+        O, O, O, X, X, O, O, O
+    ]
+    return arrow
+
+#_______________________________________________________________________________
