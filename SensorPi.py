@@ -90,22 +90,25 @@ def main(gatewayLetter):
     while True:
 
         # Break out of the inner while-loop only when the table has been updated
+        sense.set_pixels(LED.threeDots('green'))
+
         stayInLoop = True
         key = {
             'forum'     : '1',
             'subject'   : 'PC1'
         }
-        countTime = 1
-        sense.set_pixels(LED.diamond('green'))
+        # countTime = 1
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-            print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
+            # print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
             time.sleep(10)
-            countTime += 1
+            # countTime += 1
 
         oldSizeTime = timeStamp
 
         # Collect the required number of data points
+        sense.set_pixels(LED.threeDots('green'))
+
         numberOfDataPoints = int(table.getItem(key)['sampleSize'])
         feature = 3
         startTime = time.time()

@@ -19,6 +19,22 @@ ledColors = {
 
 #_______________________________________________________________________________
 
+def pluses(color):
+    X = ledColors[color]
+    figure = [
+        O, X, O, O, O, O, X, O,
+        X, X, X, O, O, X, X, X,
+        O, X, O, O, O, O, X, O,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        O, X, O, O, O, O, X, O,
+        X, X, X, O, O, X, X, X,
+        O, X, O, O, O, O, X, O
+    ]
+    return figure
+
+#_______________________________________________________________________________
+
 def threeDots(color):
     X = ledColors[color]
     figure = [
