@@ -19,9 +19,25 @@ ledColors = {
 
 #_______________________________________________________________________________
 
+def threeDots(color):
+    X = ledColors[color]
+    figure = [
+        O, O, O, O, O, O, O, O,
+        O, O, O, O, O, O, O, O,
+        O, O, O, O, O, O, O, O,
+        X, X, O, X, X, O, X, X,
+        X, X, O, X, X, O, X, X,
+        O, O, O, O, O, O, O, O,
+        O, O, O, O, O, O, O, O,
+        O, O, O, O, O, O, O, O
+    ]
+    return figure
+
+#_______________________________________________________________________________
+
 def diamond(color):
     X = ledColors[color]
-    diamond = [
+    figure = [
         O, O, O, X, X, O, O, O,
         O, O, X, O, O, X, O, O,
         O, X, O, O, O, O, X, O,
@@ -31,13 +47,13 @@ def diamond(color):
         O, O, X, O, O, X, O, O,
         O, O, O, X, X, O, O, O
     ]
-    return diamond
+    return figure
 
 #_______________________________________________________________________________
 
 def xCross(color):
     X = ledColors[color]
-    xCross = [
+    figure = [
         X, O, O, O, O, O, O, X,
         O, X, O, O, O, O, X, O,
         O, O, X, O, O, X, O, O,
@@ -47,13 +63,13 @@ def xCross(color):
         O, X, O, O, O, O, X, O,
         X, O, O, O, O, O, O, X
     ]
-    return xCross
+    return figure
 
 #_______________________________________________________________________________
 
 def arrow(color):
     X = ledColors[color]
-    arrow = [
+    figure = [
         O, O, O, X, X, O, O, O,
         O, O, O, X, X, O, O, O,
         O, O, O, X, X, O, O, O,
@@ -63,6 +79,6 @@ def arrow(color):
         O, O, X, X, X, X, O, O,
         O, O, O, X, X, O, O, O
     ]
-    return arrow
+    return figure
 
 #_______________________________________________________________________________

@@ -79,11 +79,8 @@ def main(gatewayLetter):
     Handles the experiment flow. When ran:
     1)  It listens for a trigger from the 'SampleSize' table on DynamoDB
     2)  Once triggered the Pi collects half the data points specified in the table.
-            LED Pattern = Diamond
     3)  The Pi then transmits the data to the Gateway Pi via Bluetooth
-            LED Pattern = Arrow
     4)  The program terminates.
-            LED Pattern = Cross
 
     '''
 
@@ -99,6 +96,7 @@ def main(gatewayLetter):
             'subject'   : 'PC1'
         }
         countTime = 1
+        sense.set_pixels(LED.diamond('green'))
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
             print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
