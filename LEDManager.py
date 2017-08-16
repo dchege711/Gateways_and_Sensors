@@ -9,11 +9,11 @@ Stores various LED patterns.
 
 # Set up helper variables for the colors
 ledColors = {
-    'black'   : (  0,   0,   0)
-    'red'     : (255,   0,   0)
-    'green'   : (  0, 255,   0)
-    'blue'    : (  0,   0, 255)
-    'orange'  : (255, 165,   0)
+    'black'   : (  0,   0,   0),
+    'red'     : (255,   0,   0),
+    'green'   : (  0, 255,   0),
+    'blue'    : (  0,   0, 255),
+    'orange'  : (255, 165,   0),
     'magenta' : (255,   0, 255)
 }
 
