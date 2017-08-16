@@ -18,6 +18,7 @@ import sys
 
 import LEDManager as LED
 from DynamoDBUtility import Table
+import BluetoothUtility as BT
 
 #_______________________________________________________________________________
 
@@ -137,7 +138,7 @@ def main(gatewayLetter):
         print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
 
         # Transmit the data via bluetooth to the Gateway Pi
-        sendDataByBluetooth(collectedData, gatewayBRAddresses['gatewayLetter'], 1)
+        BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)        
 
 #_______________________________________________________________________________
 

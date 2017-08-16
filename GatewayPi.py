@@ -12,7 +12,6 @@ Gateway 3 transmits the data (hence Transmission Latency)
 
 import bluetooth
 import time
-import cPickle
 import pickle
 import numpy as np
 import sys
