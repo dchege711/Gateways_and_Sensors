@@ -158,8 +158,8 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
     # Otherwise, the Gateway was meant to aggregate data without calculations
     else:
-        designMatrix = data[0]
-        targetMatrix = data[1]
+        targetMatrix = data[0]
+        designMatrix = data[1]
 
         # Numpy indexes follow the [row][column] convention
         # ndarray.shape returns the dimensions as a (#OfRows, #OfColumns)
@@ -169,9 +169,6 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
         for i in range(numOfRows):
             item = {}
-            print(i, numOfRows, designMatrix.shape[1])
-            print("X : ", designMatrix[i])
-            print("Y : ", targetMatrix[i])
             item['X_1']     = Decimal(str(designMatrix[i][0]))    # Time
             item['X_2']     = Decimal(str(designMatrix[i][1]))    # Pressure
             item['X_3']     = Decimal(str(designMatrix[i][2]))    # Humidity
@@ -298,6 +295,7 @@ def main(tableLetter, sleepTime):
             uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
 
         else:
+            # Make sure that targetMatrix and designMatrix get read in the correct order
             uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime)
 
         # Reset the state of the LED
