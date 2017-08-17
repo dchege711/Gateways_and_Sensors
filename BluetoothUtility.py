@@ -42,6 +42,7 @@ def listenOnBluetooth(port):
 
     '''
     # Setup the Bluetooth connection
+    sense.set_pixels(LED.arrowStatus('orange', 'red'))
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     server_sock.bind(("", port))
     server_sock.listen(port)
@@ -51,6 +52,7 @@ def listenOnBluetooth(port):
 
     # Listen for incoming data, while watching for the keyboard interrupt
     try:
+        sense.set_pixels(LED.arrowStatus('orange', 'orange'))
         client_sock, address = server_sock.accept()
         # print("Accepted connection from", address)
         startTime = time.time()
@@ -64,14 +66,17 @@ def listenOnBluetooth(port):
             total_data.append(data_1)
 
     except IOError:
+        sense.set_pixels(LED.arrowStatus('orange', 'magenta'))
         # print("Ran into IOError")
         pass    # Sincere apologies to all who told me passing is poor practice
 
     except KeyboardInterrupt:
+        sense.set_pixels(LED.arrowStatus('orange', 'magenta'))
         bluetooth.stop_advertising(server_sock)
         # sys.exit()    Why do we need an exit before we're actually done?
 
     # Log the results of the bluetooth data to the console
+    sense.set_pixels(LED.arrowStatus('orange', 'green'))
     endTime = time.time()
     print("Bluetooth Transmission Time :", str(endTime - startTime))
 
