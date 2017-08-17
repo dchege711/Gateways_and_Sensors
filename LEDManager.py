@@ -55,9 +55,9 @@ def threeDots(color, sOrG):
         X, X, O, X, X, O, X, X,
         O, O, O, O, O, O, O, O,
         O, O, X, X, X, X, O, O,
-        O, O, X, O, O, O, O, O,
-        O, O, X, S, X, X, G, O,
-        O, O, G, O, O, X, O, O,
+        O, O, X, O, O, G, O, O,
+        O, G, X, X, S, X, O, O,
+        O, O, O, O, O, X, O, O,
         O, O, X, X, X, X, O, O
     ]
     return figure
