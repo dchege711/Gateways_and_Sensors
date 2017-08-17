@@ -168,15 +168,15 @@ def uploadToDB(tableLetter, data, btTime, compTime):
         aggregatedItems = []
 
         for i in range(numOfRows):
-            item = {}
-            item['X_1']     = Decimal(str(designMatrix[i][0]))    # Time
-            item['X_2']     = Decimal(str(designMatrix[i][1]))    # Pressure
-            item['X_3']     = Decimal(str(designMatrix[i][2]))    # Humidity
-            item['Y']       = Decimal(str(targetMatrix[i][0]))    # Temperature
-            aggregatedItems.append(item)
+            currentItem = {}
+            currentItem['X_1']     = Decimal(str(designMatrix[i][0]))    # Time
+            currentItem['X_2']     = Decimal(str(designMatrix[i][1]))    # Pressure
+            currentItem['X_3']     = Decimal(str(designMatrix[i][2]))    # Humidity
+            currentItem['Y']       = Decimal(str(targetMatrix[i][0]))    # Temperature
+            aggregatedItems.append(currentItem)
 
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
-        # item['aggregated_data'] = aggregatedItems
+        item['aggregated_data'] = aggregatedItems
 
     # Upload this document to DynamoDB
     item['Comm_pi_pi'] = Decimal(str(btTime))
