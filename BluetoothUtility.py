@@ -42,7 +42,7 @@ def listenOnBluetooth(port):
 
     '''
     # Setup the Bluetooth connection
-    sense.set_pixels(LED.arrowStatus('orange', 'red'))
+    sense.set_pixels(LED.arrowReceive('orange', 'red'))
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     server_sock.bind(("", port))
     server_sock.listen(port)
@@ -52,7 +52,7 @@ def listenOnBluetooth(port):
 
     # Listen for incoming data, while watching for the keyboard interrupt
     try:
-        sense.set_pixels(LED.arrowStatus('orange', 'blue'))
+        sense.set_pixels(LED.arrowReceive('orange', 'blue'))
         client_sock, address = server_sock.accept()
         # print("Accepted connection from", address)
         startTime = time.time()
@@ -66,17 +66,17 @@ def listenOnBluetooth(port):
             total_data.append(data_1)
 
     except IOError:
-        sense.set_pixels(LED.arrowStatus('orange', 'magenta'))
+        sense.set_pixels(LED.arrowReceive('orange', 'magenta'))
         # print("Ran into IOError")
         pass    # Sincere apologies to all who told me passing is poor practice
 
     except KeyboardInterrupt:
-        sense.set_pixels(LED.arrowStatus('orange', 'magenta'))
+        sense.set_pixels(LED.arrowReceive('orange', 'magenta'))
         bluetooth.stop_advertising(server_sock)
         # sys.exit()    Why do we need an exit before we're actually done?
 
     # Log the results of the bluetooth data to the console
-    sense.set_pixels(LED.arrowStatus('orange', 'green'))
+    sense.set_pixels(LED.arrowReceive('orange', 'green'))
     endTime = time.time()
     print("Bluetooth Transmission Time :", str(endTime - startTime))
 
@@ -101,17 +101,17 @@ def sendDataByBluetooth(data, gatewayLetter, port):
     bd_addr = gatewayBRAddresses[gatewayLetter]
 
     # Establish the bluetooth connection
-    sense.set_pixels(LED.arrowStatus('blue', 'red'))
+    sense.set_pixels(LED.arrowSend('blue', 'red'))
     sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     sock.connect((bd_addr, port))
 
     # Send the data
-    sense.set_pixels(LED.arrowStatus('blue', 'blue'))
+    sense.set_pixels(LED.arrowSend('blue', 'blue'))
     startTime = time.time()
     sock.send(cPickle.dumps(data))
     endTime = time.time()
     btTime = endTime - startTime
-    sense.set_pixels(LED.arrowStatus('blue', 'green'))
+    sense.set_pixels(LED.arrowSend('blue', 'green'))
     sock.close()
     print("Sensor : Sent data over bluetooth in", btTime, "seconds")
     return btTime

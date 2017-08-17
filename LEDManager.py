@@ -51,14 +51,14 @@ def threeDots(color, sOrG):
         G = ledColors['red']
 
     figure = [
+        X, X, O, X, X, O, X, X,
+        X, X, O, X, X, O, X, X
+        O, O, O, O, O, O, O, O,
         O, O, X, X, X, X, O, O,
         O, O, X, O, O, O, O, O,
         O, O, X, S, X, X, G, O,
         O, O, G, O, O, X, O, O,
-        O, O, X, X, X, X, O, O,
-        O, O, O, O, O, O, O, O,
-        X, X, O, X, X, O, X, X,
-        X, X, O, X, X, O, X, X
+        O, O, X, X, X, X, O, O
     ]
     return figure
 
@@ -96,7 +96,7 @@ def xCross(color):
 
 #_______________________________________________________________________________
 
-def arrowStatus(colorArrow, colorDot):
+def arrowSend(colorArrow, colorDot):
     X = ledColors[colorArrow]
     Y = ledColors[colorDot]
     figure = [
@@ -113,18 +113,35 @@ def arrowStatus(colorArrow, colorDot):
 
 #_______________________________________________________________________________
 
-def arrow(colorArrow):
+def arrowReceive(colorArrow, colorDot):
     X = ledColors[colorArrow]
+    Y = ledColors[colorDot]
     figure = [
-        O, O, O, X, X, O, O, O,
-        O, O, O, X, X, O, O, O,
-        O, O, O, X, X, O, O, O,
-        O, O, O, X, X, O, O, O,
-        X, X, X, X, X, X, X, X,
-        O, X, X, X, X, X, X, O,
+        Y, O, O, X, X, O, O, Y,
         O, O, X, X, X, X, O, O,
-        O, O, O, X, X, O, O, O
+        O, X, X, X, X, X, X, O,
+        X, X, X, X, X, X, X, X,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        Y, O, O, X, X, O, O, Y
     ]
     return figure
+
+#_______________________________________________________________________________
+
+# def arrow(colorArrow):
+#     X = ledColors[colorArrow]
+#     figure = [
+#         O, O, O, X, X, O, O, O,
+#         O, O, O, X, X, O, O, O,
+#         O, O, O, X, X, O, O, O,
+#         O, O, O, X, X, O, O, O,
+#         X, X, X, X, X, X, X, X,
+#         O, X, X, X, X, X, X, O,
+#         O, O, X, X, X, X, O, O,
+#         O, O, O, X, X, O, O, O
+#     ]
+#     return figure
 
 #_______________________________________________________________________________

@@ -261,7 +261,7 @@ def main(tableLetter, sleepTime):
         numFeatures = 3
 
         # Listen for incoming bluetooth data on port 1
-        sense.set_pixels(LED.arrow('orange'))
+        sense.set_pixels(LED.arrowReceive('orange', 'black'))
 
         timeOne = time.time()
         dataFromBT = BT.listenOnBluetooth(1)
@@ -289,7 +289,7 @@ def main(tableLetter, sleepTime):
         compTime = timeThree - timeTwo
 
         # Upload data to DynamoDB
-        sense.set_pixels(LED.arrow('blue'))
+        sense.set_pixels(LED.arrowSend('blue', 'black'))
 
         if calculateFeatures[tableLetter]:
             uploadTime = uploadToDB(tableLetter, features, btTime, compTime)

@@ -116,7 +116,7 @@ def main(gatewayLetter, sleepTime):
         # print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
 
         # Transmit the data via bluetooth to the Gateway Pi
-        sense.set_pixels(LED.arrow('blue'))
+        sense.set_pixels(LED.arrowSend('blue', 'black'))
         btTime = BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
 
         # Show that the Pi has completed it's work
