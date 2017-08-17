@@ -125,7 +125,7 @@ def main(gatewayLetter, sleepTime):
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
-    gatewayLetter = sys.argv[1]
-    sleepTime = sys.argv[2]
+    gatewayLetter = sys.argv[1]     # The letter is used to distinguish tables
+    sleepTime = float(sys.argv[2])  # Determines how frequently we'll query the DB
     main(gatewayLetter, sleepTime)
 #_______________________________________________________________________________

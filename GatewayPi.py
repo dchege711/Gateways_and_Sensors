@@ -306,6 +306,6 @@ def main(tableLetter, sleepTime):
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
-    tableLetter = sys.argv[1]   # The letter is used to distinguish tables
-    sleepTime = sys.argv[2]
+    tableLetter = sys.argv[1]       # The letter is used to distinguish tables
+    sleepTime = float(sys.argv[2])  # Determines how frequently we'll query the DB
     main(tableLetter, sleepTime)
