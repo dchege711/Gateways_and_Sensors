@@ -234,13 +234,11 @@ def main(tableLetter, sleepTime):
     6)  Visualizes these results using an animated matplotlib figure.
 
     '''
-
+    # Establish a connection to the 'SampleSize' table
+    table = Table('SampleSize')
     oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
 
     while True:
-
-        # Establish a connection to the 'SampleSize' table
-        table = Table('SampleSize')
 
         # Break out of the inner while-loop only when the table has been updated
         sense.set_pixels(LED.threeDots('green', 'G'))
