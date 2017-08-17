@@ -253,6 +253,8 @@ def main(tableLetter):
 
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+            # Sleep for 10 seconds because pinging AWS is costly
+            time.sleep(10)
         oldSizeTime = timeStamp
 
         numDataPoints = int(table.getItem(key)['sampleSize'])
