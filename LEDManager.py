@@ -52,7 +52,7 @@ def threeDots(color, sOrG):
 
     figure = [
         X, X, O, X, X, O, X, X,
-        X, X, O, X, X, O, X, X
+        X, X, O, X, X, O, X, X,
         O, O, O, O, O, O, O, O,
         O, O, X, X, X, X, O, O,
         O, O, X, O, O, O, O, O,
