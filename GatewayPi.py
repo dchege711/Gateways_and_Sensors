@@ -222,7 +222,7 @@ def visualizeData(btTime, compTime, uploadTime):
 
 #_______________________________________________________________________________
 
-def main(tableLetter):
+def main(tableLetter, sleepTime):
     '''
     Runs the experiment as indicated below:
 
@@ -254,7 +254,7 @@ def main(tableLetter):
         while stayInLoop:
             stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
             # Sleep for 10 seconds because pinging AWS is costly
-            time.sleep(10)
+            time.sleep(sleepTime)
         oldSizeTime = timeStamp
 
         numDataPoints = int(table.getItem(key)['sampleSize'])
@@ -307,4 +307,5 @@ def main(tableLetter):
 
 if __name__ == '__main__':
     tableLetter = sys.argv[1]   # The letter is used to distinguish tables
-    main(tableLetter)
+    sleepTime = sys.argv[2]
+    main(tableLetter, sleepTime)

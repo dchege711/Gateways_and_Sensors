@@ -73,7 +73,7 @@ def collectData(numberOfDataPoints, feature):
 
 #_______________________________________________________________________________
 
-def main(gatewayLetter):
+def main(gatewayLetter, sleepTime):
     '''
     Handles the experiment flow. When ran:
     1)  It listens for a trigger from the 'SampleSize' table on DynamoDB
@@ -126,5 +126,6 @@ def main(gatewayLetter):
 
 if __name__ == '__main__':
     gatewayLetter = sys.argv[1]
-    main(gatewayLetter)
+    sleepTime = sys.argv[2]
+    main(gatewayLetter, sleepTime)
 #_______________________________________________________________________________
