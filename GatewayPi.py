@@ -169,6 +169,7 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
         for i in range(numOfRows):
             item = {}
+            print(i, numOfRows, designMatrix.shape[1])
             item['X_1']     = Decimal(str(designMatrix[i][0]))    # Time
             item['X_2']     = Decimal(str(designMatrix[i][1]))    # Pressure
             item['X_3']     = Decimal(str(designMatrix[i][2]))    # Humidity
