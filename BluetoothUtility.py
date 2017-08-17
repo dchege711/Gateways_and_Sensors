@@ -52,7 +52,7 @@ def listenOnBluetooth(port):
 
     # Listen for incoming data, while watching for the keyboard interrupt
     try:
-        sense.set_pixels(LED.arrowStatus('orange', 'orange'))
+        sense.set_pixels(LED.arrowStatus('orange', 'blue'))
         client_sock, address = server_sock.accept()
         # print("Accepted connection from", address)
         startTime = time.time()
@@ -106,7 +106,7 @@ def sendDataByBluetooth(data, gatewayLetter, port):
     sock.connect((bd_addr, port))
 
     # Send the data
-    sense.set_pixels(LED.arrowStatus('blue', 'orange'))
+    sense.set_pixels(LED.arrowStatus('blue', 'blue'))
     startTime = time.time()
     sock.send(cPickle.dumps(data))
     endTime = time.time()
