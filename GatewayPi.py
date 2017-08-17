@@ -235,8 +235,9 @@ def main(tableLetter):
 
     '''
 
+    oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
+
     while True:
-        oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
 
         # Establish a connection to the 'SampleSize' table
         table = Table('SampleSize')
