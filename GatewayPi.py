@@ -295,7 +295,7 @@ def main(tableLetter):
             uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
 
         else:
-            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime)
+            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime)
 
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
