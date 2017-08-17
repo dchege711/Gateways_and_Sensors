@@ -37,17 +37,28 @@ def pluses(color):
 
 #_______________________________________________________________________________
 
-def threeDots(color):
+def threeDots(color, sOrG):
     X = ledColors[color]
+
+    if sOrG == 'S':
+        S = X
+        G = O
+    elif sOrG == 'G':
+        S = O
+        G = X
+    else:
+        S = ledColors['red']
+        G = ledColors['red']
+
     figure = [
-        O, O, O, O, O, O, O, O,
-        O, O, O, O, O, O, O, O,
+        O, O, X, X, X, X, O, O,
+        O, O, X, O, O, O, O, O,
+        O, O, X, S, X, X, G, O,
+        O, O, G, O, O, X, O, O,
+        O, O, X, X, X, X, O, O,
         O, O, O, O, O, O, O, O,
         X, X, O, X, X, O, X, X,
-        X, X, O, X, X, O, X, X,
-        O, O, O, O, O, O, O, O,
-        O, O, O, O, O, O, O, O,
-        O, O, O, O, O, O, O, O
+        X, X, O, X, X, O, X, X
     ]
     return figure
 
@@ -80,22 +91,6 @@ def xCross(color):
         O, O, X, O, O, X, O, O,
         O, X, O, O, O, O, X, O,
         X, O, O, O, O, O, O, X
-    ]
-    return figure
-
-#_______________________________________________________________________________
-
-def arrow(color):
-    X = ledColors[color]
-    figure = [
-        O, O, O, X, X, O, O, O,
-        O, O, O, X, X, O, O, O,
-        O, O, O, X, X, O, O, O,
-        O, O, O, X, X, O, O, O,
-        X, X, X, X, X, X, X, X,
-        O, X, X, X, X, X, X, O,
-        O, O, X, X, X, X, O, O,
-        O, O, O, X, X, O, O, O
     ]
     return figure
 

@@ -28,8 +28,8 @@
     * `$ python3 InitializeAllDBTables.py` to set up all DynamoDB tables.
     * Upload the .zip file that contains LinearRegressionLambda.py to AWS Lambda. ([Instructions on creating a python .zip deployment package](http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html))
 * Run the following scripts in the order below:
-    * `$ python3 SensorPi.py <letterDenotingTheSensor>` on the Pis designated as sensors.
-    * `$ python3 GatewayPi.py <letterDenotingTheGateway>` on the Pis designated as gateways.
+    * `$ python3 SensorPi.py <letterDenotingTheSensor> <sleepTimeInSeconds>` on the Pis designated as sensors.
+    * `$ python3 GatewayPi.py <letterDenotingTheGateway> <sleepTimeInSeconds>` on the Pis designated as gateways.
     * `$ python3 Button.py` on your laptop. Enter the number of data points to be collected.
         * This triggers the sensors and the gateways.
     * `$ python3 TriggerLambda.py` on your laptop.

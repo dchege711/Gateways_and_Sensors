@@ -167,7 +167,7 @@ def uploadToDB(tableLetter, data, btTime, compTime):
         numOfRows = designMatrix.shape[0]
         aggregatedItems = []
 
-        for i in numOfRows:
+        for i in range(numOfRows):
             item = {}
             item['X_1']     = Decimal(str(designMatrix[i][0]))    # Time
             item['X_2']     = Decimal(str(designMatrix[i][1]))    # Pressure
@@ -243,7 +243,7 @@ def main(tableLetter, sleepTime):
         table = Table('SampleSize')
 
         # Break out of the inner while-loop only when the table has been updated
-        sense.set_pixels(LED.threeDots('green'))
+        sense.set_pixels(LED.threeDots('green', 'G'))
 
         stayInLoop = True
         key = {
