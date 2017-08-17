@@ -117,7 +117,7 @@ def main(gatewayLetter):
 
         # Transmit the data via bluetooth to the Gateway Pi
         sense.set_pixels(LED.arrow('blue'))
-        BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
+        btTime = BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
 
         # Show that the Pi has completed it's work
         sense.set_pixels(LED.xCross('red'))

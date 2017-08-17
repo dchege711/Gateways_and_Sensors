@@ -100,3 +100,20 @@ def arrow(color):
     return figure
 
 #_______________________________________________________________________________
+
+def arrowStatus(colorArrow, colorDot):
+    X = ledColors[colorArrow]
+    Y = ledColors[colorDot]
+    figure = [
+        Y, O, O, X, X, O, O, Y,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        O, O, O, X, X, O, O, O,
+        X, X, X, X, X, X, X, X,
+        O, X, X, X, X, X, X, O,
+        O, O, X, X, X, X, O, O,
+        Y, O, O, X, X, O, O, Y
+    ]
+    return figure
+
+#_______________________________________________________________________________

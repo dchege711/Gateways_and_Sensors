@@ -298,8 +298,7 @@ def main(tableLetter):
         sense.set_pixels(LED.xCross('red'))
 
         # Visualize the results
-        while True:
-            visualizeData(btTime, compTime, uploadTime)
+        visualizeData(btTime, compTime, uploadTime)
 
 #_______________________________________________________________________________
 
