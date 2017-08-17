@@ -176,7 +176,7 @@ def uploadToDB(tableLetter, data, btTime, compTime):
             aggregatedItems.append(item)
 
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
-        item['aggregated_data'] = aggregatedItems
+        # item['aggregated_data'] = aggregatedItems
 
     # Upload this document to DynamoDB
     item['Comm_pi_pi'] = Decimal(str(btTime))
