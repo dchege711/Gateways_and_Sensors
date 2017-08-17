@@ -176,12 +176,12 @@ def uploadToDB(tableLetter, data, btTime, compTime):
             aggregatedItems.append(item)
 
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
-        item['aggregated_data'] = aggregatedItems
+        item['aggregated_data'] = Decimal(aggregatedItems)
 
     # Upload this document to DynamoDB
     item['Comm_pi_pi'] = Decimal(btTime)
     item['Compu_pi'] = Decimal(compTime)
-    item['data_bytes'] = sizeOfDataInBytes
+    item['data_bytes'] = Decimal(sizeOfDataInBytes)
     table.addItem(item)
 
     # Attach a time stamp and the size of the file to the header item in DynamoDB
