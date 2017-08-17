@@ -151,9 +151,9 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
     # If the Gateway was designated to calculate features...
     if calculateFeatures[tableLetter]:
-        item['feature_A'] = Decimal(float(data[0][0]))
-        item['feature_B'] = Decimal(float(data[1][0]))
-        item['feature_C'] = Decimal(float(data[2][0]))
+        item['feature_A'] = Decimal(str(float(data[0][0])))
+        item['feature_B'] = Decimal(str(float(data[1][0])))
+        item['feature_C'] = Decimal(str(float(data[2][0])))
         sizeOfDataInBytes = data.nbytes
 
     # Otherwise, the Gateway was meant to aggregate data without calculations
@@ -169,26 +169,26 @@ def uploadToDB(tableLetter, data, btTime, compTime):
 
         for i in numOfRows:
             item = {}
-            item['X_1']     = Decimal(designMatrix[i][0])    # Time
-            item['X_2']     = Decimal(designMatrix[i][1])    # Pressure
-            item['X_3']     = Decimal(designMatrix[i][2])    # Humidity
-            item['Y']       = Decimal(targetMatrix[i][0])    # Temperature
+            item['X_1']     = Decimal(str(designMatrix[i][0]))    # Time
+            item['X_2']     = Decimal(str(designMatrix[i][1]))    # Pressure
+            item['X_3']     = Decimal(str(designMatrix[i][2]))    # Humidity
+            item['Y']       = Decimal(str(targetMatrix[i][0]))    # Temperature
             aggregatedItems.append(item)
 
         sizeOfDataInBytes = designMatrix.nbytes + targetMatrix.nbytes
-        item['aggregated_data'] = Decimal(aggregatedItems)
+        item['aggregated_data'] = Decimal(str(aggregatedItems))
 
     # Upload this document to DynamoDB
-    item['Comm_pi_pi'] = Decimal(btTime)
-    item['Compu_pi'] = Decimal(compTime)
-    item['data_bytes'] = Decimal(sizeOfDataInBytes)
+    item['Comm_pi_pi'] = Decimal(str(btTime))
+    item['Compu_pi'] = Decimal(str(compTime))
+    item['data_bytes'] = Decimal(str(sizeOfDataInBytes))
     table.addItem(item)
 
     # Attach a time stamp and the size of the file to the header item in DynamoDB
     endTime = time.time()
     uploadDuration = endTime - startTime
-    item['Comm_pi_lambda'] = Decimal(uploadDuration)
-    item['timeStamp'] = Decimal(endTime)
+    item['Comm_pi_lambda'] = Decimal(str(uploadDuration))
+    item['timeStamp'] = Decimal(str(endTime))
     table.addItem(item)
 
     return uploadDuration
