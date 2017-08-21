@@ -12,6 +12,7 @@ This scripts updates a DynamoDB table that triggers AWS Lambda
 
 import time
 from DynamoDBUtility import Table
+from decimal import Decimal
 
 #_______________________________________________________________________________
 
@@ -41,35 +42,36 @@ while True:
     ready = 0
 
     # This while-loop is only escaped once all the Gateway Pi's are done
-	while True:
-        aIsReady, timeA = tableA.compareValues(oldTimeA, queryA, 'timeStamp', False)
-        bIsReady, timeB = tableB.compareValues(oldTimeB, queryB, 'timeStamp', False)
-        cIsReady, timeC = tableC.compareValues(oldTimeC, queryC, 'timeStamp', False)
+    while True:
+        aIsReady, timeA = tableA.compareValues(queryA, 'timeStamp', oldTimeA, False)
+        bIsReady, timeB = tableB.compareValues(queryB, 'timeStamp', oldTimeB, False)
+        cIsReady, timeC = tableC.compareValues(queryC, 'timeStamp', oldTimeC, False)
 
-		if aIsReady:
+        if aIsReady:
             ready = ready + 1
-			oldTimeA = timeA
-		if bIsReady:
-			ready = ready + 1
-			oldTimeB = timeB
-		if cIsReady:
+            oldTimeA = timeA
+        if bIsReady:
             ready = ready + 1
-			oldTimeC = timeC
+            oldTimeB = timeB
+        if cIsReady:
+            ready = ready + 1
+            oldTimeC = timeC
 
         # This means that all gateways are ready
-		if ready >= 3:
-			ready = 0
-			break
-
+        if ready >= 3:
+            ready = 0
+            print("Now triggering lambda...")
+            break
 
     # The Trigger_A table makes Lambda start processing the data.
     # The table needs to be specified in the Lambda function config.
-	lambdaTriggerTable = Table('Trigger_A')
-	item = lambdaTriggerTable.getItem({
-        'forum'     : 'roomA',
-        'subject'   : '1'
-	})
+    lambdaTriggerTable = Table('Trigger_A')
+    item = lambdaTriggerTable.getItem({
+    'forum'     : 'roomA',
+    'subject'   : '1'
+    })
 
-	tEnd = time.time()
-	item['timeStamp'] = tEnd
-	lambdaTriggerTable.addItem(item)
+    tEnd = time.time()
+    item['timeStamp'] = Decimal(str(tEnd))
+    lambdaTriggerTable.addItem(item)
+    print("Lambda triggered!")

@@ -103,17 +103,17 @@ def lambda_handler(event, context):
 		maxit = 1000
 		tol = 1e-3
 		Xb = np.dot(X, betam)
-		#print Xb
+		#print(Xb)
 		step = 1.0 / np.max(np.linalg.svd(Xb, full_matrices=0, compute_uv=0)) ** 2
 
 		for it in range(maxit):
 			prev_w = np.copy(w)
-			#print w
+			#print(w)
 			res = y - np.dot(np.matrix(Xb), np.matrix(w).T)
-			#print res
+			#print(res)
 			grad = -np.dot(np.matrix(Xb).T, np.matrix(res))
-			#print grad
-			#print step
+			#print(grad)
+			#print(step)
 			w -= step * np.squeeze(np.asarray(grad.T))
 			w = prox_simplex(w)
 			#print(w)
@@ -124,8 +124,8 @@ def lambda_handler(event, context):
 
 	w = combine(y, X, betam)
 	w_temp = [decimal.Decimal(str(w[i]))for i in range(collectornum)]
-	#print type(w_temp[0])
-	#print (w_temp[0])
+	#print(type(w_temp[0])
+	#print(w_temp[0])
 
 	wb = np.dot(np.matrix(betam), np.matrix(w).T)
 	Predict_y = np.dot(np.matrix(X), wb)
@@ -139,7 +139,7 @@ def lambda_handler(event, context):
 	tEnd_temp = decimal.Decimal(str(tEnd))
 	Lambda_ExecTime_temp = decimal.Decimal(str(Lambda_ExecTime))
 	table = dynamo.Table('weightresult')
-	#print Predict_y
+	#print(Predict_y)
 
 	item = table.put_item(
 		Item = {
@@ -164,10 +164,10 @@ def lambda_handler(event, context):
 	#	return len(s.encode('utf-8'))
 
 	#data_bytes = utf8len(str(w_temp[0]))+utf8len(str(w_temp[1]))+utf8len(str(Predict_y_temp))+utf8len(str(y))+utf8len(str(MSE_temp))+utf8len(str(Lambda_ExecTime_temp))
-	print datanum
+	print(datanum)
 	#return betam
-	#print betam
-	#print w
-	#print Lambda_ExecTime
-	#print data_bytes
-	#print MSE
+	#print(betam)
+	#print(w)
+	#print(Lambda_ExecTime)
+	#print(data_bytes)
+	#print(MSE)
