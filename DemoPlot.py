@@ -18,15 +18,32 @@ from DynamoDBUtility import Table
 #_______________________________________________________________________________
 
 # Color Codes
-lightPurple = '#DDDDFF'
-pink = 'FFD0DF'
-paleYellow = '#FDFFD0'
+lightPurple = '#ddddff'
+pink = '#ffb6c1'
+paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-fig, axs =plt.subplots(3,1)
-fig.set_size_inches(20,2)
+fig, axs = plt.subplots(4,1)
+# fig.set_size_inches(20,2)
 
 #_______________________________________________________________________________
+
+def plotBandwidth(resultItem):
+    featureBytes = resultItem['data_bytes_features']
+    entireDataBytes = resultItem['data_bytes_entire']
+    savings = ((entireDataBytes - featureBytes) / entireDataBytes) * 100
+
+    bandwidthCollabel = ['Sensor Data', 'Feature Data', 'Data Savings']
+    n = 0
+    bandwidthData = [
+        [ dp(entireDataBytes, ' bytes', n = n),
+          dp(featureBytes, ' bytes', n = n),
+          dp(savings, ' %', n = n)
+        ]
+    ]
+    colors = [pink, pink, paleYellow]
+    plotTableFigure(0, bandwidthData, bandwidthCollabel, colors, 1, 1.5)
+
 
 def plotLatency(resultItem):
     '''
@@ -36,45 +53,34 @@ def plotLatency(resultItem):
 
     '''
 
-    latencyCTable = Table('latency_C')
-    latencyCItem = latencyCTable.getItem({
-        'forum'   : 'roomA',
-        'subject' : 'sensorC'
-    })
+    bluetoothLatency = resultItem['Comm_pi_pi']
+    awsUploadLatency = resultItem['Comm_pi_lambda']
+    piComputationLatency = resultItem['Compu_pi']
+    lambdaComputationLatency = resultItem['Lambda_ExecTime']
 
-	bluetoothLatency = resultItem['bluetoothLatency']
-	awsUploadLatency = resultItem['awsUploadLatency']
-	piComputationLatency = resultItem['piComputationLatency']
-	lambdaComputationLatency = resultItem['Lambda_ExecTime']
-	totalLatency = bluetoothLatency + awsUploadLatency + piComputationLatency + lambdaComputationLatency
-	dataSizeInBytes = latencyCItem['data_bytes']
+    totalLatency = bluetoothLatency + awsUploadLatency + piComputationLatency + lambdaComputationLatency
 
-	latency_collabel= [
-        "Data_Amount", "Communication_Latency", "Communication_Latency",
-        "Computation_Latency", "Computation_Latency", "Total_Latency"
+    # dataLatency = str(bluetoothLatency, awsUploadLatency)
+    latency_collabel= [
+        "Data_Latency", "Computation_Latency", "Total_Latency"
     ]
-	latency_data = [
-        [
-            "(Bytes)", "Sensor_Pi -> Gateway_Pi", "Gateway_Pi -> Lambda",
-            "Gateway_Pi", "Lambda", "(seconds)"
-        ],
-		[
-            dataSizeInBytes, bluetoothLatency, awsUploadLatency,
-            piComputationLatency, lambdaComputationLatency, totalLatency
+
+    latency_data = [
+        [ "Bluetooth, Wi-Fi", "On-Pi, On-Lambda", "Total Latency"],
+        [ dp(bluetoothLatency, 's') + ', ' + dp(awsUploadLatency, 's'),
+          dp(piComputationLatency, 's') + ', ' + dp(lambdaComputationLatency, 's'),
+          dp(totalLatency, 's')
         ]
     ]
 
-	colors = ['gray', lightPurple, lightPurple, pink, pink, paleYellow]
+    colors = [pink, pink, paleYellow]
+    plotTableFigure(1, latency_data, latency_collabel, colors, 1, 1.5)
 
-	axs[0].axis('tight')
-	axs[0].axis('off')
-	the_table_latency = axs[0].table(
-        cellText    = latency_data,
-        colLabels   = latency_collabel,
-        loc         = 'center',
-        colColours  = colors
-    )
-	the_table_latency.scale(1.3,1.5)
+#_______________________________________________________________________________
+
+def dp(number, unit, n = 2):
+    dp = '{:.' + str(n) + 'f}'
+    return dp.format(float(number)) + unit
 
 #_______________________________________________________________________________
 
@@ -85,37 +91,39 @@ def plotCosts(resultItem):
 
     '''
     # Get the cost of storing data on AWS Lambda
-	dbGBHourRate = 0.25
-	dynamoDBCost = dataSizeInBytes * (dbGBHourRate / (1024 * 1024))
+    dbGBHourRate = 0.25
+    dataSizeInBytes = float(resultItem['data_bytes_entire'])
+    dbCost = dataSizeInBytes * (dbGBHourRate / (1024 * 1024))
 
     # Get the cost of invoking AWS Lambda
-	numLambdaInvocations = 1
-	lambdaInvokeCostPerReq = 0.0000002
-	lambdaInvokeTotalCost = numLambdaInvocations * lambdaInvokeCostPerReq
+    numLambdaInvocations = 1
+    lambdaInvokeCostPerReq = 0.0000002
+    invokeCost = numLambdaInvocations * lambdaInvokeCostPerReq
 
     # Get the cost of computing on AWS Lambda
     lambdaComputeCostPerSec = 0.000000208
-	lambdaComputeTime = resultItem['ExecTime']
-	lambdaComputeTime = math.ceil(float(lambdaComputeTime * 10))
-	lambdaComputeTotalCost = (lambdaComputeTime / 10) * lambdaComputeCostPerSec
+    lambdaComputeTime = resultItem['Lambda_ExecTime']
+    lambdaComputeTime = math.ceil(float(lambdaComputeTime * 10))
+    computeCost = (lambdaComputeTime / 10) * lambdaComputeCostPerSec
 
     # Plot the cost data
-	totalCost = dynamoDBCost + lambdaInvokeTotalCost + lambdaComputeTotalCost
-	costs_collabel= [
-        "DynamoDB_Storage", "Lambda_Invocation", "Lambda_Computation", "Total_Cost"
+    totalCost = dbCost + invokeCost + computeCost
+    costs_collabel= [
+        "AWS DynamoDB", "AWS Lambda", "Total_Cost"
     ]
-	costs_data = [
+    dec = 8
+    costs_data = [
         [
-            "dynamoDBCost", "lambdaInvokeTotalCost",
-            "lambdaComputeTotalCost", "(USD)"
+            "Storage", "Invoke, Compute", "Total"
         ],
-		[
-            dynamoDBCost, lambdaInvokeTotalCost,
-            lambdaComputeTotalCost, totalCost
+        [
+            dp(dbCost, '$', n = dec),
+            dp(invokeCost, '$', n = dec) + ', ' + dp(computeCost, '$', n = dec),
+            dp(totalCost, '$', n = dec)
         ]
     ]
-	colors = [lightPurple, pink, pink, paleYellow]
-    plotTableFigure(1, costs_data, costs_collabel, colors)
+    colors = [pink, pink, paleYellow]
+    plotTableFigure(2, costs_data, costs_collabel, colors, 1, 1.5)
 
 #_______________________________________________________________________________
 
@@ -123,25 +131,19 @@ def plotAccuracy(resultItem):
     '''
     Plots a table that shows the observed value, predicted value and error.
     '''
-    sensingCTtable = Table('sensingdata_C')
-    sensingCItem = sensingCTtable.getItem({}
-        'forum'   : 'roomA',
-        'subject' : '199'
-    })
-
-	actualData = sensingCItem['Y']
-	predictedData = resultItem['Prediction']
-	predictionError = resultItem['Error']
-	accuracy_collabel = ["Observed_Values", "Predicted_Values", "Error"]
-	accuracy_data = [
+    actualData = resultItem['Real_Result']
+    predictedData = resultItem['Prediction']
+    predictionError = resultItem['Error']
+    accuracy_collabel = ["Observed_Value", "Predicted_Value", "Error"]
+    accuracy_data = [
         [actualData, predictedData, predictionError]
     ]
-    colors_2 = [lightPurple, pink, paleYellow]
-	plotTableFigure(2, accuracy_data, accuracy_collabel, colors_2)
+    colors_2 = [pink, pink, paleYellow]
+    plotTableFigure(3, accuracy_data, accuracy_collabel, colors_2, 1, 1.5)
 
 #_______________________________________________________________________________
 
-def plotTableFigure(index, cellText, columnLabels, colors):
+def plotTableFigure(index, cellText, columnLabels, colors, width, height):
     '''
     Helper method for plotting tables using matplotlib
 
@@ -156,39 +158,47 @@ def plotTableFigure(index, cellText, columnLabels, colors):
 
     axs[index].axis('tight')
     axs[index].axis('off')
-    tableBeingPlotted = axs[2].table(
+    tableBeingPlotted = axs[index].table(
         cellText    = cellText,
         colLabels   = columnLabels,
         loc         = 'center',
         colColours  = colors
     )
 
-    tableBeingPlotted.scale(1.3,1.5)
+    tableBeingPlotted.scale(width, height)
 
 #_______________________________________________________________________________
 
 def main():
-    
+
     oldTime = 0
+    resultTable = Table('weightresult')
+    resultItem = resultTable.getItem({
+        'environment'    : 'roomA',
+        'sensor'         : 'sensorA&B&C'
+    })
 
-    while True:
+    plotBandwidth(resultItem)
+    plotLatency(resultItem)
+    plotCosts(resultItem)
+    plotAccuracy(resultItem)
+    plt.show()
 
-        # When the results table gets updated, escape this loop
-        resultTable = Table('weightresult')
-    	while True:
-    		resultItem = resultTable.getItem({
-    			'environment'    : 'roomA',
-    			'sensor'         : 'sensorA&B&C'
-    	    })
-    		if oldTime != resultItem['Time']:
-    			oldTime = resultItem['Time']
-    			break
-    		else:
-    			oldTime = resultItem['Time']
-        plotLatency(resultItem)
-        plotCosts(resultItem)
-        plotAccuracy(resultItem)
-        plt.show(block=False)
+    # while True:
+    #
+    #     # When the results table gets updated, update the figures
+    #     resultItem = resultTable.getItem({
+    #         'environment'    : 'roomA',
+    #         'sensor'         : 'sensorA&B&C'
+    #     })
+    #
+    #     newTime = resultItem['Time']
+    #     if oldTime != newTime:
+    #         print("Updating tables...")
+    #         plotLatency(resultItem)
+    #         # plotCosts(resultItem)
+    #         # plotAccuracy(resultItem)
+    #         oldTime = newTime
 
 #_______________________________________________________________________________
 
