@@ -62,13 +62,14 @@ def lambda_handler(event, context):
 	datanum = len(aggregatedData)
 	X = np.zeros((datanum,featurenum))
 	y = np.zeros((datanum,1))
+	data_bytes_entire = item_C['data_bytes']
 
 	for i in range(datanum):
 		X[i][0] = aggregatedData[i]['X_1']
 		X[i][1] = aggregatedData[i]['X_2']
 		X[i][2] = aggregatedData[i]['X_3']
 		y[i][0] = aggregatedData[i]['Y']
-	data_bytes = item_C['data_bytes']
+
 
 	# Compute the maximum bluetooth latency
 	Comm_pi_pi_A = item_A['Comm_pi_pi']
@@ -132,6 +133,7 @@ def lambda_handler(event, context):
 	Predict_y = np.dot(np.matrix(X), wb)
 	Predict_y_array = np.squeeze(np.asarray(Predict_y))
 	Predict_y_temp = decimal.Decimal(str(Predict_y_array[0])) # Why was this 199?
+	Real_y_temp = decimal.Decimal(str(y[0][0]))
 
 	MSE = np.sqrt(np.sum((y-np.squeeze(np.asarray(Predict_y))) ** 2)) / datanum
 	MSE_temp = decimal.Decimal(str(MSE))
@@ -148,7 +150,7 @@ def lambda_handler(event, context):
 		'w_1' : w_temp[0],
 		'w_2' : w_temp[1],
 		'Prediction' : Predict_y_temp,
-		#'Real_Result' : y[199],
+		'Real_Result' : Real_y_temp,
 		'Error' : MSE_temp,
 		'Lambda_ExecTime' : Lambda_ExecTime_temp,
 		'Time': tEnd_temp,
@@ -156,7 +158,7 @@ def lambda_handler(event, context):
 		'Comm_pi_lambda': Comm_pi_lambda,
 		'Compu_pi': Compu_pi,
 		'data_bytes_features' : decimal.Decimal(str(dataBytesFeatures)),
-		'data_bytes_entire' : decimal.Decimal(str(data_bytes))
+		'data_bytes_entire' : decimal.Decimal(str(data_bytes_entire))
 	}
 	item = table.put_item(Item = resultData)
 
