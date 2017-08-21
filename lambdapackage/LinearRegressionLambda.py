@@ -26,42 +26,42 @@ def lambda_handler(event, context):
 	tStart = time.time()
 	dynamo = boto3.resource('dynamodb')
 
-	# Obtain the number of samples that we're working with
-	table_S = dynamo.Table('SampleSize')
-	db_response_S = table_S.scan()
-	item_S = tuple(db_response_S['Items'])
-	# x2 because we're not halving the number at the gateway or at the sensor
-	# We end up collecting (datanum) items on both sensorC and gatewayC
-	datanum = int(item_S[0]['sampleSize']) * 2
+	# Change: Getting the number of samples from the 'SampleSize' table is tricky
+	# When we'll have multiple Pi's, keeping track of this number will be buggy
+	# For this reason, I'm setting the value of 'datanum' to the number of items
+	# that we're going to get from the table containing the aggregated sensor data
 
 	# Initialize helper variables
 	featurenum = 3
 	collectornum = 2
-	X = np.zeros((datanum,featurenum))
-	y = np.zeros((datanum,1))
 	betam = np.zeros((featurenum,collectornum))
 
 	# Fetch the features calculated by Gateway A
 	table_A = dynamo.Table('sensingdata_A')
-	db_response_A = table_A.scan()
-	item_A = tuple(db_response_A['Items'])[0]
+	itemKey = {'forum' : 'roomA', 'subject' : 'sensorA'}
+	item_A = table_A.get_item(Key = itemKey)['Item']
 	betam[0][0] = item_A['feature_A']
 	betam[1][0] = item_A['feature_B']
 	betam[2][0] = item_A['feature_C']
 
 	# Fetch the features calculated by Gateway B
 	table_B = dynamo.Table('sensingdata_B')
-	db_response_B = table_B.scan()
-	item_B = tuple(db_response_B['Items'])[0]
+	itemKey = {'forum' : 'roomA', 'subject' : 'sensorB'}
+	item_B = table_B.get_item(Key = itemKey)['Item']
 	betam[0][1] = item_B['feature_A']
 	betam[1][1] = item_B['feature_B']
 	betam[2][1] = item_B['feature_C']
 
 	# Fetch the aggregated data from Gateway C
+	X = np.zeros((datanum,featurenum))
+	y = np.zeros((datanum,1))
+
 	table_C = dynamo.Table('sensingdata_C')
-	db_response_C = table_C.scan()
-	item_C = tuple(db_response_C['Items'])[0]
+	itemKey = {'forum' : 'roomA', 'subject' : 'sensorC'}
+	item_C = table_C.get_item(Key = itemKey)['Item']
 	aggregatedData = item_C['aggregated_data']
+	datanum = len(aggregatedData)
+	
 	for i in range(datanum):
 		X[i][0] = aggregatedData[i]['X_1']
 		X[i][1] = aggregatedData[i]['X_2']
