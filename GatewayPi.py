@@ -249,9 +249,16 @@ def main(tableLetter, sleepTime):
         }
 
         while stayInLoop:
-            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-            # Sleep for 10 seconds because pinging AWS is costly
-            time.sleep(sleepTime)
+            try:
+                stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+                # Sleep for 10 seconds because pinging AWS is costly
+                time.sleep(sleepTime)
+
+            except KeyboardInterrupt:
+                print("Shutting down...")
+                sense.set_pixels(LED.pluses('black'))
+                sys.exit()
+
         oldSizeTime = timeStamp
 
         numDataPoints = int(table.getItem(key)['sampleSize'])

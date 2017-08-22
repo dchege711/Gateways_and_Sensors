@@ -38,7 +38,7 @@ def plotBandwidth(resultItem):
     bandwidthData = [
         [ dp(entireDataBytes, ' bytes', n = n),
           dp(featureBytes, ' bytes', n = n),
-          dp(savings, ' %', n = n)
+          dp(savings, ' %', n = 4)
         ]
     ]
     colors = [pink, pink, paleYellow]

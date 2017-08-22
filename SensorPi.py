@@ -98,10 +98,16 @@ def main(gatewayLetter, sleepTime):
         }
         # countTime = 1
         while stayInLoop:
-            stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-            # print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
-            time.sleep(10)
-            # countTime += 1
+            try:
+                stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+                # print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
+                time.sleep(sleepTime)
+                # countTime += 1
+
+            except KeyboardInterrupt:
+                print("Shutting down...")
+                sense.set_pixels(LED.pluses('black'))
+                sys.exit()
 
         oldSizeTime = timeStamp
 
