@@ -65,6 +65,9 @@ def listenOnBluetooth(port):
             # Else append the received data to the helper variable
             total_data.append(data_1)
 
+        # Should we stop timing at this point?
+        # endTime = time.time()
+
     except IOError:
         sense.set_pixels(LED.arrowReceive('orange', 'magenta'))
         # print("Ran into IOError")
@@ -78,13 +81,15 @@ def listenOnBluetooth(port):
     # Log the results of the bluetooth data to the console
     sense.set_pixels(LED.arrowReceive('orange', 'green'))
     endTime = time.time()
-    print("Bluetooth Transmission Time :", str(endTime - startTime))
+    btTime = endTime - startTime
+
+    print("Bluetooth Transmission Time :", btTime)
 
     # Close the bluetooth connection
     client_sock.close()
     server_sock.close()
 
-    return pickle.loads(''.join(total_data))
+    return btTime, pickle.loads(''.join(total_data))
 
 #_______________________________________________________________________________
 

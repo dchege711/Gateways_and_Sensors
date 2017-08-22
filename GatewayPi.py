@@ -40,7 +40,7 @@ def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
     Transcribes the data received via bluetooth to numpy arrays.
 
     Param(s):
-    (num)
+
     '''
 
     designMatrix = np.zeros((numDataPoints * 2, numFeatures))
@@ -87,7 +87,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     Returns a numpy array of features that approximate the mapping
     '''
 
-    count = 0
+    # count = 0
     w_old = np.zeros((numFeatures, 1))
     w_new = np.zeros((numFeatures, 1))
     E_old = 0
@@ -99,7 +99,6 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         w_old = w_new
 
         for i in range(numDataPoints * 2):
-
             delta_E[i,:] = delta_E[i,:] + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i,:]),np.matrix(w_old)))*designMatrix[i,:]
 
         w_new = w_old + learning_rate * np.matrix(delta_E[i, :] / (numDataPoints * 2)).T
@@ -112,12 +111,12 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         if E_new > E_old:
             learning_rate = learning_rate / 2
 
-        count = count + 1
-        print("E_new", E_new, "E_old", E_old)
+        # count = count + 1
+        # print("E_new", E_new, "E_old", E_old)
 
         # I'm running into an infinite loop at this point
         # if E_new == E_old:
-        if E_new < E_old:
+        if E_new > E_old:
             break
 
     return w_new
@@ -262,8 +261,9 @@ def main(tableLetter, sleepTime):
         sense.set_pixels(LED.arrowReceive('orange', 'black'))
 
         timeOne = time.time()
-        dataFromBT = BT.listenOnBluetooth(1)
+        btTime, dataFromBT = BT.listenOnBluetooth(1)
         timeTwo = time.time()
+        # Edit: timeTwo - timeOne != btTime since some time is spent waiting on the sockets
 
         # Signify the computation state
         sense.set_pixels(LED.diamond('blue'))
@@ -283,7 +283,7 @@ def main(tableLetter, sleepTime):
             features = gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints)
 
         timeThree = time.time()
-        btTime = timeTwo - timeOne
+        # btTime = timeTwo - timeOne
         compTime = timeThree - timeTwo
 
         # Upload data to DynamoDB
@@ -300,7 +300,7 @@ def main(tableLetter, sleepTime):
         sense.set_pixels(LED.xCross('red'))
 
         # Visualize the results
-        visualizeData(btTime, compTime, uploadTime)
+        # visualizeData(btTime, compTime, uploadTime)
 
 #_______________________________________________________________________________
 
