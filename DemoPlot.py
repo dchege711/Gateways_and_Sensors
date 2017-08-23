@@ -156,15 +156,15 @@ def plotAccuracy(resultItem):
     error = '{:.3f}'.format(resultItem['Error'])
 
     pyplot.figure(1)
-    pyplot.grid(True)
+    # pyplot.grid(True)
     pyplot.xlabel("Samples")
     pyplot.ylabel("Temperature")
     pyplot.title("Comparing Observed Temperature to Predicted Temperature")
-    print("Error : " + error, resultItem['Error'])
 
     pyplot.plot(xUnits, realData, color = 'r', label = "Real Data")
     pyplot.plot(xUnits, predictedData, color = 'b', label = "Predicted Data")
-    pyplot.text(0.5, 0.5, "Error : ")
+    # Coordinates are of the form x, y scaled according to the current figure
+    pyplot.text(900, 25, r'$\sigma = $' + error, bbox = dict(facecolor='blue', alpha=0.5))
     pyplot.legend(loc = 'best')
 
 #_______________________________________________________________________________

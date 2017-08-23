@@ -94,7 +94,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     E_new = 0
     delta_E = np.zeros((numDataPoints * 2, numFeatures))
     learning_rate = 0.001
-    epsilon = sys.float_info.epsilon
+    epsilon = 1e-10
 
     while True:
         w_old = w_new
