@@ -46,21 +46,21 @@ def collectData(numberOfDataPoints, feature):
 
     for i in range(numberOfDataPoints):
         # Record several parameters of interest
-        device = {}
-        device['cpuTemperature'] = os.popen('vcgencmd measure_temp').readline().replace("temp=","").replace("'C\n","")
-
-        temp = {}
-        temp['basedOnHumidity'] = sense.get_temperature_from_humidity()
-        temp['basedOnPressure'] = sense.get_temperature_from_pressure()
-
-        environment = {}
-        environment['humidity'] = sense.get_humidity()
-        environment['pressure'] = sense.get_pressure()
-        environment['temperature'] = temp
-
-        message = {}
-        message['device'] = device
-        message['environment'] = environment
+        # device = {}
+        # device['cpuTemperature'] = os.popen('vcgencmd measure_temp').readline().replace("temp=","").replace("'C\n","")
+        #
+        # temp = {}
+        # temp['basedOnHumidity'] = sense.get_temperature_from_humidity()
+        # temp['basedOnPressure'] = sense.get_temperature_from_pressure()
+        #
+        # environment = {}
+        # environment['humidity'] = sense.get_humidity()
+        # environment['pressure'] = sense.get_pressure()
+        # environment['temperature'] = temp
+        #
+        # message = {}
+        # message['device'] = device
+        # message['environment'] = environment
 
         tdataTime = time.time()
 
