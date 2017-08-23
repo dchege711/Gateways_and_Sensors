@@ -149,11 +149,11 @@ def plotAccuracy(resultItem):
     realData = resultItem['Real_Data']
     xUnits = list(range(len(predictedData)))
 
-    squareDiff = 0
-    for i in range(len(predictedData)):
-        squareDiff += (realData[i] - predictedData[i]) ** 2
-    error = math.sqrt(squareDiff / len(predictedData))
-    error = '{:.3f}'.format(error)
+    # squareDiff = 0
+    # for i in range(len(predictedData)):
+    #     squareDiff += (realData[i] - predictedData[i]) ** 2
+    # error = math.sqrt(squareDiff / len(predictedData))
+    error = '{:.3f}'.format(resultItem['Error'])
 
     pyplot.figure(1)
     pyplot.grid(True)
