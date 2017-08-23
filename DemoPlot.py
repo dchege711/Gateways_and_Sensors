@@ -11,6 +11,7 @@ Note: Still needs debugging.
 #_______________________________________________________________________________
 
 import matplotlib.pylab as plt
+import matplotlib.pyplot as pyplot
 import math
 
 from DynamoDBUtility import Table
@@ -131,15 +132,40 @@ def plotAccuracy(resultItem):
     '''
     Plots a table that shows the observed value, predicted value and error.
     '''
-    actualData = resultItem['Real_Result']
+    # actualData = resultItem['Real_Result']
+    # predictedData = resultItem['Prediction']
+    # predictionError = resultItem['Error']
+    # accuracy_collabel = ["Observed_Value", "Predicted_Value", "Error"]
+    # accuracy_data = [
+    #     [actualData, predictedData, predictionError]
+    # ]
+    # colors_2 = [pink, pink, paleYellow]
+    # plotTableFigure(3, accuracy_data, accuracy_collabel, colors_2, 1, 1.5)
+
+    # tableC = Table('sensingdata_C')
+    # realData = tableC.getItem({'forum' : 'roomA', 'subject' : 'sensorC'})['aggregated_data']
+
     predictedData = resultItem['Prediction']
-    predictionError = resultItem['Error']
-    accuracy_collabel = ["Observed_Value", "Predicted_Value", "Error"]
-    accuracy_data = [
-        [actualData, predictedData, predictionError]
-    ]
-    colors_2 = [pink, pink, paleYellow]
-    plotTableFigure(3, accuracy_data, accuracy_collabel, colors_2, 1, 1.5)
+    realData = resultItem['Real_Data']
+    xUnits = list(range(len(predictedData)))
+
+    squareDiff = 0
+    for i in range(len(predictedData)):
+        squareDiff += (realData[i] - predictedData[i]) ** 2
+    error = math.sqrt(squareDiff / len(predictedData))
+    error = '{:.3f}'.format(error)
+
+    pyplot.figure(1)
+    pyplot.grid(True)
+    pyplot.xlabel("Samples")
+    pyplot.ylabel("Temperature")
+    pyplot.title("Comparing Observed Temperature to Predicted Temperature")
+    # print("Error : " + error)
+
+    pyplot.plot(xUnits, realData, color = 'r', label = "Real Data")
+    pyplot.plot(xUnits, predictedData, color = 'b', label = "Predicted Data")
+    pyplot.text(0.5, 0.5, "Error : ")
+    pyplot.legend(loc = 'best')
 
 #_______________________________________________________________________________
 
@@ -177,7 +203,6 @@ def main():
         'environment'    : 'roomA',
         'sensor'         : 'sensorA&B&C'
     })
-
     plotBandwidth(resultItem)
     plotLatency(resultItem)
     plotCosts(resultItem)

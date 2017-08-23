@@ -16,6 +16,7 @@ import numpy as np
 import decimal
 from decimal import *
 import time
+import matplotlib.pyplot as plt
 
 from DynamoDBUtility import Table
 
@@ -127,20 +128,38 @@ def lambda_handler(event, context):
 	Predict_y_temp = decimal.Decimal(str(Predict_y_array[0]))
 	Real_y_temp = decimal.Decimal(str(y[0][0]))
 
+	# # print(len(Predict_y_array), type(Predict_y_array))
+	# xUnits = np.arange(len(Predict_y_array))
+	# # print(len(y), type(y))
+	# plt.figure(1)
+	# plt.plot(xUnits, y, color = 'r', label = "Actual")
+	# plt.plot(xUnits, Predict_y_array, color = 'b', label = "Predicted")
+	# plt.legend(loc = 'best')
+	# plt.show()
+
 	MSE = np.sqrt(np.sum((y-np.squeeze(np.asarray(Predict_y))) ** 2)) / datanum
 	MSE_temp = decimal.Decimal(str(MSE))
 	tEnd = time.time()
 	Lambda_ExecTime = tEnd - tStart
 	tEnd_temp = decimal.Decimal(str(tEnd))
 	Lambda_ExecTime_temp = decimal.Decimal(str(Lambda_ExecTime))
+
+	Predict_y_array = Predict_y_array.tolist()
+	y = y.tolist()
+	# print(y)
+	for i in range(len(Predict_y_array)):
+		y[i] = y[i][0]
+		y[i] = decimal.Decimal(str(y[i]))
+		Predict_y_array[i] = decimal.Decimal(str(Predict_y_array[i]))
+
 	table = Table('weightresult')
 	resultData = {
 		'environment' : 'roomA',
 		'sensor': 'sensorA&B&C',
 		'w_1' : w_temp[0],
 		'w_2' : w_temp[1],
-		'Prediction' : Predict_y_temp,
-		'Real_Result' : Real_y_temp,
+		'Prediction' : Predict_y_array,
+		'Real_Data' : y,
 		'Error' : MSE_temp,
 		'Lambda_ExecTime' : Lambda_ExecTime_temp,
 		'Time': tEnd_temp,
@@ -153,7 +172,7 @@ def lambda_handler(event, context):
 
 	item = table.addItem(resultData)
 
-	for key in resultData.keys():
-		print('{:20}'.format(key), resultData[key])
+	# for key in resultData.keys():
+	# 	print('{:20}'.format(key), resultData[key])
 
 lambda_handler(35, 46)

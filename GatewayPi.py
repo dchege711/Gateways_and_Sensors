@@ -94,6 +94,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     E_new = 0
     delta_E = np.zeros((numDataPoints * 2, numFeatures))
     learning_rate = 0.001
+    epsilon = sys.float_info.epsilon
 
     while True:
         w_old = w_new
@@ -116,7 +117,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
 
         # I'm running into an infinite loop at this point
         # if E_new == E_old:
-        if E_new > E_old:
+        if abs(E_new - E_old) <= epsilon:
             break
 
     return w_new

@@ -30,7 +30,7 @@ sense = SenseHat()
 
 #_______________________________________________________________________________
 
-def listenOnBluetooth(port):
+def listenOnBluetooth(channelNumber):
     '''
     Listens to incoming data on the Bluetooth Interface
 
@@ -41,11 +41,14 @@ def listenOnBluetooth(port):
     (pickle)    ???
 
     '''
+    allowableUnacceptedConns = 1 # The # of unaccepted connection before refusing new connections
+    bufferSize = 1 # Receive up to this number of buffersize bytes from the socket
+
     # Setup the Bluetooth connection
     sense.set_pixels(LED.arrowReceive('orange', 'red'))
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    server_sock.bind(("", port))
-    server_sock.listen(port)
+    server_sock.bind(("", channelNumber))
+    server_sock.listen(allowableUnacceptedConns)
 
     # startTime = time.time()
     total_data = []
@@ -53,16 +56,18 @@ def listenOnBluetooth(port):
     # Listen for incoming data, while watching for the keyboard interrupt
     try:
         sense.set_pixels(LED.arrowReceive('orange', 'blue'))
+        # The received address is a (host, channel) tuple
         client_sock, address = server_sock.accept()
-        # print("Accepted connection from", address)
-        startTime = time.time()
+        # startTime = time.time()
 
         while True:
-            data_1 = client_sock.recv(port)
-            # If there's no more data to receive, escape the loop
+            startTime = time.time()
+            data_1 = client_sock.recv(bufferSize)
+            # We need a break statement because when no data is available,
+            # recv() blocks until at least one byte is available
             if len(data_1) == 0:
                 break
-            # Else append the received data to the helper variable
+            # Append the received data to the helper variable
             total_data.append(data_1)
 
         # Should we stop timing at this point?
@@ -93,13 +98,13 @@ def listenOnBluetooth(port):
 
 #_______________________________________________________________________________
 
-def sendDataByBluetooth(data, gatewayLetter, port):
+def sendDataByBluetooth(data, gatewayLetter, channelNumber):
     '''
     Param(s):
         (String)    Destination Address
-        (int)       Destination Port
+        (int)       Destination Channel
 
-    Sends data over bluetooth to the designated address and port.
+    Sends data over bluetooth to the designated address and channel.
     Run "$ hciconfig dev" on the Pi to identify the address
 
     '''
@@ -107,18 +112,23 @@ def sendDataByBluetooth(data, gatewayLetter, port):
 
     # Establish the bluetooth connection
     sense.set_pixels(LED.arrowSend('blue', 'red'))
+
+    startTime = time.time()
     sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    sock.connect((bd_addr, port))
+    sock.connect((bd_addr, channelNumber))
 
     # Send the data
     sense.set_pixels(LED.arrowSend('blue', 'blue'))
-    startTime = time.time()
-    sock.send(cPickle.dumps(data))
-    endTime = time.time()
-    btTime = endTime - startTime
+    dataToSend = cPickle.dumps(data)
+    intendedBytes = len(dataToSend)
+    bytesSent = sock.send(dataToSend)
+
     sense.set_pixels(LED.arrowSend('blue', 'green'))
     sock.close()
-    print("Sensor : Sent data over bluetooth in", btTime, "seconds")
+
+    endTime = time.time()
+    btTime = endTime - startTime
+    print("Sensor : Sent", bytesSent, "/", intendedBytes, "bytes over bluetooth in", btTime, "seconds")
     return btTime
 
 #_______________________________________________________________________________
