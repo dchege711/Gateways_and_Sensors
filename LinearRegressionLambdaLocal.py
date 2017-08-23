@@ -125,17 +125,6 @@ def lambda_handler(event, context):
 	wb = np.dot(np.matrix(betam), np.matrix(w).T)
 	Predict_y = np.dot(np.matrix(X), wb)
 	Predict_y_array = np.squeeze(np.asarray(Predict_y))
-	Predict_y_temp = decimal.Decimal(str(Predict_y_array[0]))
-	Real_y_temp = decimal.Decimal(str(y[0][0]))
-
-	# # print(len(Predict_y_array), type(Predict_y_array))
-	# xUnits = np.arange(len(Predict_y_array))
-	# # print(len(y), type(y))
-	# plt.figure(1)
-	# plt.plot(xUnits, y, color = 'r', label = "Actual")
-	# plt.plot(xUnits, Predict_y_array, color = 'b', label = "Predicted")
-	# plt.legend(loc = 'best')
-	# plt.show()
 
 	MSE = np.sqrt(np.sum((y-np.squeeze(np.asarray(Predict_y))) ** 2)) / datanum
 	MSE_temp = decimal.Decimal(str(MSE))
@@ -146,10 +135,8 @@ def lambda_handler(event, context):
 
 	Predict_y_array = Predict_y_array.tolist()
 	y = y.tolist()
-	# print(y)
 	for i in range(len(Predict_y_array)):
-		y[i] = y[i][0]
-		y[i] = decimal.Decimal(str(y[i]))
+		y[i] = decimal.Decimal(str(y[i][0]))
 		Predict_y_array[i] = decimal.Decimal(str(Predict_y_array[i]))
 
 	table = Table('weightresult')
