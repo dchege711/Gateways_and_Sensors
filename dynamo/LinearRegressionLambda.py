@@ -33,6 +33,7 @@ def lambda_handler(event, context):
 	featurenum = 3
 	collectornum = 2
 	betam = np.zeros((featurenum,collectornum))
+	dataBytesFeatures = 0
 
 	# Fetch the features calculated by Gateway A
 	table_A = dynamo.Table('sensingdata_A')
@@ -41,6 +42,7 @@ def lambda_handler(event, context):
 	betam[0][0] = item_A['feature_A']
 	betam[1][0] = item_A['feature_B']
 	betam[2][0] = item_A['feature_C']
+	dataBytesFeatures += item_A['data_bytes']
 
 	# Fetch the features calculated by Gateway B
 	table_B = dynamo.Table('sensingdata_B')
@@ -49,7 +51,7 @@ def lambda_handler(event, context):
 	betam[0][1] = item_B['feature_A']
 	betam[1][1] = item_B['feature_B']
 	betam[2][1] = item_B['feature_C']
-	dataBytesFeatures = item_B['data_bytes']
+	dataBytesFeatures += item_B['data_bytes']
 
 	# Fetch the aggregated data from Gateway C
 

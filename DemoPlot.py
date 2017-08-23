@@ -160,7 +160,7 @@ def plotAccuracy(resultItem):
     pyplot.xlabel("Samples")
     pyplot.ylabel("Temperature")
     pyplot.title("Comparing Observed Temperature to Predicted Temperature")
-    # print("Error : " + error)
+    print("Error : " + error, resultItem['Error'])
 
     pyplot.plot(xUnits, realData, color = 'r', label = "Real Data")
     pyplot.plot(xUnits, predictedData, color = 'b', label = "Predicted Data")
