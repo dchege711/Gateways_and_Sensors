@@ -87,7 +87,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     Returns a numpy array of features that approximate the mapping
     '''
 
-    # count = 0
+    count = 0
     w_old = np.zeros((numFeatures, 1))
     w_new = np.zeros((numFeatures, 1))
     E_old = 0
@@ -112,12 +112,14 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         if E_new > E_old:
             learning_rate = learning_rate / 2
 
-        # count = count + 1
+        count = count + 1
         # print("E_new", E_new, "E_old", E_old)
 
-        # I'm running into an infinite loop at this point
+        # I'm running into an infinite loop at this point.
+        # Comparing E_new == E_old is tricky because of precision.
         # if E_new == E_old:
         if abs(E_new - E_old) <= epsilon:
+            print("Escaped loop after", count, "iterations.")
             break
 
     return w_new
