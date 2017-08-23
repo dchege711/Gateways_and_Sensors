@@ -16,7 +16,6 @@ import sys
 from sense_hat import SenseHat
 import matplotlib.pylab as plt
 from decimal import Decimal
-import math
 
 import LEDManager as LED
 from DynamoDBUtility import Table
@@ -95,7 +94,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     E_new = 0
     delta_E = np.zeros((numDataPoints * 2, numFeatures))
     learning_rate = 0.001
-    tolerance = 1e-7
+    # tolerance = 1e-7
 
     while True:
         w_old = w_new
@@ -119,7 +118,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         # I'm running into an infinite loop at this point.
         # Comparing E_new == E_old is tricky because of precision.
         # if E_new == E_old:
-        if math.isclose(E_new, E_old, abs_tol = tolerance):
+        if np.isclose(E_new, E_old)[0]:
             print("Escaped loop after", count, "iterations.")
             break
 
