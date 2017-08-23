@@ -16,6 +16,7 @@ import sys
 from sense_hat import SenseHat
 import matplotlib.pylab as plt
 from decimal import Decimal
+import math
 
 import LEDManager as LED
 from DynamoDBUtility import Table
