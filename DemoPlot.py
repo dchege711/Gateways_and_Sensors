@@ -164,7 +164,9 @@ def plotAccuracy(resultItem):
     pyplot.plot(xUnits, realData, color = 'r', label = "Real Data")
     pyplot.plot(xUnits, predictedData, color = 'b', label = "Predicted Data")
     # Coordinates are of the form x, y scaled according to the current figure
-    pyplot.text(900, 25, r'$\sigma = $' + error, bbox = dict(facecolor='blue', alpha=0.5))
+    xSpot = xUnits[-1] - 300
+    ySpot = realData[0]
+    pyplot.text(xSpot, ySpot, r'$\sigma = $' + error, bbox = dict(facecolor='blue', alpha=0.5))
     pyplot.legend(loc = 'best')
 
 #_______________________________________________________________________________
