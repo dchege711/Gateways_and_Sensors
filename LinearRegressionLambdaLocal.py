@@ -161,6 +161,8 @@ def lambda_handler(event, context):
 
 	item = table.addItem(resultData)
 
+	# Record this run
+
 	# for key in resultData.keys():
 	# 	print('{:20}'.format(key), resultData[key])
 
