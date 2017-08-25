@@ -11,6 +11,7 @@ This scripts updates a DynamoDB table that triggers AWS Lambda
 #_______________________________________________________________________________
 
 import time
+import sys
 from DynamoDBUtility import Table
 from decimal import Decimal
 
@@ -75,3 +76,7 @@ while True:
     item['timeStamp'] = Decimal(str(tEnd))
     lambdaTriggerTable.addItem(item)
     print("Lambda triggered!")
+
+    if KeyBoardInterrupt:
+        print("Closing Lambda Trigger")
+        sys.exit()
