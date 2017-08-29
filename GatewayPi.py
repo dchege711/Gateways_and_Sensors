@@ -114,11 +114,13 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
 
         count = count + 1
         # print("E_new", E_new, "E_old", E_old)
+        if count % 20 == 0:
+            print str(count) + " iterations so far..."
 
         # I'm running into an infinite loop at this point.
         # Comparing E_new == E_old is tricky because of precision.
-        # if E_new == E_old:
-        if np.isclose(E_new, E_old)[0]:
+        # if np.isclose(E_new, E_old)[0]:
+        if E_new == E_old:
             print("Escaped loop after", count, "iterations.")
             break
 
