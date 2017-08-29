@@ -195,6 +195,13 @@ def uploadToDB(tableLetter, data, btTime, compTime):
     item['timeStamp'] = Decimal(str(endTime))
     table.addItem(item)
 
+    # Log the experiment run to DynamoDB, regardless of gateway type
+    item.pop('aggregated_data', None)   # We don't want a record of readings
+    record = table.getItem({'forum' : 'roomA', 'subject' : 'records'})
+    data = record['data']
+    data.append(item)
+    table.addItem(record)
+
     return uploadDuration
 
 #_______________________________________________________________________________
