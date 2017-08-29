@@ -1,9 +1,9 @@
-'''
+"""
 Centralized location for handling all requests to Amazon's DynamoDB
 
 @ Original Author   : Chege Gitau
 
-'''
+"""
 #_______________________________________________________________________________
 
 import boto3
@@ -20,8 +20,8 @@ dynamodb = boto3.resource(
 
 class Table:
 
-    def __init__(self, nameOfTable, hashKey = None, rangeKey = None, readCapUnits = 10, writeCapUnits = 10):
-        '''
+    def __init__(self, nameOfTable, hashKey = None, rangeKey = None, readCapUnits = 2, writeCapUnits = 2):
+        """
         Initializes an instance of this class bearing a reference to a table.
 
         Param(s):
@@ -30,9 +30,9 @@ class Table:
         Optional Param(s):
             hashKey (list)      Name of the hash key and either 'S', 'N' or 'B' to specify type.
             rangeKey (list)     Name of the range key and either 'S', 'N' or 'B' to specify type.
-            readCapUnits (int)  Read capacity units. 10 if not specified.
-            writeCapUnits (int) Write capacity units. 10 if not specified.
-        '''
+            readCapUnits (int)  Read capacity units. 2 if not specified.
+            writeCapUnits (int) Write capacity units. 2 if not specified.
+        """
         # If the table doesn't exist, create one.
         if (not self.tableExists(nameOfTable)):
             self.table = self.createTable(nameOfTable, hashKey, rangeKey, readCapUnits, writeCapUnits)
@@ -41,21 +41,21 @@ class Table:
             self.table = dynamodb.Table(nameOfTable)
             print("Fetched the table '", self.table.table_name, "' created at", self.table.creation_date_time)
 
-    def createTable(self, nameOfTable, hashKey, rangeKey, readCapUnits = 10, writeCapUnits = 10):
-        '''
+    def createTable(self, nameOfTable, hashKey, rangeKey, readCapUnits = 2, writeCapUnits = 2):
+        """
         Param(s):
             (String)            Name of the table that you wish to create.
             (list)              Name of the hash key and either 'S', 'N' or 'B' to specify type.
             (list)              Name of the range key and either 'S', 'N' or 'B' to specify type.
 
         Optional Param(s):
-            readCapUnits (int)  Read capacity units. 10 if not specified.
-            writeCapUnits (int) Write capacity units. 10 if not specified.
+            readCapUnits (int)  Read capacity units. 2 if not specified.
+            writeCapUnits (int) Write capacity units. 2 if not specified.
 
         Returns a table resource that corresponds to an active table on DynamoDB
         Raises a ReferenceError is no KeySchema values are provided.
 
-        '''
+        """
         # Raise exceptions for invalid requests
         if hashKey == None and rangeKey == None:
             tip = "Try an initialization such as Table('nameOfTable', ['last_name', 'S'])"
@@ -103,23 +103,23 @@ class Table:
         return table
 
     def tableExists(self, nameOfTable):
-        '''
+        """
         Param(s)
             (String) Name of a (potential) DynamoDB table
 
         Returns True if such a table actually exists, False otherwise.
-        '''
+        """
         try:
             return dynamodb.Table(nameOfTable).table_status == "ACTIVE"
         except:
             return False
 
     def getAttributes(self):
-        '''
+        """
         Returns a string that shows the atribute definitions for the table's
         key schema.
 
-        '''
+        """
         attributeMap = {
             'S' : '(type = String)',
             'B' : '(type = Binary)',
@@ -132,14 +132,14 @@ class Table:
         return ' and '.join(listOfAttr)
 
     def addItem(self, itemData):
-        '''
+        """
         Param(s):
             (dict) Specifies the data that you wish to add to the table.
 
         Returns a dict containing metrics and stats from AWS.
         Overwrites old values if the KeySchema values are already in present.
         Raises a ClientError exception if the input dict doesn't contain mandatory keys.
-        '''
+        """
         try:
             return self.table.put_item(Item = itemData)
         except ClientError as e:
@@ -148,7 +148,7 @@ class Table:
             raise(e)
 
     def getItem(self, itemKey):
-        '''
+        """
         Param(s):
             (dict) The key-value pair(s) that you wish to search for in the table.
 
@@ -156,7 +156,7 @@ class Table:
         Raises a ClientError exception if the input dict's keys don't match the
         stored attributes.
 
-        '''
+        """
         try:
             return self.table.get_item(Key = itemKey)['Item']
         except KeyError:
@@ -167,7 +167,7 @@ class Table:
             raise(e)
 
     def compareValues(self, itemKey, keyToLookUp, expectedValue, testForEquality):
-        '''
+        """
         Helper method for checking values in a DynamoDB table.
         Useful for setting and reading tables that act as triggers
 
@@ -179,7 +179,7 @@ class Table:
 
         Returns a boolean and a copy of the data found at the key of interest.
 
-        '''
+        """
         item = self.getItem(itemKey)
         booleanResult = expectedValue == item[keyToLookUp]
         if testForEquality:
@@ -188,12 +188,12 @@ class Table:
             return not booleanResult, item[keyToLookUp]
 
     def log(self, tip):
-        '''
+        """
         Param(s):
             (String) Tip for handling the exception that you're about to raise.
 
         Logs message to the console. Useful for providing tips to the user.
-        '''
+        """
         print("---------------------------")
         print("Pro-Tip :", tip)
         print("---------------------------")
