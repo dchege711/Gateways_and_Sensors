@@ -159,3 +159,18 @@ def lambda_handler(event, context):
 		'data_bytes_entire' : decimal.Decimal(str(data_bytes_entire))
 	}
 	item = table.put_item(Item = resultData)
+
+	# Record this run
+	resultData.pop('environment', None)
+	resultData.pop('sensor', None)
+	data_labels = []
+	new_data = []
+	for key in resultData.keys():
+		data_labels.append(key)
+		new_data.append(resultData[key])
+
+	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'expResults'})['Item']
+	record['data_labels'] = data_labels
+	results = record['results']
+	results.append(new_data)
+	item = table.put_item(Item = record)
