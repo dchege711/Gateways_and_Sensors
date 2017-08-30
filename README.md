@@ -1,3 +1,7 @@
+### Next Steps:
+* Resolve the timing out on AWS. Relax table capacities(?)
+* Implement a function that plots all the collected data so far.
+
 # Gateways and Sensors Experiment
 * This repository houses the code used to test out a fog setup with Raspberry Pis.
     * [Getting Started Notes](#getting-started-notes)
