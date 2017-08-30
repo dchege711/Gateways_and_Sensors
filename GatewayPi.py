@@ -199,9 +199,17 @@ def uploadToDB(tableLetter, data, btTime, compTime):
     item.pop('aggregated_data', None)
     item.pop('forum', None)
     item.pop('subject', None)
+    newData = []
+    labels = []
+    for key in item.keys():
+        labels.append(key)
+        newData.append(item[key])
+
     record = table.getItem({'forum' : 'roomA', 'subject' : 'records'})
     data = record['data']
-    data.append(item)
+    data.append(newData)
+    record['data_labels'] = labels
+
     table.addItem(record)
 
     return uploadDuration
