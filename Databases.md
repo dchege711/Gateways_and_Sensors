@@ -162,6 +162,3 @@ calculateFeatures = {
 
 'timeStamp'         --> Set by TriggerLambda.py
 ```
-
-## To-Do Items
-* Why is DemoPlot.py calling for '199'?

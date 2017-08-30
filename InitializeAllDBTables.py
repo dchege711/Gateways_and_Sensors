@@ -35,8 +35,5 @@ initializeTable('SampleSize', 'forum', 'subject', '1', 'PC1')
 initializeTable('sensingdata_A', 'forum', 'subject', 'roomA', 'sensorA')
 initializeTable('sensingdata_B', 'forum', 'subject', 'roomA', 'sensorB')
 initializeTable('sensingdata_C', 'forum', 'subject', 'roomA', 'sensorC')
-initializeTable('latency_C', 'forum', 'subject', 'roomA', 'sensorC')
 initializeTable('weightresult', 'environment', 'sensor', 'roomA', 'sensorA&B&C')
 initializeTable('Trigger_A', 'forum', 'subject', 'roomA', '1')
-
-# Which script sets the values in sensingdata_C and latency_C?
