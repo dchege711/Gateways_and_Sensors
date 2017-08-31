@@ -1,7 +1,7 @@
-### Next Steps:
-* Resolve the timing out on AWS. Relax table capacities(?)
-  * Resolved: Taking 4,000 samples is untenable for 128 MB capacity.
-* Implement a function that plots all the collected data so far.
+### Possible Next Steps:
+* Implement a function that plots all the collected data so far versus number of samples, i.e. bluetooth latency, database upload latency, storage and computational costs, etc.
+
+-----
 
 # Gateways and Sensors Experiment
 * This repository houses the code used to test out a fog setup with Raspberry Pis.
@@ -12,8 +12,8 @@
 ----
 
 ## Getting Started Notes
-* I'm using python3 on the Pi. To check the default python version, use `$ python --version`
-    * If you need to change to python3, see the instructions on this [site](https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux#h2-change-python-version-system-wide).
+* I'm using python 2.7 on the Pi. There are compatibility issues with python3, especially with pybluez. To check the default python version, use `$ python --version`
+    * If you need to change to python2, see the instructions on this [site](https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux#h2-change-python-version-system-wide).
 * To connect to AWS services, you must present credentials. The code assumes that you have environment variables named 'aws_access_key_id' and 'aws_secret_access_key'. To set these variables:
     * Open the bash profile on the pi using `$ nano ~/.bashrc`
     * Add the AWS credentials into the bash profile as below:
