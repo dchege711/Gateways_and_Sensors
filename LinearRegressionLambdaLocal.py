@@ -164,6 +164,8 @@ def lambda_handler(event, context):
 	# Record this run
 	resultData.pop('environment', None)
 	resultData.pop('sensor', None)
+	resultData.pop('Prediction', None)
+	resultData.pop('Real_Data', None)
 	data_labels = []
 	new_data = []
 	for key in resultData.keys():

@@ -1,5 +1,6 @@
 ### Next Steps:
 * Resolve the timing out on AWS. Relax table capacities(?)
+  * Resolved: Taking 4,000 samples is untenable for 128 MB capacity.
 * Implement a function that plots all the collected data so far.
 
 # Gateways and Sensors Experiment

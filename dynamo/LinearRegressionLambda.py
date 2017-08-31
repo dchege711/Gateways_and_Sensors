@@ -160,9 +160,13 @@ def lambda_handler(event, context):
 	}
 	item = table.put_item(Item = resultData)
 
-	# Record this run
+	# Remove data that we don't want to track over time
 	resultData.pop('environment', None)
 	resultData.pop('sensor', None)
+	resultData.pop('Prediction', None)
+	resultData.pop('Real_Data', None)
+
+	# Log the data to DynamoDB
 	data_labels = []
 	new_data = []
 	for key in resultData.keys():
