@@ -94,7 +94,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
     E_new = 0
     delta_E = np.zeros((numDataPoints * 2, numFeatures))
     learning_rate = 0.001
-    # tolerance = 1e-7
+    # tolerance = 1e-5
 
     while True:
         w_old = w_new
@@ -117,10 +117,8 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         if count % 20 == 0:
             print str(count) + " iterations so far..."
 
-        # I'm running into an infinite loop at this point.
         # Comparing E_new == E_old is tricky because of precision.
-        # if np.isclose(E_new, E_old)[0]:
-        if E_new == E_old:
+        if np.isclose(E_new, E_old)[0]:
             print("Escaped loop after", count, "iterations.")
             break
 
