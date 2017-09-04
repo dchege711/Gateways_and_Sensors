@@ -77,6 +77,6 @@ while True:
     lambdaTriggerTable.addItem(item)
     print("Lambda triggered!")
 
-    if KeyboardInterrupt:
-        print("Closing Lambda Trigger")
-        sys.exit()
+    # if KeyboardInterrupt:
+    #     print("Closing Lambda Trigger")
+    #     sys.exit()
