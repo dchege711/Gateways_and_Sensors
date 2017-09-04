@@ -130,7 +130,7 @@ def plotCosts(resultItem):
 
 def plotAccuracy(resultItem):
     '''
-    Plots a table that shows the observed value, predicted value and error.
+    Plots a graph that shows the observed values, predicted values and error.
     '''
     # actualData = resultItem['Real_Result']
     # predictedData = resultItem['Prediction']
@@ -155,10 +155,13 @@ def plotAccuracy(resultItem):
     # error = math.sqrt(squareDiff / len(predictedData))
     error = '{:.3f}'.format(resultItem['Error'])
 
+
     pyplot.figure(1)
+    pyplot.rcParams.update({'font.size': 22})
+
     # pyplot.grid(True)
-    pyplot.xlabel("Samples")
-    pyplot.ylabel("Temperature")
+    pyplot.xlabel("Samples", fontsize = 22)
+    pyplot.ylabel("Temperature", fontsize = 22)
     pyplot.title("Comparing Observed Temperature to Predicted Temperature")
 
     pyplot.plot(xUnits, realData, color = 'r', label = "Real Data")
@@ -193,6 +196,8 @@ def plotTableFigure(index, cellText, columnLabels, colors, width, height):
         colColours  = colors
     )
 
+    tableBeingPlotted.auto_set_font_size(False)
+    tableBeingPlotted.set_fontsize(20)
     tableBeingPlotted.scale(width, height)
 
 #_______________________________________________________________________________
