@@ -13,8 +13,6 @@ Note: Still needs debugging.
 import matplotlib.pylab as plt
 import matplotlib.pyplot as pyplot
 import math
-import numpy as np
-from matplotlib.pylab import rcParams
 
 from DynamoDBUtility import Table
 
