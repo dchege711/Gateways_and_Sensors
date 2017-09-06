@@ -11,7 +11,6 @@ Make sure the zip file name, .py name and the handler name on Lambda coincide.
 
 #_______________________________________________________________________________
 
-import boto3
 import numpy as np
 import decimal
 from decimal import *
@@ -27,7 +26,6 @@ print('Loading function')
 def lambda_handler(event, context):
 	# Fetch the DynamoDB resource
 	tStart = time.time()
-	# dynamo = boto3.resource('dynamodb')
 
 	# Change: Getting the number of samples from the 'SampleSize' table is tricky
 	# When we'll have multiple Pi's, keeping track of this number will be buggy
@@ -39,6 +37,7 @@ def lambda_handler(event, context):
 	collectornum = 2
 	betam = np.zeros((featurenum,collectornum))
 	dataBytesFeatures = 0
+	numSensors = 0
 
 	# Fetch the features calculated by Gateway A
 	table_A = Table('sensingdata_A')
@@ -48,6 +47,7 @@ def lambda_handler(event, context):
 	betam[1][0] = item_A['feature_B']
 	betam[2][0] = item_A['feature_C']
 	dataBytesFeatures += item_A['data_bytes']
+	numSensors += item_A['number_of_sensors']
 
 	# Fetch the features calculated by Gateway B
 	table_B = Table('sensingdata_B')
@@ -57,12 +57,14 @@ def lambda_handler(event, context):
 	betam[1][1] = item_B['feature_B']
 	betam[2][1] = item_B['feature_C']
 	dataBytesFeatures += item_B['data_bytes']
+	numSensors += item_B['number_of_sensors']
 
 	# Fetch the aggregated data from Gateway C
 	table_C = Table('sensingdata_C')
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorC'}
 	item_C = table_C.getItem(itemKey)
 	aggregatedData = item_C['aggregated_data']
+	numSensors += item_C['number_of_sensors']
 	datanum = len(aggregatedData)
 	X = np.zeros((datanum,featurenum))
 	y = np.zeros((datanum,1))
@@ -141,6 +143,7 @@ def lambda_handler(event, context):
 		y[i] = decimal.Decimal(str(y[i][0]))
 		Predict_y_array[i] = decimal.Decimal(str(Predict_y_array[i]))
 
+
 	table = Table('weightresult')
 	resultData = {
 		'environment' : 'roomA',
@@ -156,7 +159,8 @@ def lambda_handler(event, context):
 		'Comm_pi_lambda': Comm_pi_lambda,
 		'Compu_pi': Compu_pi,
 		'data_bytes_features' : decimal.Decimal(str(dataBytesFeatures)),
-		'data_bytes_entire' : decimal.Decimal(str(data_bytes))
+		'data_bytes_entire' : decimal.Decimal(str(data_bytes)),
+		'number_of_sensors':decimal.Decimal(str(numSensors))
 	}
 
 	item = table.addItem(resultData)

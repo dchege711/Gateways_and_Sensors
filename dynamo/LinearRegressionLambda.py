@@ -34,6 +34,7 @@ def lambda_handler(event, context):
 	collectornum = 2
 	betam = np.zeros((featurenum,collectornum))
 	dataBytesFeatures = 0
+	numSensors = 0
 
 	# Fetch the features calculated by Gateway A
 	table_A = dynamo.Table('sensingdata_A')
@@ -43,6 +44,7 @@ def lambda_handler(event, context):
 	betam[1][0] = item_A['feature_B']
 	betam[2][0] = item_A['feature_C']
 	dataBytesFeatures += item_A['data_bytes']
+	numSensors += item_A['number_of_sensors']
 
 	# Fetch the features calculated by Gateway B
 	table_B = dynamo.Table('sensingdata_B')
@@ -52,6 +54,7 @@ def lambda_handler(event, context):
 	betam[1][1] = item_B['feature_B']
 	betam[2][1] = item_B['feature_C']
 	dataBytesFeatures += item_B['data_bytes']
+	numSensors += item_B['number_of_sensors']
 
 	# Fetch the aggregated data from Gateway C
 
@@ -60,6 +63,7 @@ def lambda_handler(event, context):
 	item_C = table_C.get_item(Key = itemKey)['Item']
 	aggregatedData = item_C['aggregated_data']
 	data_bytes_entire = item_C['data_bytes']
+	numSensors += item_C['number_of_sensors']
 
 	datanum = len(aggregatedData)
 	X = np.zeros((datanum,featurenum))
@@ -156,7 +160,8 @@ def lambda_handler(event, context):
 		'Comm_pi_lambda': Comm_pi_lambda,
 		'Compu_pi': Compu_pi,
 		'data_bytes_features' : decimal.Decimal(str(dataBytesFeatures)),
-		'data_bytes_entire' : decimal.Decimal(str(data_bytes_entire))
+		'data_bytes_entire' : decimal.Decimal(str(data_bytes_entire)),
+		'number_of_sensors':decimal.Decimal(str(numSensors))
 	}
 	item = table.put_item(Item = resultData)
 

@@ -126,7 +126,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
 
 #_______________________________________________________________________________
 
-def uploadToDB(tableLetter, data, btTime, compTime):
+def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
     '''
     Uploads the features and the latencies to DynamoDB
 
@@ -191,6 +191,7 @@ def uploadToDB(tableLetter, data, btTime, compTime):
     uploadDuration = endTime - startTime
     item['Comm_pi_lambda'] = Decimal(str(uploadDuration))
     item['timeStamp'] = Decimal(str(endTime))
+    item['number_of_sensors'] = Decimal(str(numSensors))
     table.addItem(item)
 
     # Log the experiment run to DynamoDB, regardless of gateway type
@@ -305,6 +306,10 @@ def main(tableLetter, sleepTime):
         # Signify the computation state
         sense.set_pixels(LED.diamond('blue'))
 
+        # Calculate how many sensors were used.
+        # Number of received readings divided by the number of readings per sensor.
+        numSensors = targetMatrix.shape[0] / numDataPoints
+
         # Calculate the features if the gateway has permission to do so
         if calculateFeatures[tableLetter]:
             features = gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints)
@@ -317,11 +322,11 @@ def main(tableLetter, sleepTime):
         sense.set_pixels(LED.arrowSend('blue', 'black'))
 
         if calculateFeatures[tableLetter]:
-            uploadTime = uploadToDB(tableLetter, features, btTime, compTime)
+            uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors)
 
         else:
             # Make sure that targetMatrix and designMatrix get read in the correct order
-            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime)
+            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
 
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
