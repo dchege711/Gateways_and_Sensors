@@ -13,6 +13,8 @@ Note: Still needs debugging.
 import matplotlib.pylab as plt
 import matplotlib.pyplot as pyplot
 import math
+import numpy as np
+from matplotlib.pylab import rcParams
 
 from DynamoDBUtility import Table
 
@@ -24,26 +26,31 @@ pink = '#ffb6c1'
 paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-fig, axs = plt.subplots(4,1)
-# fig.set_size_inches(20,2)
+fig, axs = plt.subplots(3, 1)
+fig.set_figwidth(0.6)
 
 #_______________________________________________________________________________
 
 def plotBandwidth(resultItem):
     featureBytes = resultItem['data_bytes_features']
     entireDataBytes = resultItem['data_bytes_entire']
-    savings = ((entireDataBytes - featureBytes) / entireDataBytes) * 100
+    numSensors = resultItem['number_of_sensors']
 
-    bandwidthCollabel = ['Sensor Data', 'Feature Data', 'Data Savings']
-    n = 0
+    # Because the gateway reports data for 2 sensors
+    intendedBytes = entireDataBytes * numSensors / 2
+    sentBytes = entireDataBytes + featureBytes
+
+    reduction = (sentBytes / intendedBytes) * 100
+
+    bandwidthCollabel = ['Sensed Data', 'Sent Data', 'Data Reduction']
     bandwidthData = [
-        [ dp(entireDataBytes, ' bytes', n = n),
-          dp(featureBytes, ' bytes', n = n),
-          dp(savings, ' %', n = 4)
+        [ dp(intendedBytes, 'bytes', n = 0),
+          dp(sentBytes, 'bytes', n = 0),
+          dp(reduction, '%', n = 2)
         ]
     ]
     colors = [pink, pink, paleYellow]
-    plotTableFigure(0, bandwidthData, bandwidthCollabel, colors, 1, 1.5)
+    plotTableFigure(0, bandwidthData, bandwidthCollabel, colors)
 
 
 def plotLatency(resultItem):
@@ -63,11 +70,11 @@ def plotLatency(resultItem):
 
     # dataLatency = str(bluetoothLatency, awsUploadLatency)
     latency_collabel= [
-        "Data_Latency", "Computation_Latency", "Total_Latency"
+        "Data Latency", "Computation Latency", "Total Latency"
     ]
 
     latency_data = [
-        [ "Bluetooth, Wi-Fi", "On-Pi, On-Lambda", "Total Latency"],
+        [ "Bluetooth, Wi-Fi", "Pi, Lambda", "Total Latency"],
         [ dp(bluetoothLatency, 's') + ', ' + dp(awsUploadLatency, 's'),
           dp(piComputationLatency, 's') + ', ' + dp(lambdaComputationLatency, 's'),
           dp(totalLatency, 's')
@@ -75,13 +82,15 @@ def plotLatency(resultItem):
     ]
 
     colors = [pink, pink, paleYellow]
-    plotTableFigure(1, latency_data, latency_collabel, colors, 1, 1.5)
+    plotTableFigure(1, latency_data, latency_collabel, colors)
 
 #_______________________________________________________________________________
 
-def dp(number, unit, n = 2):
-    dp = '{:.' + str(n) + 'f}'
-    return dp.format(float(number)) + unit
+def dp(number, unit, targetType = 'f', n = 2, suffix = True):
+    dp = ''.join(['{:,.', str(n), targetType, '}'])
+    if suffix:
+        return ' '.join([dp.format(float(number)), unit])
+    return ' '.join([unit, dp.format(float(number))])
 
 #_______________________________________________________________________________
 
@@ -110,21 +119,24 @@ def plotCosts(resultItem):
     # Plot the cost data
     totalCost = dbCost + invokeCost + computeCost
     costs_collabel= [
-        "AWS DynamoDB", "AWS Lambda", "Total_Cost"
+        "AWS DynamoDB", "AWS Lambda", "Total Cost"
     ]
-    dec = 8
+    dec = 2
     costs_data = [
         [
-            "Storage", "Invoke, Compute", "Total"
+            "Storage", "Invocation, Computation", "Total"
         ],
         [
-            dp(dbCost, '$', n = dec),
-            dp(invokeCost, '$', n = dec) + ', ' + dp(computeCost, '$', n = dec),
-            dp(totalCost, '$', n = dec)
+            dp(dbCost, '$', n = dec, suffix = False),
+            (
+                dp(invokeCost, '$', n = dec, targetType = 'e', suffix = False)
+                + ', ' + dp(computeCost, '$', n = dec, targetType = 'e', suffix = False)
+            ),
+            dp(totalCost, '$', n = dec, suffix = False)
         ]
     ]
     colors = [pink, pink, paleYellow]
-    plotTableFigure(2, costs_data, costs_collabel, colors, 1, 1.5)
+    plotTableFigure(2, costs_data, costs_collabel, colors)
 
 #_______________________________________________________________________________
 
@@ -132,36 +144,18 @@ def plotAccuracy(resultItem):
     '''
     Plots a graph that shows the observed values, predicted values and error.
     '''
-    # actualData = resultItem['Real_Result']
-    # predictedData = resultItem['Prediction']
-    # predictionError = resultItem['Error']
-    # accuracy_collabel = ["Observed_Value", "Predicted_Value", "Error"]
-    # accuracy_data = [
-    #     [actualData, predictedData, predictionError]
-    # ]
-    # colors_2 = [pink, pink, paleYellow]
-    # plotTableFigure(3, accuracy_data, accuracy_collabel, colors_2, 1, 1.5)
-
-    # tableC = Table('sensingdata_C')
-    # realData = tableC.getItem({'forum' : 'roomA', 'subject' : 'sensorC'})['aggregated_data']
-
     predictedData = resultItem['Prediction']
     realData = resultItem['Real_Data']
+
     xUnits = list(range(len(predictedData)))
+    error = '{:.4f}'.format(resultItem['Error'])
 
-    # squareDiff = 0
-    # for i in range(len(predictedData)):
-    #     squareDiff += (realData[i] - predictedData[i]) ** 2
-    # error = math.sqrt(squareDiff / len(predictedData))
-    error = '{:.3f}'.format(resultItem['Error'])
-
-
-    pyplot.figure(1)
-    pyplot.rcParams.update({'font.size': 22})
+    pyplot.figure()
+    pyplot.rcParams.update({'font.size': 25})
 
     # pyplot.grid(True)
-    pyplot.xlabel("Samples", fontsize = 22)
-    pyplot.ylabel("Temperature", fontsize = 22)
+    pyplot.xlabel("Samples", fontsize = 25)
+    pyplot.ylabel("Temperature", fontsize = 25)
     pyplot.title("Comparing Observed Temperature to Predicted Temperature")
 
     pyplot.plot(xUnits, realData, color = 'r', label = "Real Data")
@@ -169,12 +163,12 @@ def plotAccuracy(resultItem):
     # Coordinates are of the form x, y scaled according to the current figure
     xSpot = xUnits[-1] - 300
     ySpot = realData[0]
-    pyplot.text(xSpot, ySpot, r'$\sigma = $' + error, bbox = dict(facecolor='blue', alpha=0.5))
+    pyplot.text(xSpot, ySpot, r'$\Delta = $' + error, bbox = dict(facecolor='blue', alpha=0.5))
     pyplot.legend(loc = 'best')
 
 #_______________________________________________________________________________
 
-def plotTableFigure(index, cellText, columnLabels, colors, width, height):
+def plotTableFigure(index, cellText, columnLabels, colors):
     '''
     Helper method for plotting tables using matplotlib
 
@@ -186,7 +180,8 @@ def plotTableFigure(index, cellText, columnLabels, colors, width, height):
 
     The lists should be of the same length
     '''
-
+    width = 0.6
+    height = 2.0
     axs[index].axis('tight')
     axs[index].axis('off')
     tableBeingPlotted = axs[index].table(
@@ -215,22 +210,6 @@ def main():
     plotCosts(resultItem)
     plotAccuracy(resultItem)
     plt.show()
-
-    # while True:
-    #
-    #     # When the results table gets updated, update the figures
-    #     resultItem = resultTable.getItem({
-    #         'environment'    : 'roomA',
-    #         'sensor'         : 'sensorA&B&C'
-    #     })
-    #
-    #     newTime = resultItem['Time']
-    #     if oldTime != newTime:
-    #         print("Updating tables...")
-    #         plotLatency(resultItem)
-    #         # plotCosts(resultItem)
-    #         # plotAccuracy(resultItem)
-    #         oldTime = newTime
 
 #_______________________________________________________________________________
 
