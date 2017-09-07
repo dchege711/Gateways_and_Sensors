@@ -170,16 +170,7 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
-
-	# Log the data to DynamoDB
-	data_labels = []
-	new_data = []
-	for key in resultData.keys():
-		data_labels.append(key)
-		new_data.append(resultData[key])
-
 	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'expResults'})['Item']
-	record['data_labels'] = data_labels
 	results = record['results']
-	results.append(new_data)
+	results.append(resultData)
 	item = table.put_item(Item = record)

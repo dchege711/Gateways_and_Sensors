@@ -162,7 +162,6 @@ def lambda_handler(event, context):
 		'data_bytes_entire' : decimal.Decimal(str(data_bytes)),
 		'number_of_sensors':decimal.Decimal(str(numSensors))
 	}
-
 	item = table.addItem(resultData)
 
 	# Record this run
@@ -170,18 +169,10 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
-	# data_labels = []
-	# new_data = []
-	# for key in resultData.keys():
-	# 	data_labels.append(key)
-	# 	new_data.append(resultData[key])
 	record = table.getItem({'environment' : 'roomA', 'sensor' : 'expResults'})
-	# record['data_labels'] = data_labels
 	results = record['results']
 	results.append(resultData)
 	item = table.addItem(record)
 
-	# for key in resultData.keys():
-	# 	print('{:20}'.format(key), resultData[key])
 
 lambda_handler(35, 46)
