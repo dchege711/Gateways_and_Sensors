@@ -24,7 +24,7 @@ pink = '#ffb6c1'
 paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-fig, axs = plt.subplots(3, 1)
+fig, axs = plt.subplots(4, 1)
 fig.set_figwidth(0.6)
 
 #_______________________________________________________________________________
@@ -120,20 +120,19 @@ def plotCosts(resultItem):
         "AWS DynamoDB", "AWS Lambda", "Total Cost"
     ]
     dec = 2
+    displayInvokeCompute = dp(invokeCost, '$', n = dec, targetType = 'f') # + ', ' + dp(computeCost, '$', n = dec, targetType = 'E', suffix = False)
+    lambdaCost = invokeCost + computeCost
     costs_data = [
         [
             "Storage", "Invocation, Computation", "Total Cost"
         ],
         [
-            dp(dbCost, '$', n = dec, suffix = False),
-            (
-                dp(invokeCost, '$', n = dec, targetType = 'e', suffix = False)
-                + ', ' + dp(computeCost, '$', n = dec, targetType = 'e', suffix = False)
-            ),
-            dp(totalCost, '$', n = dec, suffix = False)
+            dp(dbCost, '$', n = dec),
+            dp(lambdaCost, '$', n = dec, targetType = 'e'),
+            dp(totalCost, '$', n = dec)
         ]
     ]
-    print(costs_data[1])
+    print(displayInvokeCompute)
     colors = [pink, pink, paleYellow]
     plotTableFigure(2, costs_data, costs_collabel, colors)
 
@@ -149,7 +148,7 @@ def plotAccuracy(resultItem):
     xUnits = list(range(len(predictedData)))
     error = '{:.4f}'.format(resultItem['Error'])
 
-    pyplot.figure()
+    pyplot.figure(1)
     pyplot.rcParams.update({'font.size': 25})
 
     # pyplot.grid(True)
