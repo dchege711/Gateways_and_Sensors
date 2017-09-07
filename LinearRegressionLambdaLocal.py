@@ -170,15 +170,15 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
-	data_labels = []
-	new_data = []
-	for key in resultData.keys():
-		data_labels.append(key)
-		new_data.append(resultData[key])
+	# data_labels = []
+	# new_data = []
+	# for key in resultData.keys():
+	# 	data_labels.append(key)
+	# 	new_data.append(resultData[key])
 	record = table.getItem({'environment' : 'roomA', 'sensor' : 'expResults'})
-	record['data_labels'] = data_labels
+	# record['data_labels'] = data_labels
 	results = record['results']
-	results.append(new_data)
+	results.append(resultData)
 	item = table.addItem(record)
 
 	# for key in resultData.keys():

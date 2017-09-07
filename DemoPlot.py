@@ -38,7 +38,7 @@ def plotBandwidth(resultItem):
     intendedBytes = entireDataBytes * numSensors / 2
     sentBytes = entireDataBytes + featureBytes
 
-    reduction = (sentBytes / intendedBytes) * 100
+    reduction = 100 - ((sentBytes / intendedBytes) * 100)
 
     bandwidthCollabel = ['Sensed Data', 'Sent Data', 'Data Reduction']
     bandwidthData = [
@@ -68,7 +68,7 @@ def plotLatency(resultItem):
 
     # dataLatency = str(bluetoothLatency, awsUploadLatency)
     latency_collabel= [
-        "Data Latency", "Computation Latency", "Total Latency"
+        "Communication Latency", "Computation Latency", "Total Latency"
     ]
 
     latency_data = [
@@ -122,7 +122,7 @@ def plotCosts(resultItem):
     dec = 2
     costs_data = [
         [
-            "Storage", "Invocation, Computation", "Total"
+            "Storage", "Invocation, Computation", "Total Cost"
         ],
         [
             dp(dbCost, '$', n = dec, suffix = False),
@@ -133,6 +133,7 @@ def plotCosts(resultItem):
             dp(totalCost, '$', n = dec, suffix = False)
         ]
     ]
+    print(costs_data[1])
     colors = [pink, pink, paleYellow]
     plotTableFigure(2, costs_data, costs_collabel, colors)
 
