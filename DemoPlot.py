@@ -13,6 +13,7 @@ Note: Still needs debugging.
 import matplotlib.pylab as plt
 import matplotlib.pyplot as pyplot
 import math
+import sys
 
 from DynamoDBUtility import Table
 
@@ -24,7 +25,7 @@ pink = '#ffb6c1'
 paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-fig, axs = plt.subplots(4, 1)
+fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
 fig.set_figwidth(0.6)
 
 #_______________________________________________________________________________
@@ -120,25 +121,24 @@ def plotCosts(resultItem):
         "AWS DynamoDB", "AWS Lambda", "Total Cost"
     ]
     dec = 2
-    displayInvokeCompute = dp(invokeCost, '$', n = dec, targetType = 'f') # + ', ' + dp(computeCost, '$', n = dec, targetType = 'E', suffix = False)
-    lambdaCost = invokeCost + computeCost
+    lambdaCost = dp(invokeCost, '\$', n = dec, targetType = 'e') + ', ' + dp(computeCost, '\$', n = dec, targetType = 'e')
     costs_data = [
         [
             "Storage", "Invocation, Computation", "Total Cost"
         ],
         [
             dp(dbCost, '$', n = dec),
-            dp(lambdaCost, '$', n = dec, targetType = 'e'),
+            # dp(lambdaCost, '$', n = dec, targetType = 'e'),
+            lambdaCost,
             dp(totalCost, '$', n = dec)
         ]
     ]
-    print(displayInvokeCompute)
     colors = [pink, pink, paleYellow]
     plotTableFigure(2, costs_data, costs_collabel, colors)
 
 #_______________________________________________________________________________
 
-def plotAccuracy(resultItem):
+def plotAccuracy(resultItem, figureNumber):
     '''
     Plots a graph that shows the observed values, predicted values and error.
     '''
@@ -148,8 +148,9 @@ def plotAccuracy(resultItem):
     xUnits = list(range(len(predictedData)))
     error = '{:.4f}'.format(resultItem['Error'])
 
-    pyplot.figure(1)
-    pyplot.rcParams.update({'font.size': 25})
+    pyplot.figure(int(figureNumber))
+    pyplot.rcParams.update({'figure.figsize': [0.6, 1.4]})
+    pyplot.rcParams.update({'font.size': 22})
 
     # pyplot.grid(True)
     pyplot.xlabel("Samples", fontsize = 25)
@@ -178,8 +179,10 @@ def plotTableFigure(index, cellText, columnLabels, colors):
 
     The lists should be of the same length
     '''
-    width = 0.6
-    height = 2.0
+    width = 1.0
+    height = 1.65
+    # height = len(cellText) * 0.7
+    # print("Height :", height)
     axs[index].axis('tight')
     axs[index].axis('off')
     tableBeingPlotted = axs[index].table(
@@ -196,7 +199,7 @@ def plotTableFigure(index, cellText, columnLabels, colors):
 #_______________________________________________________________________________
 
 def main():
-
+    figureNumber = sys.argv[1]
     oldTime = 0
     resultTable = Table('weightresult')
     resultItem = resultTable.getItem({
@@ -206,7 +209,7 @@ def main():
     plotBandwidth(resultItem)
     plotLatency(resultItem)
     plotCosts(resultItem)
-    plotAccuracy(resultItem)
+    plotAccuracy(resultItem, figureNumber)
     plt.show()
 
 #_______________________________________________________________________________
