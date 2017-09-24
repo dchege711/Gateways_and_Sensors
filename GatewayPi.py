@@ -1,8 +1,8 @@
 '''
 Calculates features from sensor data and transmits this to DB
 
-Gateway 1 and 2 transmit features (hence Computation_Latency)
-Gateway 3 transmits the data (hence Transmission Latency)
+Gateway A and B transmit features (hence Computation_Latency)
+Gateway C transmits the data (hence Transmission Latency)
 
 @ Original Author   : Edward Chang
 @ Modified by       : Chege Gitau
@@ -115,11 +115,11 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         count = count + 1
         # print("E_new", E_new, "E_old", E_old)
         if count % 20 == 0:
-            print str(count) + " iterations so far..."
+            print(" ".join[count, "iterations so far..."])
 
         # Comparing E_new == E_old is tricky because of precision.
         if np.isclose(E_new, E_old)[0]:
-            print("Escaped loop after", count, "iterations.")
+            print(" ".join(["Escaped loop after", count, "iterations."]))
             break
 
     return w_new
@@ -210,6 +210,8 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
     # record['data_labels'] = labels
 
     table.addItem(record)
+
+    print(" ".join(["Uploaded", sizeOfDataInBytes, "bytes of data to DynamoDB"]))
 
     return uploadDuration
 
