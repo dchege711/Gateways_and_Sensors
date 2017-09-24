@@ -205,7 +205,10 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
     #     newData.append(item[key])
 
     record = table.getItem({'forum' : 'roomA', 'subject' : 'records'})
-    data = record['data']
+    try:
+        data = record['data']
+    except KeyError:
+        record['data'] = []
     data.append(item)
     # record['data_labels'] = labels
 
