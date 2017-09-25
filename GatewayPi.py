@@ -115,11 +115,13 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         count = count + 1
         # print("E_new", E_new, "E_old", E_old)
         if count % 20 == 0:
-            print(" ".join[count, "iterations so far..."])
+            # print(" ".join[count, "iterations so far..."])
+            print(str(count), " iterations so far...")
 
         # Comparing E_new == E_old is tricky because of precision.
         if np.isclose(E_new, E_old)[0]:
-            print(" ".join(["Escaped loop after", count, "iterations."]))
+            #print(" ".join(["Escaped loop after", count, "iterations."]))
+            print("Escaped loop after", str(count), "iterations.")
             break
 
     return w_new
@@ -214,7 +216,9 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
 
     table.addItem(record)
 
-    print(" ".join(["Uploaded", sizeOfDataInBytes, "bytes of data to DynamoDB"]))
+    #print(" ".join(["Uploaded", sizeOfDataInBytes, "bytes of data to DynamoDB"]))
+    print("Uploaded ", str(sizeOfDataInBytes), " bytes of data to DynamoDB")
+
 
     return uploadDuration
 
