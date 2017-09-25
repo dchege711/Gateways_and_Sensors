@@ -21,7 +21,99 @@ from DynamoDBUtility import Table
 
 print('Loading function')
 
+def gradientDescent(targetMatrix, designMatrix, featurenum, numDataPoints):
+    """
+    Runs the gradient descent algorithm.
+
+    Param(s):
+        (numpy array)   The target matrix
+        (numpy array)   The design matrix
+
+    Returns a numpy array of features that approximate the mapping
+    """
+
+    count = 0
+    w_old = np.zeros((numFeatures, 1))
+    w_new = np.zeros((numFeatures, 1))
+    E_old = 0
+    E_new = 0
+    delta_E = np.zeros((numDataPoints * 2, numFeatures))
+    learning_rate = 0.001
+    # tolerance = 1e-5
+
+    while True:
+        w_old = w_new
+
+        for i in range(numDataPoints * 2):
+            delta_E[i,:] = delta_E[i,:] + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i,:]), np.matrix(w_old))) * designMatrix[i,:]
+
+        w_new = w_old + learning_rate * np.matrix(delta_E[i, :] / (numDataPoints * 2)).T
+        E_old = E_new
+
+        for i in range(numDataPoints * 2):
+            E_new = E_new + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i, :]), np.matrix(w_new))) ** 2
+            E_new = E_new / 2
+
+        if E_new > E_old:
+            learning_rate = learning_rate / 2
+
+        count = count + 1
+        # print("E_new", E_new, "E_old", E_old)
+        if count % 20 == 0:
+            # print(" ".join[count, "iterations so far..."])
+            print(str(count), " iterations so far...")
+
+        # Comparing E_new == E_old is tricky because of precision.
+        if np.isclose(E_new, E_old)[0]:
+            #print(" ".join(["Escaped loop after", count, "iterations."]))
+            print("Escaped loop after", str(count), "iterations.")
+            break
+
+    # Return feature_A, feature_B, feature_C
+    return w_new[0][0], w_new[1][0], w_new[2][0]
+
 #_______________________________________________________________________________
+
+def convertToNumpyArrays(aggregatedData, featurenum, datanum):
+	"""
+	Convert raw data into numpy arrays for further computation.
+
+	Param(s):
+
+		aggregatedData (list)
+		The data that will be copied into a numpy array.
+
+		featurenum (int)
+		The number of features being used in the regression model.
+
+	Return(s):
+		A numpy 1D matrix containing the labelling feature.
+		A numpy matrix containing all the descriptive features.
+
+	"""
+
+	designMatrix = np.zeros((datanum,featurenum))
+	targetMatrix = np.zeros((datanum,1))
+
+	for i in range(datanum):
+		designMatrix[i][0] = aggregatedData[i]['X_1']
+		designMatrix[i][1] = aggregatedData[i]['X_2']
+		designMatrix[i][2] = aggregatedData[i]['X_3']
+		targetMatrix[i][0] = aggregatedData[i]['Y']
+
+	return targetMatrix, designMatrix
+
+def insertFeatures(betam, aggregatedData, collectorIndex):
+	datanum = len(aggregatedData)
+	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
+	feature_A, feature_B, feature_C = gradientDescent(targetMatrix, designMatrix, featurenum, datanum)
+
+	betam[0][collectorIndex] = feature_A
+	betam[1][collectorIndex] = feature_B
+	betam[2][collectorIndex] = feature_C
+
+	return betam
+
 
 def lambda_handler(event, context):
 	# Fetch the DynamoDB resource
@@ -39,13 +131,12 @@ def lambda_handler(event, context):
 	dataBytesFeatures = 0
 	numSensors = 0
 
-	# Fetch the features calculated by Gateway A
+	# Fetch the data from Gateway A's table, and then calculate the features.
 	table_A = Table('sensingdata_A')
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorA'}
 	item_A = table_A.getItem(itemKey)
-	betam[0][0] = item_A['feature_A']
-	betam[1][0] = item_A['feature_B']
-	betam[2][0] = item_A['feature_C']
+	aggregatedData = item_A['aggregated_data']
+	betam = insertFeatures(betam, aggregatedData, 0)
 	dataBytesFeatures += item_A['data_bytes']
 	numSensors += item_A['number_of_sensors']
 
@@ -53,9 +144,8 @@ def lambda_handler(event, context):
 	table_B = Table('sensingdata_B')
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorB'}
 	item_B = table_B.getItem(itemKey)
-	betam[0][1] = item_B['feature_A']
-	betam[1][1] = item_B['feature_B']
-	betam[2][1] = item_B['feature_C']
+	aggregatedData = item_B['aggregated_data']
+	betam = insertFeatures(betam, aggregatedData, 1)
 	dataBytesFeatures += item_B['data_bytes']
 	numSensors += item_B['number_of_sensors']
 
@@ -65,6 +155,7 @@ def lambda_handler(event, context):
 	item_C = table_C.getItem(itemKey)
 	aggregatedData = item_C['aggregated_data']
 	numSensors += item_C['number_of_sensors']
+	data_bytes = item_C['data_bytes']
 	datanum = len(aggregatedData)
 	X = np.zeros((datanum,featurenum))
 	y = np.zeros((datanum,1))
@@ -74,7 +165,6 @@ def lambda_handler(event, context):
 		X[i][1] = aggregatedData[i]['X_2']
 		X[i][2] = aggregatedData[i]['X_3']
 		y[i][0] = aggregatedData[i]['Y']
-	data_bytes = item_C['data_bytes']
 
 	# Compute the maximum bluetooth latency
 	Comm_pi_pi_A = item_A['Comm_pi_pi']
