@@ -67,10 +67,12 @@ def collectData(targetMatrix, designMatrix, numDataPoints):
     for i in range(numDataPoints):
 
         tdataTime = time.time()
+        targetMatrix[i + numDataPoints][0] = sense.get_humidity()
+        
         designMatrix[i + numDataPoints][0] = tdataTime/10000000
         designMatrix[i + numDataPoints][1] = sense.get_pressure()
-        designMatrix[i + numDataPoints][2] = sense.get_humidity()
-        targetMatrix[i + numDataPoints][0] = sense.get_temperature_from_humidity()
+        designMatrix[i + numDataPoints][2] = sense.get_temperature_from_humidity()
+        
 
     return targetMatrix, designMatrix
 
