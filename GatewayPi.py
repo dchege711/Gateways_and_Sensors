@@ -117,6 +117,10 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         if count % 20 == 0:
             # print(" ".join[count, "iterations so far..."])
             print(str(count), " iterations so far...")
+        
+        # Test if restricting iterations affects the quality
+        if count == 50:
+            break
 
         # Comparing E_new == E_old is tricky because of precision.
         if np.isclose(E_new, E_old)[0]:
