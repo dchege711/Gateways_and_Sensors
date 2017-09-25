@@ -1,4 +1,4 @@
-'''
+"""
 Calculates features from sensor data and transmits this to DB
 
 Gateway A and B transmit features (hence Computation_Latency)
@@ -7,7 +7,7 @@ Gateway C transmits the data (hence Transmission Latency)
 @ Original Author   : Edward Chang
 @ Modified by       : Chege Gitau
 
-'''
+"""
 #_______________________________________________________________________________
 
 import time
@@ -27,21 +27,22 @@ sense = SenseHat()
 # Different Gateways perform different operations
 # Some Gateways aggregate data, calculate features and transmit only the features to DynamoDB.
 # Some Gateways aggregate data and send all this data to DynamoDB
+# In the all_cloud branch, every gateway acts as a relay instead of a computing edge.
 calculateFeatures = {
-'A' : True,
-'B' : True,
+'A' : False,
+'B' : False,
 'C' : False
 }
 
 #_______________________________________________________________________________
 
 def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
-    '''
+    """
     Transcribes the data received via bluetooth to numpy arrays.
 
     Param(s):
 
-    '''
+    """
 
     designMatrix = np.zeros((numDataPoints * 2, numFeatures))
     targetMatrix = np.zeros((numDataPoints * 2, 1))
@@ -56,13 +57,13 @@ def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
 #_______________________________________________________________________________
 
 def collectData(targetMatrix, designMatrix, numDataPoints):
-    '''
+    """
     Collects data required by the Gateway Pi
     Appends this data to that received from bluetooth
 
     Param(s):
         (int)   Number of data points to be collected
-    '''
+    """
 
     for i in range(numDataPoints):
 
@@ -77,7 +78,7 @@ def collectData(targetMatrix, designMatrix, numDataPoints):
 #_______________________________________________________________________________
 
 def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
-    '''
+    """
     Runs the gradient descent algorithm.
 
     Param(s):
@@ -85,7 +86,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         (numpy array)   The design matrix
 
     Returns a numpy array of features that approximate the mapping
-    '''
+    """
 
     count = 0
     w_old = np.zeros((numFeatures, 1))
@@ -133,7 +134,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
 #_______________________________________________________________________________
 
 def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
-    '''
+    """
     Uploads the features and the latencies to DynamoDB
 
     Param(s):
@@ -144,7 +145,7 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
 
     Returns an int showing the time taken to upload to DynamoDB in seconds
 
-    '''
+    """
 
     startTime = time.time()
     table = Table('sensingdata_' + tableLetter)
@@ -229,9 +230,9 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
 #_______________________________________________________________________________
 
 def visualizeData(btTime, compTime, uploadTime):
-    '''
+    """
     Sets up a non-blocking visualization of the experiment's results.
-    '''
+    """
 
     plt.close()
     fig, axs = plt.subplots(1,1)
@@ -256,7 +257,7 @@ def visualizeData(btTime, compTime, uploadTime):
 #_______________________________________________________________________________
 
 def main(tableLetter, sleepTime):
-    '''
+    """
     Runs the experiment as indicated below:
 
     1)  Listens for a trigger on the 'SampleSize' table on DynamoDB
@@ -266,7 +267,7 @@ def main(tableLetter, sleepTime):
     5)  Uploads the features to DynamoDB
     6)  Visualizes these results using an animated matplotlib figure.
 
-    '''
+    """
     # Establish a connection to the 'SampleSize' table
     table = Table('SampleSize')
     oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
