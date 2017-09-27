@@ -37,20 +37,20 @@ def gradientDescent(targetMatrix, designMatrix, featurenum, numDataPoints):
     w_new = np.zeros((featurenum, 1))
     E_old = 0
     E_new = 0
-    delta_E = np.zeros((numDataPoints * 2, featurenum))
+    delta_E = np.zeros((numDataPoints, featurenum))
     learning_rate = 0.001
     # tolerance = 1e-5
 
     while True:
         w_old = w_new
 
-        for i in range(numDataPoints * 2):
+        for i in range(numDataPoints):
             delta_E[i,:] = delta_E[i,:] + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i,:]), np.matrix(w_old))) * designMatrix[i,:]
 
         w_new = w_old + learning_rate * np.matrix(delta_E[i, :] / (numDataPoints * 2)).T
         E_old = E_new
 
-        for i in range(numDataPoints * 2):
+        for i in range(numDataPoints):
             E_new = E_new + (targetMatrix[i][0] - np.dot(np.matrix(designMatrix[i, :]), np.matrix(w_new))) ** 2
             E_new = E_new / 2
 
