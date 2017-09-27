@@ -33,11 +33,11 @@ def gradientDescent(targetMatrix, designMatrix, featurenum, numDataPoints):
     """
 
     count = 0
-    w_old = np.zeros((numFeatures, 1))
-    w_new = np.zeros((numFeatures, 1))
+    w_old = np.zeros((featurenum, 1))
+    w_new = np.zeros((featurenum, 1))
     E_old = 0
     E_new = 0
-    delta_E = np.zeros((numDataPoints * 2, numFeatures))
+    delta_E = np.zeros((numDataPoints * 2, featurenum))
     learning_rate = 0.001
     # tolerance = 1e-5
 
@@ -103,7 +103,7 @@ def convertToNumpyArrays(aggregatedData, featurenum, datanum):
 
 	return targetMatrix, designMatrix
 
-def insertFeatures(betam, aggregatedData, collectorIndex):
+def insertFeatures(betam, aggregatedData, collectorIndex, featurenum):
 	datanum = len(aggregatedData)
 	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
 	feature_A, feature_B, feature_C = gradientDescent(targetMatrix, designMatrix, featurenum, datanum)
@@ -136,7 +136,7 @@ def lambda_handler(event, context):
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorA'}
 	item_A = table_A.getItem(itemKey)
 	aggregatedData = item_A['aggregated_data']
-	betam = insertFeatures(betam, aggregatedData, 0)
+	betam = insertFeatures(betam, aggregatedData, 0, featurenum)
 	dataBytesFeatures += item_A['data_bytes']
 	numSensors += item_A['number_of_sensors']
 
@@ -145,7 +145,7 @@ def lambda_handler(event, context):
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorB'}
 	item_B = table_B.getItem(itemKey)
 	aggregatedData = item_B['aggregated_data']
-	betam = insertFeatures(betam, aggregatedData, 1)
+	betam = insertFeatures(betam, aggregatedData, 1, featurenum)
 	dataBytesFeatures += item_B['data_bytes']
 	numSensors += item_B['number_of_sensors']
 
