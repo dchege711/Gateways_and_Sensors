@@ -73,6 +73,7 @@ def main(gatewayLetter, sleepTime):
 
         # Break out of the inner while-loop only when the table has been updated
         sense.set_pixels(LED.threeDots('green', 'S'))
+        time.sleep(10)
 
         # stayInLoop = True
         # key = {
@@ -109,8 +110,8 @@ def main(gatewayLetter, sleepTime):
         btTime = BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
 
         # Show that the Pi has completed it's work
-        sense.set_pixels(LED.xCross('red'))
-        time.sleep(3)
+        # sense.set_pixels(LED.xCross('red'))
+        
 
 #_______________________________________________________________________________
 
