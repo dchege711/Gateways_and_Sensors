@@ -341,7 +341,7 @@ def main(tableLetter, sleepTime):
         #     # Make sure that targetMatrix and designMatrix get read in the correct order
         #     uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
 
-        time.sleep(5)
+        time.sleep(2)
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
 
