@@ -15,6 +15,7 @@ import matplotlib.pyplot as pyplot
 import math
 import sys
 import numpy as np
+from decimal import Decimal
 
 from DynamoDBUtility import Table
 
@@ -26,8 +27,8 @@ pink = '#ffb6c1'
 paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
-fig.set_figwidth(0.6)
+# fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
+# fig.set_figwidth(0.6)
 
 #_______________________________________________________________________________
 
@@ -36,6 +37,7 @@ def compareAllCloudVsFog(resultItem):
     resultTable = Table('weightresult')
     allCloudStats = makeLists(resultTable, 'all_cloud_results')
     fogStats = makeLists(resultTable, 'expResults')
+    # print(fogStats)
 
     # Plot comparisons
     pyplot.figure(1)
@@ -47,8 +49,8 @@ def compareAllCloudVsFog(resultItem):
     pyplot.ylabel("Time Spent in Computation (sec)", fontsize = 25)
     pyplot.title("Comparing All-Cloud Computation to Fog Computation")
 
-    pyplot.plot(allCloudStats[0], allCloudStats[1], color = 'r', label = "All-Cloud")
-    pyplot.plot(fogStats[0], fogStats[1], color = 'b', label = "Fog")
+    pyplot.scatter(allCloudStats[0], allCloudStats[1], color = 'r', label = "All-Cloud")
+    pyplot.scatter(fogStats[0], fogStats[1], color = 'b', label = "Fog")
 
     pyplot.legend(loc = 'best')
 
@@ -62,8 +64,8 @@ def compareAllCloudVsFog(resultItem):
     pyplot.ylabel("Total Time from Reading to Prediction", fontsize = 25)
     pyplot.title("Comparing All-Cloud Latency to Fog Latency")
 
-    pyplot.plot(allCloudStats[0], allCloudStats[2], color = 'r', label = "All-Cloud")
-    pyplot.plot(fogStats[0], fogStats[2], color = 'b', label = "Fog")
+    pyplot.scatter(allCloudStats[0], allCloudStats[2], color = 'r', label = "All-Cloud")
+    pyplot.scatter(fogStats[0], fogStats[2], color = 'b', label = "Fog")
     
     pyplot.legend(loc = 'best')
     
@@ -77,21 +79,30 @@ def makeLists(resultTable, sensorValue):
 
     summarizedStats = {}
 
+    # print(sensorValue, "\n")
+
     for stat in overallStats:
         # Each reading is 32 bytes and each gateway submits two sets of readings
         # Update variable names: We now have total number of readings
-        numReadingsPerSensor = (stat['data_bytes_entire'] / (32 * 2)) * 6
+        numReadingsPerSensor = (stat['data_bytes_entire'] / (32 * 2))
         computationLatency = stat['Compu_pi'] + stat['Lambda_ExecTime']
-        totalLatency = stat['Comm_pi_pi'] + stat['Comm_pi_lambda']
+        totalLatency = stat['Comm_pi_pi'] + stat['Comm_pi_lambda'] + computationLatency
+        # print(numReadingsPerSensor, stat['Comm_pi_lambda'], computationLatency, totalLatency)
 
         if numReadingsPerSensor not in summarizedStats.keys():
             summarizedStats[numReadingsPerSensor] = [computationLatency, totalLatency]
 
-        if summarizedStats[numReadingsPerSensor][0] < computationLatency:
-            summarizedStats[numReadingsPerSensor][0] = computationLatency
+        # print(summarizedStats[numReadingsPerSensor][0], computationLatency)
+        # if summarizedStats[numReadingsPerSensor][0] > computationLatency:
+        #     summarizedStats[numReadingsPerSensor][0] = computationLatency
+        #     # print("Replaced Stats Compu")
 
-        if summarizedStats[numReadingsPerSensor][1] < totalLatency:
-            summarizedStats[numReadingsPerSensor] = totalLatency
+        # if summarizedStats[numReadingsPerSensor][1] > totalLatency:
+        #     summarizedStats[numReadingsPerSensor] = totalLatency
+        #     # print("Replaced Stats Total")
+
+    # for key in summarizedStats:
+    #     print(key, ":", summarizedStats[key])
     
     readingsPerSensorList = []
     compuLatencyList = []
@@ -101,6 +112,12 @@ def makeLists(resultTable, sensorValue):
         compuLatencyList.append(summarizedStats[reading][0])
         totalLatencyList.append(summarizedStats[reading][1])
 
+    # print(readingsPerSensorList)
+    # print("\n")
+    # print(compuLatencyList)
+    # print("\n")
+    # print(totalLatencyList)
+    # print("\n")
     return readingsPerSensorList, compuLatencyList, totalLatencyList
 
 
@@ -280,10 +297,11 @@ def main():
         'environment'    : 'roomA',
         'sensor'         : 'sensorA&B&C'
     })
-    plotBandwidth(resultItem)
-    plotLatency(resultItem)
-    plotCosts(resultItem)
-    plotAccuracy(resultItem, figureNumber)
+    # plotBandwidth(resultItem)
+    # plotLatency(resultItem)
+    # plotCosts(resultItem)
+    # plotAccuracy(resultItem, figureNumber)
+    compareAllCloudVsFog(resultItem)
     plt.show()
 
 #_______________________________________________________________________________
