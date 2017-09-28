@@ -73,7 +73,7 @@ def main(gatewayLetter, sleepTime):
 
         # Break out of the inner while-loop only when the table has been updated
         sense.set_pixels(LED.threeDots('green', 'S'))
-        time.sleep(10)
+        time.sleep(20)
 
         # stayInLoop = True
         # key = {
