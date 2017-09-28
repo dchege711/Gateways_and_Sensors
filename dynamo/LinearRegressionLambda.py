@@ -261,7 +261,7 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
-	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'expResults'})['Item']
+	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
 	results = record['results']
 	results.append(resultData)
 	item = table.put_item(Item = record)

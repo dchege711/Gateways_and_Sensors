@@ -14,6 +14,7 @@ import matplotlib.pylab as plt
 import matplotlib.pyplot as pyplot
 import math
 import sys
+import numpy as np
 
 from DynamoDBUtility import Table
 
@@ -29,6 +30,79 @@ fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
 fig.set_figwidth(0.6)
 
 #_______________________________________________________________________________
+
+
+def compareAllCloudVsFog(resultItem):
+    resultTable = Table('weightresult')
+    allCloudStats = makeLists(resultTable, 'all_cloud_results')
+    fogStats = makeLists(resultTable, 'expResults')
+
+    # Plot comparisons
+    pyplot.figure(1)
+    pyplot.rcParams.update({'figure.figsize': [0.6, 1.4]})
+    pyplot.rcParams.update({'font.size': 22})
+
+    # pyplot.grid(True)
+    pyplot.xlabel("Number of Readings", fontsize = 25)
+    pyplot.ylabel("Time Spent in Computation (sec)", fontsize = 25)
+    pyplot.title("Comparing All-Cloud Computation to Fog Computation")
+
+    pyplot.plot(allCloudStats[0], allCloudStats[1], color = 'r', label = "All-Cloud")
+    pyplot.plot(fogStats[0], fogStats[1], color = 'b', label = "Fog")
+
+    pyplot.legend(loc = 'best')
+
+    # Plot comparisons
+    pyplot.figure(2)
+    pyplot.rcParams.update({'figure.figsize': [0.6, 1.4]})
+    pyplot.rcParams.update({'font.size': 22})
+
+    # pyplot.grid(True)
+    pyplot.xlabel("Number of Readings", fontsize = 25)
+    pyplot.ylabel("Total Time from Reading to Prediction", fontsize = 25)
+    pyplot.title("Comparing All-Cloud Latency to Fog Latency")
+
+    pyplot.plot(allCloudStats[0], allCloudStats[2], color = 'r', label = "All-Cloud")
+    pyplot.plot(fogStats[0], fogStats[2], color = 'b', label = "Fog")
+    
+    pyplot.legend(loc = 'best')
+    
+
+def makeLists(resultTable, sensorValue):
+
+    overallStats = resultTable.getItem({
+        'environment'   : 'roomA',
+        'sensor'        : sensorValue
+    })['results']
+
+    summarizedStats = {}
+
+    for stat in overallStats:
+        # Each reading is 32 bytes and each gateway submits two sets of readings
+        # Update variable names: We now have total number of readings
+        numReadingsPerSensor = (stat['data_bytes_entire'] / (32 * 2)) * 6
+        computationLatency = stat['Compu_pi'] + stat['Lambda_ExecTime']
+        totalLatency = stat['Comm_pi_pi'] + stat['Comm_pi_lambda']
+
+        if numReadingsPerSensor not in summarizedStats.keys():
+            summarizedStats[numReadingsPerSensor] = [computationLatency, totalLatency]
+
+        if summarizedStats[numReadingsPerSensor][0] < computationLatency:
+            summarizedStats[numReadingsPerSensor][0] = computationLatency
+
+        if summarizedStats[numReadingsPerSensor][1] < totalLatency:
+            summarizedStats[numReadingsPerSensor] = totalLatency
+    
+    readingsPerSensorList = []
+    compuLatencyList = []
+    totalLatencyList = []
+    for reading in summarizedStats.keys():
+        readingsPerSensorList.append(reading)
+        compuLatencyList.append(summarizedStats[reading][0])
+        totalLatencyList.append(summarizedStats[reading][1])
+
+    return readingsPerSensorList, compuLatencyList, totalLatencyList
+
 
 def plotBandwidth(resultItem):
     featureBytes = resultItem['data_bytes_features']
