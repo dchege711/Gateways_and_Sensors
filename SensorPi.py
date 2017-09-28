@@ -66,7 +66,7 @@ def main(gatewayLetter, sleepTime):
 
     '''
 
-    table = Table('SampleSize')
+    # table = Table('SampleSize')
     oldSizeTime = 0
 
     while True:
