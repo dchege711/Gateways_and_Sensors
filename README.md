@@ -1,10 +1,8 @@
 # Gateways and Sensors
 * This repository houses the code used to test out concepts covered in the Decomposing Data Analytics in Fog Networks demo.
 
-### The "no_wifi" branch
-* Anticipates periods of poor connectivity during demonstrations. 
-* This runs a simulation of the experiment without invoking AWS.
-* To-Do: Make the laptop do act like the cloud so that the simulation is more realistic.
+### The "master" branch
+* Runs the experiment described in the abstract without any major alterations.
 
 ### Useful links:
 * [Getting Started Notes](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Getting_Started.md)
