@@ -268,34 +268,34 @@ def main(tableLetter, sleepTime):
 
     '''
     # Establish a connection to the 'SampleSize' table
-    table = Table('SampleSize')
-    oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
+    # table = Table('SampleSize')
+    # oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
 
     while True:
 
         # Break out of the inner while-loop only when the table has been updated
         sense.set_pixels(LED.threeDots('green', 'G'))
 
-        stayInLoop = True
-        key = {
-        'forum'     : '1',
-        'subject'   : 'PC1'
-        }
+        # stayInLoop = True
+        # key = {
+        # 'forum'     : '1',
+        # 'subject'   : 'PC1'
+        # }
 
-        while stayInLoop:
-            try:
-                stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-                # Sleep for 10 seconds because pinging AWS is costly
-                time.sleep(sleepTime)
+        # while stayInLoop:
+        #     try:
+        #         stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+        #         # Sleep for 10 seconds because pinging AWS is costly
+        #         time.sleep(sleepTime)
 
-            except KeyboardInterrupt:
-                print("Shutting down...")
-                sense.set_pixels(LED.pluses('black'))
-                sys.exit()
+        #     except KeyboardInterrupt:
+        #         print("Shutting down...")
+        #         sense.set_pixels(LED.pluses('black'))
+        #         sys.exit()
 
-        oldSizeTime = timeStamp
+        # oldSizeTime = timeStamp
 
-        numDataPoints = int(table.getItem(key)['sampleSize'])
+        numDataPoints = 400
         numFeatures = 3
 
         # Listen for incoming bluetooth data on port 1
@@ -334,13 +334,14 @@ def main(tableLetter, sleepTime):
         # Upload data to DynamoDB
         sense.set_pixels(LED.arrowSend('blue', 'black'))
 
-        if calculateFeatures[tableLetter]:
-            uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors)
+        # if calculateFeatures[tableLetter]:
+        #     uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors)
 
-        else:
-            # Make sure that targetMatrix and designMatrix get read in the correct order
-            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
-
+        # else:
+        #     # Make sure that targetMatrix and designMatrix get read in the correct order
+        #     uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
+        print("\nSimulating upload of data to the cloud...\n")
+        time.sleep(3)
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
 

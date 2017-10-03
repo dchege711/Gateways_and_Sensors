@@ -66,38 +66,39 @@ def main(gatewayLetter, sleepTime):
 
     '''
 
-    table = Table('SampleSize')
+    # table = Table('SampleSize')
     oldSizeTime = 0
 
     while True:
 
         # Break out of the inner while-loop only when the table has been updated
         sense.set_pixels(LED.threeDots('green', 'S'))
+        time.sleep(20)
 
-        stayInLoop = True
-        key = {
-            'forum'     : '1',
-            'subject'   : 'PC1'
-        }
-        # countTime = 1
-        while stayInLoop:
-            try:
-                stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-                # print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
-                time.sleep(sleepTime)
-                # countTime += 1
+        # stayInLoop = True
+        # key = {
+        #     'forum'     : '1',
+        #     'subject'   : 'PC1'
+        # }
+        # # countTime = 1
+        # while stayInLoop:
+        #     try:
+        #         stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+        #         # print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
+        #         time.sleep(sleepTime)
+        #         # countTime += 1
 
-            except KeyboardInterrupt:
-                print("Shutting down...")
-                sense.set_pixels(LED.pluses('black'))
-                sys.exit()
+        #     except KeyboardInterrupt:
+        #         print("Shutting down...")
+        #         sense.set_pixels(LED.pluses('black'))
+        #         sys.exit()
 
-        oldSizeTime = timeStamp
+        # oldSizeTime = timeStamp
 
         # Collect the required number of data points
         sense.set_pixels(LED.pluses('green'))
 
-        numberOfDataPoints = int(table.getItem(key)['sampleSize'])
+        numberOfDataPoints = 400
         feature = 3
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
@@ -109,7 +110,8 @@ def main(gatewayLetter, sleepTime):
         btTime = BT.sendDataByBluetooth(collectedData, gatewayLetter, 1)
 
         # Show that the Pi has completed it's work
-        sense.set_pixels(LED.xCross('red'))
+        # sense.set_pixels(LED.xCross('red'))
+        
 
 #_______________________________________________________________________________
 
