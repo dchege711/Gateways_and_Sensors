@@ -1,22 +1,13 @@
 # Gateways and Sensors
 * This repository houses the code used to test out concepts covered in the Decomposing Data Analytics in Fog Networks paper.
-* A few notes on the puporse of each branch in this repo:
-    * **master**
-        * Contains the code up to Sept 25th before we decided to explore other possibilities.
-    * **humidity_prediction**
-        * Instead of predicting temperature, we'll be predicting humidity from temperature and air pressure.
-    * **all_cloud**
-        * In this branch, the Pis do no computations. Everything is done on the cloud.
-        * Remember to set the appropriate link to the code .zip file on AWS Lambda.
-        * This allows a comparison to the decomposition that this experiment advocates.
-    * **no_wifi**
-        * Anticipates periods of poor connectivity during demonstrations. 
-        * This runs a simulation of the experiment without invoking AWS.
-        * Plan: Make the laptop do act like the cloud so that the simulation is more realistic.
-* Useful links:
-    * [Getting Started Notes](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Getting_Started.md)
-    * [Replicating the Experiment](#replicating-the-experiment)
-    * [Description of Files](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Description_of_Files.md)
+
+### The "master" branch
+* Runs the experiment described in the abstract without any major alterations.
+
+### Useful links:
+* [Getting Started Notes](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Getting_Started.md)
+* [Replicating the Experiment](#replicating-the-experiment)
+* [Description of Files](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Description_of_Files.md)
 
 ----
 
