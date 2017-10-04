@@ -1,0 +1,3 @@
+# The following packages require "$ sudo apt-get install python-<package_name>"
+python-bluez
+matplotlib
