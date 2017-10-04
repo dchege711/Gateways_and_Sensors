@@ -19,7 +19,6 @@ html5lib==0.999
 itsdangerous==0.24
 jmespath==0.9.3
 lxkeymap==0.1
-matplotlib==1.4.2
 mcpi==0.1.1
 mock==1.0.1
 ndg-httpsclient==0.3.2
