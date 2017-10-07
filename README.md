@@ -8,4 +8,4 @@
 * [Getting Started Notes](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Markdown_Documents/Getting_Started.md)
 * [Replicating the Experiment](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Markdown_Documents/Replicating_the_Experiment.md)
 * [Description of Files](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Markdown_Documents/Description_of_Files.md)
-* [Adding New Pis](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Markdown_Documents/Adding_New_Pis.md)
+* [Adding New Devices](https://github.com/dchege711/Gateways_and_Sensors/blob/master/Markdown_Documents/Adding_New_Devices.md)
