@@ -112,6 +112,18 @@ def insertFeatures(betam, aggregatedData, collectorIndex, featurenum):
 
 	return betam
 
+def log_piecewise_to_DB(table, index, key, data):
+	"""
+	A workaround for the 'exceeded item size' error.
+	Comes at the cost of more calls to DynamoDB.
+	
+	"""
+	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
+	results = record['results'][index]
+	results.append({key:data})
+	item = table.put_item(Item = record)
+
+
 def lambda_handler(event, context):
 	# Fetch the DynamoDB resource
 	tStart = time.time()
@@ -260,10 +272,14 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
-	resultData['gateway_A'] = aggregatedData_A
-	resultData['gateway_B'] = aggregatedData_B
-	resultData['gateway_C'] = aggregatedData_C
 	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
 	results = record['results']
 	results.append(resultData)
 	item = table.put_item(Item = record)
+
+	# AWS sets a limit on the upload size. 
+	# We therefore need to break down our uploads into parts
+	data_entry_index = len(results) - 1
+	log_piecewise_to_DB(table, 'gateway_A', aggregatedData_A)
+	log_piecewise_to_DB(table, 'gateway_B', aggregatedData_B)
+	log_piecewise_to_DB(table, 'gateway_C', aggregatedData_C)
