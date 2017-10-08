@@ -116,7 +116,7 @@ def log_piecewise_to_DB(table, index, key, data):
 	"""
 	A workaround for the 'exceeded item size' error.
 	Comes at the cost of more calls to DynamoDB.
-	
+
 	"""
 	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
 	results = record['results'][index]
@@ -280,6 +280,6 @@ def lambda_handler(event, context):
 	# AWS sets a limit on the upload size. 
 	# We therefore need to break down our uploads into parts
 	data_entry_index = len(results) - 1
-	log_piecewise_to_DB(table, 'gateway_A', aggregatedData_A)
-	log_piecewise_to_DB(table, 'gateway_B', aggregatedData_B)
-	log_piecewise_to_DB(table, 'gateway_C', aggregatedData_C)
+	log_piecewise_to_DB(table, data_entry_index, 'gateway_A', aggregatedData_A)
+	log_piecewise_to_DB(table, data_entry_index, 'gateway_B', aggregatedData_B)
+	log_piecewise_to_DB(table, data_entry_index, 'gateway_C', aggregatedData_C)
