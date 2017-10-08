@@ -1,4 +1,4 @@
-'''
+"""
 Calculates features from sensor data and transmits this to DB
 
 Gateway A and B transmit features (hence Computation_Latency)
@@ -7,7 +7,7 @@ Gateway C transmits the data (hence Transmission Latency)
 @ Original Author   : Edward Chang
 @ Modified by       : Chege Gitau
 
-'''
+"""
 #_______________________________________________________________________________
 
 import time
@@ -36,12 +36,12 @@ calculateFeatures = {
 #_______________________________________________________________________________
 
 def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
-    '''
+    """
     Transcribes the data received via bluetooth to numpy arrays.
 
     Param(s):
 
-    '''
+    """
 
     designMatrix = np.zeros((numDataPoints * 2, numFeatures))
     targetMatrix = np.zeros((numDataPoints * 2, 1))
@@ -56,13 +56,13 @@ def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
 #_______________________________________________________________________________
 
 def collectData(targetMatrix, designMatrix, numDataPoints):
-    '''
+    """
     Collects data required by the Gateway Pi
     Appends this data to that received from bluetooth
 
     Param(s):
         (int)   Number of data points to be collected
-    '''
+    """
 
     for i in range(numDataPoints):
 
@@ -77,7 +77,7 @@ def collectData(targetMatrix, designMatrix, numDataPoints):
 #_______________________________________________________________________________
 
 def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
-    '''
+    """
     Runs the gradient descent algorithm.
 
     Param(s):
@@ -85,7 +85,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
         (numpy array)   The design matrix
 
     Returns a numpy array of features that approximate the mapping
-    '''
+    """
 
     count = 0
     w_old = np.zeros((numFeatures, 1))
@@ -133,7 +133,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
 #_______________________________________________________________________________
 
 def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
-    '''
+    """
     Uploads the features and the latencies to DynamoDB
 
     Param(s):
@@ -144,7 +144,7 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
 
     Returns an int showing the time taken to upload to DynamoDB in seconds
 
-    '''
+    """
 
     startTime = time.time()
     table = Table('sensingdata_' + tableLetter)
@@ -229,9 +229,9 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
 #_______________________________________________________________________________
 
 def visualizeData(btTime, compTime, uploadTime):
-    '''
+    """
     Sets up a non-blocking visualization of the experiment's results.
-    '''
+    """
 
     plt.close()
     fig, axs = plt.subplots(1,1)
@@ -256,7 +256,7 @@ def visualizeData(btTime, compTime, uploadTime):
 #_______________________________________________________________________________
 
 def main(tableLetter, sleepTime):
-    '''
+    """
     Runs the experiment as indicated below:
 
     1)  Listens for a trigger on the 'SampleSize' table on DynamoDB
@@ -266,36 +266,36 @@ def main(tableLetter, sleepTime):
     5)  Uploads the features to DynamoDB
     6)  Visualizes these results using an animated matplotlib figure.
 
-    '''
+    """
     # Establish a connection to the 'SampleSize' table
-    # table = Table('SampleSize')
-    # oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
+    table = Table('SampleSize')
+    oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
 
     while True:
 
         # Break out of the inner while-loop only when the table has been updated
         sense.set_pixels(LED.threeDots('green', 'G'))
 
-        # stayInLoop = True
-        # key = {
-        # 'forum'     : '1',
-        # 'subject'   : 'PC1'
-        # }
+        stayInLoop = True
+        key = {
+            'forum'     : '1',
+            'subject'   : 'PC1'
+        }
 
-        # while stayInLoop:
-        #     try:
-        #         stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-        #         # Sleep for 10 seconds because pinging AWS is costly
-        #         time.sleep(sleepTime)
+        while stayInLoop:
+            try:
+                stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
+                # Sleep because pinging AWS is costs $$$
+                time.sleep(sleepTime)
 
-        #     except KeyboardInterrupt:
-        #         print("Shutting down...")
-        #         sense.set_pixels(LED.pluses('black'))
-        #         sys.exit()
+            except KeyboardInterrupt:
+                print("Shutting down...")
+                sense.set_pixels(LED.pluses('black'))
+                sys.exit()
 
-        # oldSizeTime = timeStamp
+        oldSizeTime = timeStamp
 
-        numDataPoints = 400
+        numDataPoints = table.getItem(key)['sampleSize']
         numFeatures = 3
 
         # Listen for incoming bluetooth data on port 1
@@ -306,7 +306,7 @@ def main(tableLetter, sleepTime):
         timeTwo = time.time()
         # Edit: timeTwo - timeOne != btTime since some time is spent waiting on the sockets
 
-        # Signify the computation state
+        # Make the LEDs show the computation state
         sense.set_pixels(LED.diamond('blue'))
 
         # Transform the received bluetooth data to numpy arrays
@@ -317,7 +317,7 @@ def main(tableLetter, sleepTime):
         targetMatrix, designMatrix = collectData(targetMatrix, designMatrix, numDataPoints)
 
         # Signify the computation state
-        sense.set_pixels(LED.diamond('blue'))
+        sense.set_pixels(LED.diamond('blue')) 
 
         # Calculate how many sensors were used.
         # Number of received readings divided by the number of readings per sensor.
@@ -328,20 +328,18 @@ def main(tableLetter, sleepTime):
             features = gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints)
 
         timeThree = time.time()
-        # btTime = timeTwo - timeOne
         compTime = timeThree - timeTwo
 
         # Upload data to DynamoDB
         sense.set_pixels(LED.arrowSend('blue', 'black'))
 
-        # if calculateFeatures[tableLetter]:
-        #     uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors)
+        if calculateFeatures[tableLetter]:
+            uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors)
 
-        # else:
-        #     # Make sure that targetMatrix and designMatrix get read in the correct order
-        #     uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
-        print("\nSimulating upload of data to the cloud...\n")
-        time.sleep(3)
+        else:
+            # Make sure that targetMatrix and designMatrix get read in the correct order
+            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
+        
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
 
