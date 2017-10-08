@@ -133,37 +133,36 @@ def lambda_handler(event, context):
 	table_A = dynamo.Table('sensingdata_A')
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorA'}
 	item_A = table_A.get_item(Key=itemKey)['Item']
-	aggregatedData = item_A['aggregated_data']
-	betam = insertFeatures(betam, aggregatedData, 0, featurenum)
+	aggregatedData_A = item_A['aggregated_data']
+	betam = insertFeatures(betam, aggregatedData_A, 0, featurenum)
 	dataBytesFeatures += item_A['data_bytes']
 	numSensors += item_A['number_of_sensors']
 
-	# Fetch the features calculated by Gateway B
+	# Fetch the data from Gateway B's table, and then calculate the features.
 	table_B = dynamo.Table('sensingdata_B')
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorB'}
 	item_B = table_B.get_item(Key = itemKey)['Item']
-	aggregatedData = item_B['aggregated_data']
-	betam = insertFeatures(betam, aggregatedData, 1, featurenum)
+	aggregatedData_B = item_B['aggregated_data']
+	betam = insertFeatures(betam, aggregatedData_B, 1, featurenum)
 	dataBytesFeatures += item_B['data_bytes']
 	numSensors += item_B['number_of_sensors']
 
 	# Fetch the aggregated data from Gateway C
-
 	table_C = dynamo.Table('sensingdata_C')
 	itemKey = {'forum' : 'roomA', 'subject' : 'sensorC'}
 	item_C = table_C.get_item(Key = itemKey)['Item']
-	aggregatedData = item_C['aggregated_data']
+	aggregatedData_C = item_C['aggregated_data']
 	data_bytes_entire = item_C['data_bytes']
 	numSensors += item_C['number_of_sensors']
 
-	datanum = len(aggregatedData)
+	datanum = len(aggregatedData_C)
 	X = np.zeros((datanum,featurenum))
 	y = np.zeros((datanum,1))
 	for i in range(datanum):
-		X[i][0] = aggregatedData[i]['X_1']
-		X[i][1] = aggregatedData[i]['X_2']
-		X[i][2] = aggregatedData[i]['X_3']
-		y[i][0] = aggregatedData[i]['Y']
+		X[i][0] = aggregatedData_C[i]['X_1']
+		X[i][1] = aggregatedData_C[i]['X_2']
+		X[i][2] = aggregatedData_C[i]['X_3']
+		y[i][0] = aggregatedData_C[i]['Y']
 
 
 	# Compute the maximum bluetooth latency
@@ -261,6 +260,9 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
+	resultData['gateway_A'] = aggregatedData_A
+	resultData['gateway_B'] = aggregatedData_B
+	resultData['gateway_C'] = aggregatedData_C
 	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
 	results = record['results']
 	results.append(resultData)
