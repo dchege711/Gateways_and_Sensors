@@ -120,7 +120,7 @@ def log_piecewise_to_DB(table, index, key, data):
 	"""
 	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
 	results = record['results'][index]
-	results.append({key:data})
+	results[key] = data
 	item = table.put_item(Item = record)
 
 

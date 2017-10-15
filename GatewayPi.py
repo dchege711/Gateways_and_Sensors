@@ -29,9 +29,9 @@ sense = SenseHat()
 # Some Gateways aggregate data and send all this data to DynamoDB
 # In the all_cloud branch, every gateway acts as a relay instead of a computing edge.
 calculateFeatures = {
-'A' : False,
-'B' : False,
-'C' : False
+    'A' : False,
+    'B' : False,
+    'C' : False
 }
 
 #_______________________________________________________________________________
@@ -220,6 +220,13 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
     #print(" ".join(["Uploaded", sizeOfDataInBytes, "bytes of data to DynamoDB"]))
     print("Uploaded ", str(sizeOfDataInBytes), " bytes of data to DynamoDB")
 
+    # Keep a log of the data indexed by the timestamp
+    # The time stamp can then be used to get match up corresponding data.
+    loggingItem = {}
+    loggingItem['forum'] = room
+    loggingItem['subject'] = str(endTime)
+    loggingItem['aggregated_data'] = aggregatedItems
+    table.addItem(loggingItem)
 
     return uploadDuration
 
