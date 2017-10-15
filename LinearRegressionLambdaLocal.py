@@ -259,9 +259,9 @@ def lambda_handler(event, context):
 	resultData.pop('sensor', None)
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
-	resultData['gateway_A'] = aggregatedData_A
-	resultData['gateway_B'] = aggregatedData_B
-	resultData['gateway_C'] = aggregatedData_C
+	resultData['gateway_A_subject'] = str(item_A['timeStamp'])
+	resultData['gateway_B_subject'] = str(item_B['timeStamp'])
+	resultData['gateway_C_subject'] = str(item_C['timeStamp'])
 	
 	record = table.getItem({'environment' : 'roomA', 'sensor' : 'all_cloud_results'})
 	results = record['results']
