@@ -13,6 +13,7 @@ from DynamoDBUtility import Table
 table_A = Table('sensingdata_A')
 table_B = Table('sensingdata_B')
 table_C = Table('sensingdata_C')
+dataTable = Table('weightresult')
 
 def get_file_name(error, label, readings_per_gateway):
 	"""
@@ -52,24 +53,46 @@ def log_from_table(gateway_subject, gateway_letter, error, readings_per_gateway)
 
 
 	print("Logging", filename)
-	with open(filename, 'w') as dataFile:
-		dataFile.write(str(error) + "\t" + str(readings_per_gateway) + "\n")
-		dataFile.write("time\tpressure\thumidity\ttemperature\n")
+	with open(filename, 'w') as data_file:
+		data_file.write(str(error) + "\t" + str(readings_per_gateway) + "\n")
+		data_file.write("time\tpressure\thumidity\ttemperature\n")
 		for item in items:
-			dataFile.write(
+			data_file.write(
 				str(item['X_1']) + "\t" +
 				str(item['X_2']) + "\t" +
 				str(item['X_3']) + "\t" +
 				str(item['Y']) + "\n"
 			)
 
+def log_all_cloud_stats():
+	data = dataTable.getItem({'environment': 'roomA', 'sensor': 'all_cloud_results'})['results']
+	size_of_one_reading = 32
 
-def main():
+	print("Logging stats from the all_cloud experiment...")
+	filename = "all_cloud_stats.txt"
+
+	with open(filename, 'w') as data_file:
+		data_file.write("N_used_for_prediction\terror\tupload_time\tbluetooth_time\tpi_compute_time\tlambda_compute_time\n")
+		for item in data:
+			readings_per_sensor = str(item['data_bytes_features'] / size_of_one_reading)
+			data_file.write(
+				readings_per_sensor + "\t" +
+				str(item['Error']) + "\t" +
+				str(item['Comm_pi_lambda']) + "\t" +
+				str(item['Comm_pi_pi']) + "\t" +
+				str(item['Compu_pi']) + "\t" +
+				str(item['Lambda_ExecTime']) + "\n"
+			)
+
+	print("Successfully logged data to", filename)
+
+
+def log_sensor_data():
 	"""
 	Execute the main logic of this program.
 
 	"""
-	dataTable = Table('weightresult')
+	
 	data = dataTable.getItem({'environment': 'roomA', 'sensor': 'all_cloud_results'})['results']
 	size_of_one_reading = 32
 
@@ -89,5 +112,6 @@ def main():
 
 	 
 if __name__ == "__main__":
-	main()
+	# log_sensor_data()
+	log_all_cloud_stats()
 
