@@ -43,7 +43,12 @@ def log_from_table(gateway_subject, gateway_letter, error, readings_per_gateway)
 		])
 		raise ValueError(error_msg)
 	items = appropriate_table.getItem({'forum': 'roomA', 'subject': gateway_subject})
-	items = items['aggregated_data']
+	
+	try:
+		items = items['aggregated_data']
+	except KeyError:
+		print("Missing", gateway_letter, gateway_subject)
+		return
 
 
 	print("Logging", filename)
@@ -69,6 +74,7 @@ def main():
 	size_of_one_reading = 32
 
 	for experiment_data in data:
+
 		error = float(experiment_data['Error'])
 		readings_per_gateway = str(experiment_data['data_bytes_entire'] / size_of_one_reading)
 		
@@ -79,6 +85,8 @@ def main():
 		log_from_table(gateway_A_subject, "gateway_A", error, readings_per_gateway)
 		log_from_table(gateway_B_subject, "gateway_B", error, readings_per_gateway)
 		log_from_table(gateway_C_subject, "gateway_C", error, readings_per_gateway)
+
+
 	 
 if __name__ == "__main__":
 	main()
