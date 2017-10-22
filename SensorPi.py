@@ -46,8 +46,7 @@ def collectData(numberOfDataPoints, feature):
 
     for i in range(numberOfDataPoints):
         
-        tdataTime = time.time()
-        data_all[i][0] = tdataTime
+        data_all[i][0] = 0
         data_all[i][1] = sense.get_pressure()
         data_all[i][2] = sense.get_humidity()
         data_all[i][3] = sense.get_temperature_from_humidity()
