@@ -97,7 +97,7 @@ def main(gatewayLetter, sleepTime):
         # Collect the required number of data points
         sense.set_pixels(LED.pluses('green'))
 
-        numberOfDataPoints = 400
+        numberOfDataPoints = 400 
         feature = 3
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
