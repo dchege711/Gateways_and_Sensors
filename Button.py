@@ -9,7 +9,17 @@ running the experiment.
 '''
 #_______________________________________________________________________________
 
-import tkinter as tk
+import sys
+
+# Tkinter was was previously named tkinter in python 2
+version = sys.version_info.major
+if version == 2:
+	import tkinter as tk
+elif version == 3:
+	import Tkinter as tk
+else:
+	raise ImportError("This script needs either Python 2 or Python 3")
+	
 import time
 import os
 from decimal import Decimal
