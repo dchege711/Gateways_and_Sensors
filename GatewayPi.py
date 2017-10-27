@@ -147,11 +147,9 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
     room = 'roomA'
     sensor = 'sensor' + tableLetter
 
-    # Prepare the upload payload
-    item = table.getItem({
-        'forum'     : room,
-        'subject'   : sensor
-    })
+    # Prepare the upload payload (overwrite the previous entry)
+    item['forum'] = room
+    item['subject'] = sensor
 
     # If the Gateway was designated to calculate features...
     if calculateFeatures[tableLetter]:
