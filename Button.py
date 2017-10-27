@@ -9,15 +9,16 @@ running the experiment.
 '''
 #_______________________________________________________________________________
 
-# Tkinter was was previously named tkinter in python 2
+# tkinter was was previously named Tkinter in python 2
 import sys
 version = sys.version_info.major
+print(version)
 if version == 2:
-	import tkinter as tk
-elif version == 3:
 	import Tkinter as tk
+elif version == 3:
+	import tkinter as tk
 else:
-	raise ImportError("This script needs either Python 2 or Python 3")
+raise ImportError("This script needs either Python 2 or Python 3")
 	
 import time
 import os
