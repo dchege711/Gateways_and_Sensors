@@ -27,7 +27,7 @@ pink = '#ffb6c1'
 paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-# fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
+fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
 # fig.set_figwidth(0.6)
 
 #_______________________________________________________________________________
@@ -297,11 +297,11 @@ def main():
         'environment'    : 'roomA',
         'sensor'         : 'sensorA&B&C'
     })
-    # plotBandwidth(resultItem)
-    # plotLatency(resultItem)
-    # plotCosts(resultItem)
-    # plotAccuracy(resultItem, figureNumber)
-    compareAllCloudVsFog(resultItem)
+    plotBandwidth(resultItem)
+    plotLatency(resultItem)
+    plotCosts(resultItem)
+    plotAccuracy(resultItem, figureNumber)
+    # compareAllCloudVsFog(resultItem)
     plt.show()
 
 #_______________________________________________________________________________
