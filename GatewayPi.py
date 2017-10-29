@@ -156,6 +156,7 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors, calculateFeature
     sensor = 'sensor' + tableLetter
 
     # Prepare the upload payload (overwrite the previous entry)
+    item = {}
     item['forum'] = room
     item['subject'] = sensor
 
