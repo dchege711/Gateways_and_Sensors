@@ -70,7 +70,7 @@ def set_sample_size(sample_size=None, table_letter=None):
 
 def update_table(table_letter, sample_size):
 	tStart = time.time()
-	subject_val = "".join(["gateway_", tableLetter])
+	subject_val = "".join(["gateway_", table_letter])
 	item = table.getItem({
 		'forum'		: '1',
 		'subject'	: subject_val
