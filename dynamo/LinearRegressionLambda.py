@@ -331,9 +331,9 @@ def lambda_handler(event, context):
 	resultData['gateway_B_subject'] = str(item_B.timeStamp)
 	resultData['gateway_C_subject'] = str(item_C.timeStamp)
 
-	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
+	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'cloud_vs_fog'})['Item']
 	results = record['results']
 	results.append(resultData)
 	item = table.put_item(Item = record)
 
-	return record
+	return resultData

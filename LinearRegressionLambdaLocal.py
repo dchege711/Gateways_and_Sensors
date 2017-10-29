@@ -326,7 +326,7 @@ def lambda_handler(event, context):
 	for key in resultData.keys():
 		print(key, "\t", resultData[key])
 	
-	record = table.getItem({'environment' : 'roomA', 'sensor' : 'all_cloud_results'})
+	record = table.getItem({'environment' : 'roomA', 'sensor' : 'cloud_vs_fog'})
 	results = record['results']
 	results.append(resultData)
 	# item = table.addItem(record)
