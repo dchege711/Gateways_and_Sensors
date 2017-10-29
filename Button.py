@@ -59,12 +59,12 @@ def set_sample_size(sample_size=None, table_letter=None):
 	# to all the gateways
 	if sample_size is None:
 		sample_size = Decimal(e.get())
-		update_table('A', sample_size)
-		update_table('B', sample_size)
-		update_table('B', sample_size)
+		tStart = update_table('A', sample_size)
+		tStart = update_table('B', sample_size)
+		tStart = update_table('B', sample_size)
 
 	else:
-		update_table(table_letter, sample_size)
+		tStart = update_table(table_letter, sample_size)
 
 	return tStart
 
