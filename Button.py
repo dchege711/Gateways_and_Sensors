@@ -83,7 +83,7 @@ def update_table(table_letter, sample_size):
 #_______________________________________________________________________________
 
 # Display the submission button
-b1 = tk.Button(window, text = 'Start', width = 15, height = 2, command = sample_size)
+b1 = tk.Button(window, text = 'Start', width = 15, height = 2, command = set_sample_size)
 b1.pack()
 window.mainloop()
 
