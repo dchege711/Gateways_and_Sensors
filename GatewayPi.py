@@ -121,15 +121,12 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
             learning_rate = learning_rate / 2
 
         count = count + 1
-        # print("E_new", E_new, "E_old", E_old)
         if count % 20 == 0:
-            # print(" ".join[count, "iterations so far..."])
-            print(str(count), " iterations so far...")
+            print(str(count), " iterations so far...\n")
 
         # Comparing E_new == E_old is tricky because of precision.
         if np.isclose(E_new, E_old)[0]:
-            #print(" ".join(["Escaped loop after", count, "iterations."]))
-            print("Escaped loop after", str(count), "iterations.")
+            print("Escaped loop after", str(count), "iterations.\n")
             break
 
     return w_new
@@ -223,8 +220,7 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors, calculateFeature
 
     table.addItem(record)
 
-    #print(" ".join(["Uploaded", sizeOfDataInBytes, "bytes of data to DynamoDB"]))
-    print("Uploaded ", str(sizeOfDataInBytes), " bytes of data to DynamoDB")
+    print("Uploaded ", str(sizeOfDataInBytes), " bytes of data to DynamoDB\n")
 
     # Keep a log of the data indexed by the timestamp
     # The time stamp can then be used to get match up corresponding data.
@@ -300,7 +296,7 @@ def main(tableLetter, sleepTime, calculateFeatures):
                 time.sleep(sleepTime)
 
             except KeyboardInterrupt:
-                print("Shutting down...")
+                print("Shutting down...\n")
                 sense.set_pixels(LED.pluses('black'))
                 sys.exit()
 

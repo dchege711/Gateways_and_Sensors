@@ -82,12 +82,11 @@ def main(gatewayLetter, sleepTime):
         while stayInLoop:
             try:
                 stayInLoop, timeStamp = table.compareValues(key, 'timeStamp', oldSizeTime, True)
-                # print(countTime, "Old", oldSizeTime, "\tNew", timeStamp)
                 time.sleep(sleepTime)
                 # countTime += 1
 
             except KeyboardInterrupt:
-                print("Shutting down...")
+                print("Shutting down...\n")
                 sense.set_pixels(LED.pluses('black'))
                 sys.exit()
 
@@ -106,7 +105,6 @@ def main(gatewayLetter, sleepTime):
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
         endTime = time.time()
-        # print("Sensor :", str(numberOfDataPoints), "data points collected in", str(endTime - startTime), "seconds")
 
         # Transmit the data via bluetooth to the Gateway Pi
         sense.set_pixels(LED.arrowSend('blue', 'black'))
