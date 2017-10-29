@@ -335,3 +335,5 @@ def lambda_handler(event, context):
 	results = record['results']
 	results.append(resultData)
 	item = table.put_item(Item = record)
+
+	return record
