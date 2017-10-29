@@ -215,11 +215,6 @@ def lambda_handler(event, context):
 	numSensors += item_B.number_of_sensors
 
 	# Fetch the aggregated data from Gateway C
-	item_A = read_gateway_data('A')
-	betam = insert_features(item_A.features, featurenum, betam, 0)
-	dataBytesFeatures += item_A.data_bytes
-	numSensors += item_A.number_of_sensors
-
 	item_C = read_gateway_data('C', call_fetch_test_data=True)
 	numSensors += item_C.number_of_sensors
 	data_bytes = item_C.data_bytes

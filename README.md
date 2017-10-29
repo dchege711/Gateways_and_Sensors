@@ -1,7 +1,7 @@
 # Gateways and Sensors
 * This repository houses the code used to test out concepts covered in the Decomposing Data Analytics in Fog Networks paper.
 
-### The "hybrid" branch
+### The "cloud_vs_fog" branch
 * This branch allows side-by-side comparison of a cloud implementation and a fog implementation.
 * When the experiment is run, two inner runs are made, one using cloud resources, and one using fog resources.
 * At the end of each experiment, the two are compared using a table.

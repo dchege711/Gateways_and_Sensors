@@ -17,6 +17,8 @@ import decimal
 from decimal import *
 import time
 
+dynamo = boto3.resource('dynamodb')
+
 #_______________________________________________________________________________
 
 def gradientDescent(targetMatrix, designMatrix, featurenum, numDataPoints):
@@ -101,6 +103,93 @@ def convertToNumpyArrays(aggregatedData, featurenum, datanum):
 
 	return targetMatrix, designMatrix
 
+def calculate_features(aggregatedData, featurenum):
+	datanum = len(aggregatedData)
+	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
+	features = gradientDescent(targetMatrix, designMatrix, featurenum, datanum)
+
+	return features
+
+def insert_features(feature_values, featurenum, betam, index):
+	for i in range(featurenum):
+		betam[i][index] = feature_values[i]
+	return betam
+
+def read_gateway_data(gateway_letter, call_fetch_test_data=False):
+
+	# All of the tables share a common format
+	table_name = "".join(["sensingdata_", gateway_letter])
+	sensor_name = "".join(["sensor", gateway_letter])
+	table = dynamo.Table(table_name)
+	item = table.get_item(Key={
+		"forum"		: "roomA",
+		"subject"	: sensor_name
+	})['Item']
+
+	try:
+		features = item["feature_A"], item["feature_B"], item["feature_C"]
+		print("Collected features from table", gateway_letter)
+		X, y, datanum = None, None, None
+	except KeyError:
+		aggregatedData = item["aggregated_data"]
+		datanum = len(aggregatedData)
+		# Because one of them is a target feature...
+		featurenum = len(aggregatedData[0]) - 1	
+
+		if call_fetch_test_data:
+			X, y = fetch_test_data(aggregatedData, featurenum)
+			features = None
+			print("Collected test data from table", gateway_letter)
+
+		else:
+			X, y = None, None
+			features = calculate_features(aggregatedData, featurenum)
+			print("Calculated summarized features for table", gateway_letter)
+
+
+	# Return the data obtained
+	gateway_results = namedtuple('gateway_results', 
+		[
+			'X', 'y', 'features', 'data_bytes', 'Compu_pi', 'datanum',
+			'number_of_sensors', 'Comm_pi_pi', 'Comm_pi_lambda', 'timeStamp'
+	])
+
+	results = gateway_results(
+		X,
+		y,
+		features,
+		item['data_bytes'],
+		item['Compu_pi'],
+		datanum,
+		item['number_of_sensors'],
+		item['Comm_pi_pi'],
+		item['Comm_pi_lambda'],
+		item['timeStamp']
+	)
+
+	return results
+
+def fetch_test_data(aggregatedData, featurenum):
+	datanum = len(aggregatedData)
+	# Some of the gateways may be used as sources of test data
+	# that helps us gauge the accuracy of our model
+	X = np.zeros((datanum, featurenum))
+	y = np.zeros((datanum, 1))
+	# Think of a cleaner way of doing this. Are we guaranteed that
+	# X_number are descriptive features and Y is the target such that
+	# we can sort the keys and remove the last item?
+	data_item_keys = list(aggregatedData[0].keys())
+	data_item_keys.sort()
+
+	for i in range(datanum):
+		for j in range(featurenum):
+			X[i][j] = aggregatedData[i][data_item_keys[j]]
+		# In this case, featurenum = index of the target feature
+		# We're assuming only one target feature
+		y[i][0] = aggregatedData[i][data_item_keys[featurenum]]
+
+	return X, y
+
 def insertFeatures(betam, aggregatedData, collectorIndex, featurenum):
 	datanum = len(aggregatedData)
 	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
@@ -115,7 +204,6 @@ def insertFeatures(betam, aggregatedData, collectorIndex, featurenum):
 def lambda_handler(event, context):
 	# Fetch the DynamoDB resource
 	tStart = time.time()
-	dynamo = boto3.resource('dynamodb')
 
 	# Change: Getting the number of samples from the 'SampleSize' table is tricky
 	# When we'll have multiple Pi's, keeping track of this number will be buggy
@@ -130,58 +218,46 @@ def lambda_handler(event, context):
 	numSensors = 0
 
 	# Fetch the data from Gateway A's table, and then calculate the features.
-	table_A = dynamo.Table('sensingdata_A')
-	itemKey = {'forum' : 'roomA', 'subject' : 'sensorA'}
-	item_A = table_A.get_item(Key=itemKey)['Item']
-	aggregatedData_A = item_A['aggregated_data']
-	betam = insertFeatures(betam, aggregatedData_A, 0, featurenum)
-	dataBytesFeatures += item_A['data_bytes']
-	numSensors += item_A['number_of_sensors']
+	item_A = read_gateway_data('A')
+	betam = insertFeatures(item_A.features, featurenum, betam, 0)
+	dataBytesFeatures += item_A.data_bytes
+	numSensors += item_A.number_of_sensors
 
 	# Fetch the data from Gateway B's table, and then calculate the features.
-	table_B = dynamo.Table('sensingdata_B')
-	itemKey = {'forum' : 'roomA', 'subject' : 'sensorB'}
-	item_B = table_B.get_item(Key = itemKey)['Item']
-	aggregatedData_B = item_B['aggregated_data']
-	betam = insertFeatures(betam, aggregatedData_B, 1, featurenum)
-	dataBytesFeatures += item_B['data_bytes']
-	numSensors += item_B['number_of_sensors']
+	item_B = read_gateway_data('B')
+	betam = insertFeatures(item_B.features, featurenum, betam, 1)
+	dataBytesFeatures += item_B.data_bytes
+	numSensors += item_B.number_of_sensors
 
 	# Fetch the aggregated data from Gateway C
-	table_C = dynamo.Table('sensingdata_C')
-	itemKey = {'forum' : 'roomA', 'subject' : 'sensorC'}
-	item_C = table_C.get_item(Key = itemKey)['Item']
-	aggregatedData_C = item_C['aggregated_data']
-	data_bytes_entire = item_C['data_bytes']
-	numSensors += item_C['number_of_sensors']
-
-	datanum = len(aggregatedData_C)
-	X = np.zeros((datanum,featurenum))
-	y = np.zeros((datanum,1))
-	for i in range(datanum):
-		X[i][0] = aggregatedData_C[i]['X_1']
-		X[i][1] = aggregatedData_C[i]['X_2']
-		X[i][2] = aggregatedData_C[i]['X_3']
-		y[i][0] = aggregatedData_C[i]['Y']
-
+	item_C = read_gateway_data('C', call_fetch_test_data=True)
+	data_bytes_entire = item_C.data_bytes
+	numSensors += item_C.number_of_sensors
+	datanum = item_C.datanum # Whichever item has test data has datanum
+	X = item_C.X
+	y = item_C.y
 
 	# Compute the maximum bluetooth latency
-	Comm_pi_pi_A = item_A['Comm_pi_pi']
-	Comm_pi_pi_B = item_B['Comm_pi_pi']
-	Comm_pi_pi_C = item_C['Comm_pi_pi']
-	Comm_pi_pi = np.max([Comm_pi_pi_A, Comm_pi_pi_B, Comm_pi_pi_C])
+	Comm_pi_pi = np.max([
+		item_A.Comm_pi_pi, 
+		item_B.Comm_pi_pi, 
+		item_C.Comm_pi_pi
+	])
 
 	# Compute the maximum upload latency
-	Comm_pi_lambda_A = item_A['Comm_pi_lambda']
-	Comm_pi_lambda_B = item_B['Comm_pi_lambda']
-	Comm_pi_lambda_C = item_C['Comm_pi_lambda']
-	Comm_pi_lambda = np.max([Comm_pi_lambda_A, Comm_pi_lambda_B, Comm_pi_lambda_C])
+	Comm_pi_lambda = np.max([
+		item_A.Comm_pi_lambda, 
+		item_B.Comm_pi_lambda, 
+		item_C.Comm_pi_lambda
+	])
 
-	# Compute the maximum computational latency (as observed in the Pi, not Lambda)
-	Compu_pi_A = item_A['Compu_pi']
-	Compu_pi_B = item_B['Compu_pi']
-	Compu_pi_C = item_C['Compu_pi']
-	Compu_pi = np.max([Compu_pi_A, Compu_pi_B, Compu_pi_C])
+	# Compute the maximum computational latency 
+	# * As observed in the Pi, not AWS Lambda
+	Compu_pi = np.max([
+		item_A.Compu_pi, 
+		item_B.Compu_pi, 
+		item_C.Compu_pi
+	])
 
 	def prox_simplex(y):
 		# projection onto simplex
