@@ -9,6 +9,7 @@ import boto3
 import os
 from botocore.exceptions import ClientError
 import time
+import json
 
 client = boto3.client(
     'lambda',
@@ -40,7 +41,7 @@ class aws_lambda:
 			FunctionName=function_name,
 			InvocationType=invocation_type
 		)
-		return response
+		return json.loads(response['Payload'].read())
 
 	def list_all_functions(self):
 		response = client.list_functions()
@@ -58,7 +59,7 @@ def test():
 	startTime = time.time()
 	response = my_lambda.invoke("LinearRegressionLambda")
 	endTime = time.time()
-	for key in response:
+	for key in response.keys():
 		print(key, "\t:", response[key])
 	print("\nInvocation took", str(endTime-startTime), "seconds.")
 
