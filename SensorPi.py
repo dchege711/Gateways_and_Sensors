@@ -97,6 +97,11 @@ def main(gatewayLetter, sleepTime):
         sense.set_pixels(LED.pluses('green'))
 
         numberOfDataPoints = int(table.getItem(key)['sampleSize'])
+
+        if numberOfDataPoints == -1:
+            sense.set_pixels(LED.pluses('black'))
+            sys.exit()
+
         feature = 3
         startTime = time.time()
         collectedData = collectData(numberOfDataPoints, feature)
