@@ -20,9 +20,33 @@ lambda_client = aws_lambda()
 
 #_______________________________________________________________________________
 
-oldTimeA = 0
-oldTimeB = 0
-oldTimeC = 0
+def trigger_using_dynamodb():
+    # The Trigger_A table makes Lambda start processing the data.
+    # The table needs to be specified in the Lambda function config.
+    lambdaTriggerTable = Table('Trigger_A')
+    item = lambdaTriggerTable.getItem({
+    'forum'     : 'roomA',
+    'subject'   : 'PC1'
+    })
+
+    tEnd = time.time()
+    item['timeStamp'] = Decimal(str(tEnd))
+    lambdaTriggerTable.addItem(item)
+    print("Lambda triggered!")
+    print()
+
+def trigger_using_lambda_client():
+    startTime = time.time()
+    response = lambda_client.invoke("LinearRegressionLambda")
+    endTime = time.time()
+    for key in response.keys():
+        print(key, "\t:", response[key])
+    print()
+    print("Time taken on AWS Lambda :", str(endTime-startTime), "seconds.")
+    print()
+
+
+oldTimeA, oldTimeB, oldTimeC = 0, 0, 0
 
 queryA = {
     'forum'     : 'roomA',
@@ -41,32 +65,6 @@ tableA = Table('sensingdata_A')
 tableB = Table('sensingdata_B')
 tableC = Table('sensingdata_C') # I changed this since I don't see latency_C's purpose
 
-def trigger_using_dynamodb():
-    # The Trigger_A table makes Lambda start processing the data.
-    # The table needs to be specified in the Lambda function config.
-    lambdaTriggerTable = Table('Trigger_A')
-    item = lambdaTriggerTable.getItem({
-    'forum'     : 'roomA',
-    'subject'   : '1'
-    })
-
-    tEnd = time.time()
-    item['timeStamp'] = Decimal(str(tEnd))
-    lambdaTriggerTable.addItem(item)
-    print("Lambda triggered!")
-    print()
-
-def trigger_using_lambda_client():
-    startTime = time.time()
-    response = my_lambda.invoke("LinearRegressionLambda")
-    endTime = time.time()
-    for key in response.keys():
-        print(key, "\t:", response[key])
-    print()
-    print("Time taken on AWS Lambda :", str(endTime-startTime), "seconds.")
-    print()
-
-
 while True:
 
     ready = 0
@@ -75,9 +73,23 @@ while True:
     while True:
 
         try:
-            aIsReady, timeA = tableA.compareValues(queryA, 'timeStamp', oldTimeA, False)
-            bIsReady, timeB = tableB.compareValues(queryB, 'timeStamp', oldTimeB, False)
-            cIsReady, timeC = tableC.compareValues(queryC, 'timeStamp', oldTimeC, False)
+            # Challenge: If GatewayPi.py is using the same document as the 
+            # one being requested by TriggerLambda, the document will be unavailable
+            # The KeyError doesn't mean that the key doesn't really exist
+            try:
+                aIsReady, timeA = tableA.compareValues(queryA, 'timeStamp', oldTimeA, False)
+            except KeyError:
+                pass   
+
+            try:
+                bIsReady, timeB = tableB.compareValues(queryB, 'timeStamp', oldTimeB, False)
+            except KeyError:
+                pass   
+
+            try:
+                cIsReady, timeC = tableC.compareValues(queryC, 'timeStamp', oldTimeC, False)
+            except KeyError:
+                pass
 
             if aIsReady:
                 ready = ready + 1
@@ -96,10 +108,10 @@ while True:
                 print()
                 break
 
-            # trigger_using_dynamodb()
-            trigger_using_lambda_client()
-
         except KeyboardInterrupt:
             print("Closing Lambda Trigger")
             print()
             sys.exit()
+
+    # trigger_using_dynamodb()
+    trigger_using_lambda_client()

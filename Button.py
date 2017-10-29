@@ -61,7 +61,7 @@ def set_sample_size(sample_size=None, table_letter=None):
 		sample_size = Decimal(e.get())
 		tStart = update_table('A', sample_size)
 		tStart = update_table('B', sample_size)
-		tStart = update_table('B', sample_size)
+		tStart = update_table('C', sample_size)
 
 	else:
 		tStart = update_table(table_letter, sample_size)
