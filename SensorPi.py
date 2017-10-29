@@ -77,7 +77,7 @@ def main(gatewayLetter, sleepTime):
         stayInLoop = True
         key = {
             'forum'     : '1',
-            'subject'   : gatewayLetter
+            'subject'   : subject_val
         }
         # countTime = 1
         while stayInLoop:
