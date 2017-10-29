@@ -88,7 +88,8 @@ def listenOnBluetooth(channelNumber):
     endTime = time.time()
     btTime = endTime - startTime
 
-    print("Bluetooth Transmission Time :", btTime, "\n")
+    print("Bluetooth Transmission Time :", btTime)
+    print()
 
     # Close the bluetooth connection
     client_sock.close()
@@ -128,7 +129,8 @@ def sendDataByBluetooth(data, gatewayLetter, channelNumber):
 
     endTime = time.time()
     btTime = endTime - startTime
-    print("Sensor : Sent", bytesSent, "/", intendedBytes, "bytes over bluetooth in", btTime, "seconds\n")
+    print("Sensor : Sent", bytesSent, "/", intendedBytes, "bytes over bluetooth in", btTime, "seconds")
+    print()
     return btTime
 
 #_______________________________________________________________________________

@@ -54,6 +54,7 @@ def trigger_using_dynamodb():
     item['timeStamp'] = Decimal(str(tEnd))
     lambdaTriggerTable.addItem(item)
     print("Lambda triggered!")
+    print()
 
 def trigger_using_lambda_client():
     startTime = time.time()
@@ -61,7 +62,9 @@ def trigger_using_lambda_client():
     endTime = time.time()
     for key in response.keys():
         print(key, "\t:", response[key])
-    print("\nTime taken on AWS Lambda :", str(endTime-startTime), "seconds.")
+    print()
+    print("Time taken on AWS Lambda :", str(endTime-startTime), "seconds.")
+    print()
 
 
 while True:
@@ -90,6 +93,7 @@ while True:
             if ready >= 3:
                 ready = 0
                 print("Now triggering lambda...")
+                print()
                 break
 
             # trigger_using_dynamodb()
@@ -97,4 +101,5 @@ while True:
 
         except KeyboardInterrupt:
             print("Closing Lambda Trigger")
+            print()
             sys.exit()

@@ -86,7 +86,8 @@ def main(gatewayLetter, sleepTime):
                 # countTime += 1
 
             except KeyboardInterrupt:
-                print("Shutting down...\n")
+                print("Shutting down...")
+                print()
                 sense.set_pixels(LED.pluses('black'))
                 sys.exit()
 
