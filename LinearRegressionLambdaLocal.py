@@ -224,7 +224,7 @@ def lambda_handler(event, context):
 	numSensors += item_C.number_of_sensors
 	data_bytes = item_C.data_bytes
 	size_of_one_reading = 32
-	readings_per_sensor = str(data_bytes / size_of_one_reading)
+	readings_per_sensor = str((data_bytes / size_of_one_reading)/item_C.number_of_sensors)
 	datanum = item_C.datanum	# Whichever item has test data has datanum
 	X = item_C.X
 	y = item_C.y

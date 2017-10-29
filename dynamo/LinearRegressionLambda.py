@@ -127,15 +127,19 @@ def read_gateway_data(gateway_letter, call_fetch_test_data=False):
 		"subject"	: sensor_name
 	})['Item']
 
+	fog_or_cloud = None
+
 	try:
 		features = item["feature_A"], item["feature_B"], item["feature_C"]
 		print("Collected features from table", gateway_letter)
+		fog_or_cloud = "fog (edge + cloud)"
 		X, y, datanum = None, None, None
 	except KeyError:
 		aggregatedData = item["aggregated_data"]
 		datanum = len(aggregatedData)
 		# Because one of them is a target feature...
 		featurenum = len(aggregatedData[0]) - 1	
+		fog_or_cloud = "all_cloud"
 
 		if call_fetch_test_data:
 			X, y = fetch_test_data(aggregatedData, featurenum)
@@ -151,7 +155,7 @@ def read_gateway_data(gateway_letter, call_fetch_test_data=False):
 	# Return the data obtained
 	gateway_results = namedtuple('gateway_results', 
 		[
-			'X', 'y', 'features', 'data_bytes', 'Compu_pi', 'datanum',
+			'X', 'y', 'features', 'data_bytes', 'Compu_pi', 'datanum', 'fog_or_cloud'
 			'number_of_sensors', 'Comm_pi_pi', 'Comm_pi_lambda', 'timeStamp'
 	])
 
@@ -162,6 +166,7 @@ def read_gateway_data(gateway_letter, call_fetch_test_data=False):
 		item['data_bytes'],
 		item['Compu_pi'],
 		datanum,
+		fog_or_cloud,
 		item['number_of_sensors'],
 		item['Comm_pi_pi'],
 		item['Comm_pi_lambda'],
@@ -212,6 +217,7 @@ def lambda_handler(event, context):
 	betam = insert_features(item_A.features, featurenum, betam, 0)
 	dataBytesFeatures += item_A.data_bytes
 	numSensors += item_A.number_of_sensors
+	fog_or_cloud = item_A.fog_or_cloud
 
 	# Fetch the data from Gateway B's table, and then calculate the features.
 	item_B = read_gateway_data('B')
@@ -223,6 +229,8 @@ def lambda_handler(event, context):
 	item_C = read_gateway_data('C', call_fetch_test_data=True)
 	data_bytes_entire = item_C.data_bytes
 	numSensors += item_C.number_of_sensors
+	size_of_one_reading = 32
+	readings_per_sensor = str((data_bytes_entire / size_of_one_reading)/item_C.number_of_sensors)
 	datanum = item_C.datanum # Whichever item has test data has datanum
 	X = item_C.X
 	y = item_C.y
@@ -315,6 +323,8 @@ def lambda_handler(event, context):
 		'Comm_pi_pi': Comm_pi_pi,
 		'Comm_pi_lambda': Comm_pi_lambda,
 		'Compu_pi': Compu_pi,
+		'readings_per_sensor': readings_per_sensor,
+		'fog_or_cloud': fog_or_cloud,
 		'data_bytes_features' : decimal.Decimal(str(dataBytesFeatures)),
 		'data_bytes_entire' : decimal.Decimal(str(data_bytes_entire)),
 		'number_of_sensors':decimal.Decimal(str(numSensors))
