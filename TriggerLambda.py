@@ -15,6 +15,9 @@ import sys
 from DynamoDBUtility import Table
 from decimal import Decimal
 
+from lambda_utility import aws_lambda
+lambda_client = aws_lambda()
+
 #_______________________________________________________________________________
 
 oldTimeA = 0
@@ -38,32 +41,7 @@ tableA = Table('sensingdata_A')
 tableB = Table('sensingdata_B')
 tableC = Table('sensingdata_C') # I changed this since I don't see latency_C's purpose
 
-while True:
-
-    ready = 0
-
-    # This while-loop is only escaped once all the Gateway Pi's are done
-    while True:
-        aIsReady, timeA = tableA.compareValues(queryA, 'timeStamp', oldTimeA, False)
-        bIsReady, timeB = tableB.compareValues(queryB, 'timeStamp', oldTimeB, False)
-        cIsReady, timeC = tableC.compareValues(queryC, 'timeStamp', oldTimeC, False)
-
-        if aIsReady:
-            ready = ready + 1
-            oldTimeA = timeA
-        if bIsReady:
-            ready = ready + 1
-            oldTimeB = timeB
-        if cIsReady:
-            ready = ready + 1
-            oldTimeC = timeC
-
-        # This means that all gateways are ready
-        if ready >= 3:
-            ready = 0
-            print("Now triggering lambda...")
-            break
-
+def trigger_using_dynamodb():
     # The Trigger_A table makes Lambda start processing the data.
     # The table needs to be specified in the Lambda function config.
     lambdaTriggerTable = Table('Trigger_A')
@@ -77,6 +55,46 @@ while True:
     lambdaTriggerTable.addItem(item)
     print("Lambda triggered!")
 
-    # if KeyboardInterrupt:
-    #     print("Closing Lambda Trigger")
-    #     sys.exit()
+def trigger_using_lambda_client():
+    startTime = time.time()
+    response = my_lambda.invoke("LinearRegressionLambda")
+    endTime = time.time()
+    for key in response.keys():
+        print(key, "\t:", response[key])
+    print("\nTime taken on AWS Lambda :", str(endTime-startTime), "seconds.")
+
+
+while True:
+
+    ready = 0
+
+    # This while-loop is only escaped once all the Gateway Pi's are done
+    while True:
+
+        try:
+            aIsReady, timeA = tableA.compareValues(queryA, 'timeStamp', oldTimeA, False)
+            bIsReady, timeB = tableB.compareValues(queryB, 'timeStamp', oldTimeB, False)
+            cIsReady, timeC = tableC.compareValues(queryC, 'timeStamp', oldTimeC, False)
+
+            if aIsReady:
+                ready = ready + 1
+                oldTimeA = timeA
+            if bIsReady:
+                ready = ready + 1
+                oldTimeB = timeB
+            if cIsReady:
+                ready = ready + 1
+                oldTimeC = timeC
+
+            # This means that all gateways are ready
+            if ready >= 3:
+                ready = 0
+                print("Now triggering lambda...")
+                break
+
+            # trigger_using_dynamodb()
+            trigger_using_lambda_client()
+
+        except KeyboardInterrupt:
+            print("Closing Lambda Trigger")
+            sys.exit()
