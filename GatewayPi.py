@@ -24,16 +24,6 @@ sense = SenseHat()
 
 #_______________________________________________________________________________
 
-# Different Gateways perform different operations
-# Some Gateways aggregate data, calculate features and transmit only the features to DynamoDB.
-# Some Gateways aggregate data and send all this data to DynamoDB
-# In the all_cloud branch, every gateway acts as a relay instead of a computing edge.
-calculateFeatures = {
-    'A' : False,
-    'B' : False,
-    'C' : False
-}
-
 #_______________________________________________________________________________
 
 def bluetoothDataToNPArrays(dataFromBT, numDataPoints, numFeatures):
@@ -128,7 +118,7 @@ def gradientDescent(targetMatrix, designMatrix, numFeatures, numDataPoints):
 
 #_______________________________________________________________________________
 
-def uploadToDB(tableLetter, data, btTime, compTime, numSensors):
+def uploadToDB(tableLetter, data, btTime, compTime, numSensors, calculateFeatures):
     """
     Uploads the features and the latencies to DynamoDB
 
@@ -256,7 +246,7 @@ def visualizeData(btTime, compTime, uploadTime):
 
 #_______________________________________________________________________________
 
-def main(tableLetter, sleepTime):
+def main(tableLetter, sleepTime, calculateFeatures):
     """
     Runs the experiment as indicated below:
 
@@ -297,6 +287,11 @@ def main(tableLetter, sleepTime):
         oldSizeTime = timeStamp
 
         numDataPoints = int(table.getItem(key)['sampleSize'])
+
+        if numDataPoints == -1:
+            sense.set_pixels(LED.pluses('black'))
+            sys.exit()
+
         numFeatures = 3
 
         # Listen for incoming bluetooth data on port 1
@@ -336,11 +331,11 @@ def main(tableLetter, sleepTime):
         sense.set_pixels(LED.arrowSend('blue', 'black'))
 
         if calculateFeatures[tableLetter]:
-            uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors)
+            uploadTime = uploadToDB(tableLetter, features, btTime, compTime, numSensors, calculateFeatures)
 
         else:
             # Make sure that targetMatrix and designMatrix get read in the correct order
-            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors)
+            uploadTime = uploadToDB(tableLetter, [targetMatrix, designMatrix], btTime, compTime, numSensors, calculateFeatures)
 
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
@@ -353,4 +348,19 @@ def main(tableLetter, sleepTime):
 if __name__ == '__main__':
     tableLetter = sys.argv[1]       # The letter is used to distinguish tables
     sleepTime = float(sys.argv[2])  # Determines how frequently we'll query the DB
-    main(tableLetter, sleepTime)
+    
+    # Different Gateways perform different operations
+    # Some Gateways aggregate data, calculate features and transmit only the features to DynamoDB.
+    # Some Gateways aggregate data and send all this data to DynamoDB
+    # In the all_cloud branch, every gateway acts as a relay instead of a computing edge.
+    calculateFeatures = {
+        'A' : False,
+        'B' : False,
+        'C' : False
+    }
+
+    i = 3
+    while i < len(sys.argv):
+        calculateFeatures[sys.argv[i]] = True
+
+    main(tableLetter, sleepTime, calculateFeatures)

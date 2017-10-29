@@ -16,6 +16,7 @@ import numpy as np
 import decimal
 from decimal import *
 import time
+from collections import namedtuple
 
 dynamo = boto3.resource('dynamodb')
 
@@ -190,24 +191,13 @@ def fetch_test_data(aggregatedData, featurenum):
 
 	return X, y
 
-def insertFeatures(betam, aggregatedData, collectorIndex, featurenum):
-	datanum = len(aggregatedData)
-	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
-	feature_A, feature_B, feature_C = gradientDescent(targetMatrix, designMatrix, featurenum, datanum)
-
-	betam[0][collectorIndex] = feature_A
-	betam[1][collectorIndex] = feature_B
-	betam[2][collectorIndex] = feature_C
-
-	return betam
-
 def lambda_handler(event, context):
 	# Fetch the DynamoDB resource
 	tStart = time.time()
 
 	# Change: Getting the number of samples from the 'SampleSize' table is tricky
 	# When we'll have multiple Pi's, keeping track of this number will be buggy
-	# For this reason, I'm setting the value of 'datanum' to the number of items
+	# For this reason, I'm setting the value of 'datanum' to  the number of items
 	# that we're going to get from the table containing the aggregated sensor data
 
 	# Initialize helper variables
@@ -219,13 +209,13 @@ def lambda_handler(event, context):
 
 	# Fetch the data from Gateway A's table, and then calculate the features.
 	item_A = read_gateway_data('A')
-	betam = insertFeatures(item_A.features, featurenum, betam, 0)
+	betam = insert_features(item_A.features, featurenum, betam, 0)
 	dataBytesFeatures += item_A.data_bytes
 	numSensors += item_A.number_of_sensors
 
 	# Fetch the data from Gateway B's table, and then calculate the features.
 	item_B = read_gateway_data('B')
-	betam = insertFeatures(item_B.features, featurenum, betam, 1)
+	betam = insert_features(item_B.features, featurenum, betam, 1)
 	dataBytesFeatures += item_B.data_bytes
 	numSensors += item_B.number_of_sensors
 
@@ -337,9 +327,9 @@ def lambda_handler(event, context):
 	resultData.pop('Prediction', None)
 	resultData.pop('Real_Data', None)
 
-	resultData['gateway_A_subject'] = str(item_A['timeStamp'])
-	resultData['gateway_B_subject'] = str(item_B['timeStamp'])
-	resultData['gateway_C_subject'] = str(item_C['timeStamp'])
+	resultData['gateway_A_subject'] = str(item_A.timeStamp)
+	resultData['gateway_B_subject'] = str(item_B.timeStamp)
+	resultData['gateway_C_subject'] = str(item_C.timeStamp)
 
 	record = table.get_item(Key = {'environment' : 'roomA', 'sensor' : 'all_cloud_results'})['Item']
 	results = record['results']
