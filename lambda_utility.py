@@ -8,8 +8,9 @@ Centralized location for handling all requests to AWS Lambda
 import boto3
 import os
 from botocore.exceptions import ClientError
+import time
 
-aws_lambda = boto3.resource(
+client = boto3.client(
     'lambda',
     aws_access_key_id = os.environ['aws_access_key_id'],
     aws_secret_access_key = os.environ['aws_secret_access_key'],
@@ -18,28 +19,50 @@ aws_lambda = boto3.resource(
 
 class aws_lambda:
 
-	def __init__(self):
-		# Currently, we have no need for initialization.
-		self.aws_lambda = None
+	# Currently, we don't have any use for initialization
 
 	def get_function(self, function_name, qualifier=None):
 
-		if qualifier not None:
-			response = aws_lambda.get_function(
+		if qualifier is not None:
+			response = client.get_function(
 				FunctionName=function_name,
 				Qualifier=qualifier
 			)
 		else:
-			response = aws_lambda.get_function(
-				FunctionName=function_name,
+			response = client.get_function(
+				FunctionName=function_name
 			)
 
 		return response
 
 	def invoke(self, function_name, invocation_type="RequestResponse"):
-		response = aws_lambda.invoke(
+		response = client.invoke(
 			FunctionName=function_name,
 			InvocationType=invocation_type
 		)
 		return response
-		
+
+	def list_all_functions(self):
+		response = client.list_functions()
+
+def test():
+	my_lambda = aws_lambda()
+
+	print("\nTesting the get_function() method...")
+	print(my_lambda.get_function("DiceScore"))
+
+	print("\nTesting the list_all_functions() method...")
+	print(my_lambda.list_all_functions())
+
+	print("\nTesting the invoke() method...")
+	startTime = time.time()
+	response = my_lambda.invoke("LinearRegressionLambda")
+	endTime = time.time()
+	for key in response:
+		print(key, "\t:", response[key])
+	print("\nInvocation took", str(endTime-startTime), "seconds.")
+
+
+if __name__ == "__main__":
+	test()
+
