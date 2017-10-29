@@ -67,6 +67,7 @@ def main(gatewayLetter, sleepTime):
 
     table = Table('SampleSize')
     oldSizeTime = 0
+    subject_val = "".join(["gateway_", gatewayLetter])
 
     while True:
 
@@ -76,7 +77,7 @@ def main(gatewayLetter, sleepTime):
         stayInLoop = True
         key = {
             'forum'     : '1',
-            'subject'   : 'PC1'
+            'subject'   : gatewayLetter
         }
         # countTime = 1
         while stayInLoop:

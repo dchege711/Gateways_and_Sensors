@@ -364,7 +364,7 @@ def main(tableLetter, sleepTime, calculateFeatures):
         if t_stamp_for_last_fog != oldSizeTime:
             # Run a fog implementation for a quick comparison
             calculateFeatures = fog_configuration 
-            t_stamp_for_last_fog = Button.set_sample_size(sample_size=numDataPoints)
+            t_stamp_for_last_fog = Button.set_sample_size(sample_size=numDataPoints, table_letter=tableLetter)
 
         else:
             calculateFeatures = cloud_configuration
