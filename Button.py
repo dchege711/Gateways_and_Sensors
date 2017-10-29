@@ -41,7 +41,7 @@ e.pack()
 
 table = Table('SampleSize')
 
-def sample_size(sample_size=None):
+def set_sample_size(sample_size=None, table_letter=None):
 	'''
 	Listens to the GUI for the sample size of the experiment.
 	Uploads this number to DynamoDB so that the Pi's can access it.
@@ -53,21 +53,32 @@ def sample_size(sample_size=None):
 	by the gateway.
 
 	'''
-	tStart = time.time()
-	item = table.getItem({
-		'forum'		: '1',
-		'subject'	: 'PC1'
-	})
-	item['timeStamp'] = Decimal(tStart)
 	# item['sampleSize'] = e.get() # e.get is the number you entered in the window
 
-	if sample_size is not None:
-		item['sampleSize'] = sample_size
+	# If none, then it came from GUI and this value should be passed
+	# to all the gateways
+	if sample_size is None:
+		sample_size = Decimal(e.get())
+		update_table('A', sample_size)
+		update_table('B', sample_size)
+		update_table('B', sample_size)
+
 	else:
-		item['sampleSize'] = Decimal(e.get())
-	table.addItem(item)
+		update_table(table_letter, sample_size)
 
 	return tStart
+
+def update_table(table_letter, sample_size):
+	tStart = time.time()
+	subject_val = "".join(["gateway_", tableLetter])
+	item = table.getItem({
+		'forum'		: '1',
+		'subject'	: subject_val
+	})
+	item['timeStamp'] = Decimal(tStart)
+	table.addItem(item)
+	return tStart
+
 
 #_______________________________________________________________________________
 

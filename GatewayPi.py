@@ -280,6 +280,7 @@ def main(tableLetter, sleepTime, calculateFeatures):
     table = Table('SampleSize')
     oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
     t_stamp_for_last_fog = 0
+    subject_val = "".join(["gateway_", tableLetter])
 
     while True:
 
@@ -289,7 +290,7 @@ def main(tableLetter, sleepTime, calculateFeatures):
         stayInLoop = True
         key = {
             'forum'     : '1',
-            'subject'   : 'PC1'
+            'subject'   : subject_val
         }
 
         while stayInLoop:
@@ -363,7 +364,7 @@ def main(tableLetter, sleepTime, calculateFeatures):
         if t_stamp_for_last_fog != oldSizeTime:
             # Run a fog implementation for a quick comparison
             calculateFeatures = fog_configuration 
-            t_stamp_for_last_fog = Button.sample_size(sample_size=numDataPoints)
+            t_stamp_for_last_fog = Button.set_sample_size(sample_size=numDataPoints)
 
         else:
             calculateFeatures = cloud_configuration
