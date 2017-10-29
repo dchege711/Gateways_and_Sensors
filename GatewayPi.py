@@ -20,9 +20,27 @@ from decimal import Decimal
 import LEDManager as LED
 from DynamoDBUtility import Table
 import BluetoothUtility as BT
+import Button
 sense = SenseHat()
 
 #_______________________________________________________________________________
+
+# Different Gateways perform different operations
+# Some Gateways aggregate data, calculate features and transmit only the features to DynamoDB.
+# Some Gateways aggregate data and send all this data to DynamoDB
+# In the all_cloud branch, every gateway acts as a relay instead of a computing edge.
+
+fog_configuration = {
+    'A' : True,
+    'B' : True,
+    'C' : False
+}
+
+cloud_configuration = {
+    'A' : False,
+    'B' : False,
+    'C' : False
+}
 
 #_______________________________________________________________________________
 
@@ -261,6 +279,7 @@ def main(tableLetter, sleepTime, calculateFeatures):
     # Establish a connection to the 'SampleSize' table
     table = Table('SampleSize')
     oldSizeTime = 0 # Placeholder. The value will be overwritten by a time stamp
+    t_stamp_for_last_fog = 0
 
     while True:
 
@@ -269,8 +288,8 @@ def main(tableLetter, sleepTime, calculateFeatures):
 
         stayInLoop = True
         key = {
-        'forum'     : '1',
-        'subject'   : 'PC1'
+            'forum'     : '1',
+            'subject'   : 'PC1'
         }
 
         while stayInLoop:
@@ -340,27 +359,19 @@ def main(tableLetter, sleepTime, calculateFeatures):
         # Reset the state of the LED
         sense.set_pixels(LED.xCross('red'))
 
-        # Visualize the results
-        # visualizeData(btTime, compTime, uploadTime)
+        if t_stamp_for_last_fog != oldSizeTime:
+            # Run a fog implementation for a quick comparison
+            calculateFeatures = fog_configuration 
+            t_stamp_for_last_fog = Button.sample_size(sample_size=numDataPoints)
+
+        else:
+            calculateFeatures = cloud_configuration
+
 
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
     tableLetter = sys.argv[1]       # The letter is used to distinguish tables
     sleepTime = float(sys.argv[2])  # Determines how frequently we'll query the DB
-    
-    # Different Gateways perform different operations
-    # Some Gateways aggregate data, calculate features and transmit only the features to DynamoDB.
-    # Some Gateways aggregate data and send all this data to DynamoDB
-    # In the all_cloud branch, every gateway acts as a relay instead of a computing edge.
-    calculateFeatures = {
-        'A' : False,
-        'B' : False,
-        'C' : False
-    }
 
-    i = 3
-    while i < len(sys.argv):
-        calculateFeatures[sys.argv[i]] = True
-
-    main(tableLetter, sleepTime, calculateFeatures)
+    main(tableLetter, sleepTime, cloud_configuration)

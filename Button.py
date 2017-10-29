@@ -39,22 +39,35 @@ e.pack()
 
 #_______________________________________________________________________________
 
-def sample_size():
+table = Table('SampleSize')
+
+def sample_size(sample_size=None):
 	'''
 	Listens to the GUI for the sample size of the experiment.
 	Uploads this number to DynamoDB so that the Pi's can access it.
 
+	The sample_size param allows a script (e.g. GatewayPi.py) to 
+	simulate the press of the button.
+
+	Returns the time stamp so that we can prevent infinite loops 
+	by the gateway.
+
 	'''
 	tStart = time.time()
-	table = Table('SampleSize')
 	item = table.getItem({
 		'forum'		: '1',
 		'subject'	: 'PC1'
 	})
 	item['timeStamp'] = Decimal(tStart)
 	# item['sampleSize'] = e.get() # e.get is the number you entered in the window
-	item['sampleSize'] = Decimal(e.get())
+
+	if sample_size is not None:
+		item['sampleSize'] = sample_size
+	else:
+		item['sampleSize'] = Decimal(e.get())
 	table.addItem(item)
+
+	return tStart
 
 #_______________________________________________________________________________
 
