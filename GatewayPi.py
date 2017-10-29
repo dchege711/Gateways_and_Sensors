@@ -159,6 +159,7 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors, calculateFeature
     item = {}
     item['forum'] = room
     item['subject'] = sensor
+    aggregatedItems = []
 
     # If the Gateway was designated to calculate features...
     if calculateFeatures[tableLetter]:
@@ -176,7 +177,6 @@ def uploadToDB(tableLetter, data, btTime, compTime, numSensors, calculateFeature
         # ndarray.shape returns the dimensions as a (#OfRows, #OfColumns)
         # Both of our matrices have the same number of rows, hence one measure is enough
         numOfRows = designMatrix.shape[0]
-        aggregatedItems = []
 
         for i in range(numOfRows):
             currentItem = {}
