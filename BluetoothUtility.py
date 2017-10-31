@@ -15,7 +15,7 @@ from sense_hat import SenseHat
 
 # Obtain the bluetooth addresses by running `$ hciconfig` in the terminal
 gatewayBRAddresses = {
-    'A' : 'B8:27:EB:0F:D5:1F',
+    'A' : 'B8:27:EB:3F:84:11',
     'B' : 'B8:27:EB:1D:9D:BF',
     'C' : 'B8:27:EB:57:29:09'
 }
