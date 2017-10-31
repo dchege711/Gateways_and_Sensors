@@ -27,11 +27,12 @@ pink = '#ffb6c1'
 paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
-fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
-# fig.set_figwidth(0.6)
+# I nullified this to prevent extra figures when importing this file
+fig, axs = None, None
+# The line below was moved to the if __name__ == "__main__" block
+# fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
 
 #_______________________________________________________________________________
-
 
 def compareAllCloudVsFog(resultItem):
     resultTable = Table('weightresult')
@@ -142,7 +143,6 @@ def plotBandwidth(resultItem):
     colors = [pink, pink, paleYellow]
     plotTableFigure(0, bandwidthData, bandwidthCollabel, colors)
 
-
 def plotLatency(resultItem):
     '''
     Plots a table that shows the amount of data sent, and the latencies for
@@ -184,15 +184,9 @@ def dp(number, unit, targetType = 'f', n = 2, suffix = True):
 
 #_______________________________________________________________________________
 
-def plotCosts(resultItem):
-    '''
-    Plots a table that shows the cost of storing the data on DynamoDB, invoking
-    AWS Lambda and computing on AWS Lambda
-
-    '''
-    # Get the cost of storing data on AWS Lambda
+def estimate_costs(data_bytes_entire, lambda_exec_time):
     dbGBHourRate = 0.25
-    dataSizeInBytes = float(resultItem['data_bytes_entire'])
+    dataSizeInBytes = float(data_bytes_entire)
     dbCost = dataSizeInBytes * (dbGBHourRate / (1024 * 1024))
 
     # Get the cost of invoking AWS Lambda
@@ -202,9 +196,23 @@ def plotCosts(resultItem):
 
     # Get the cost of computing on AWS Lambda
     lambdaComputeCostPerSec = 0.000000208
-    lambdaComputeTime = resultItem['Lambda_ExecTime']
+    lambdaComputeTime = lambda_exec_time
     lambdaComputeTime = math.ceil(float(lambdaComputeTime * 10))
     computeCost = (lambdaComputeTime / 10) * lambdaComputeCostPerSec
+
+    return dbCost, invokeCost, computeCost
+
+
+def plotCosts(resultItem):
+    '''
+    Plots a table that shows the cost of storing the data on DynamoDB, invoking
+    AWS Lambda and computing on AWS Lambda
+
+    '''
+    dbCost, invokeCost, computeCost = estimate_costs(
+        resultItem['data_bytes_entire'],
+        resultItem['Lambda_ExecTime']
+    )
 
     # Plot the cost data
     totalCost = dbCost + invokeCost + computeCost
@@ -307,4 +315,5 @@ def main():
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
+    fig, axs = plt.subplots(5-int(sys.argv[1]), 1)
     main()
