@@ -155,7 +155,7 @@ def read_gateway_data(gateway_letter, call_fetch_test_data=False):
 	# Return the data obtained
 	gateway_results = namedtuple('gateway_results', 
 		[
-			'X', 'y', 'features', 'data_bytes', 'Compu_pi', 'datanum', 'fog_or_cloud'
+			'X', 'y', 'features', 'data_bytes', 'Compu_pi', 'datanum', 'fog_or_cloud',
 			'number_of_sensors', 'Comm_pi_pi', 'Comm_pi_lambda', 'timeStamp'
 	])
 
@@ -221,7 +221,8 @@ def lambda_handler(event, context):
 
 	# Fetch the data from Gateway B's table, and then calculate the features.
 	item_B = read_gateway_data('B')
-	betam = insert_features(item_B.features, featurenum, betam, 1)
+	# Why is this working when we have zero?
+	betam = insert_features(item_B.features, featurenum, betam, 0)
 	dataBytesFeatures += item_B.data_bytes
 	numSensors += item_B.number_of_sensors
 

@@ -215,6 +215,7 @@ def lambda_handler(event, context):
 
 	# Fetch the data from Gateway B's table
 	item_B = read_gateway_data('B')
+	# Why is this only working when zero?
 	betam = insert_features(item_B.features, featurenum, betam, 0)
 	dataBytesFeatures += item_B.data_bytes
 	numSensors += item_B.number_of_sensors
