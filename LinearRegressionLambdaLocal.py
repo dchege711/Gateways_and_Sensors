@@ -109,11 +109,17 @@ def calculate_features(aggregatedData, featurenum):
 	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
 	features = gradientDescent(targetMatrix, designMatrix, featurenum, datanum)
 
+	print("Printing the calculated features...\n")
+	for feature in features:
+		print(feature, end=" ")
+
+	print()
 	return features
 
 def insert_features(feature_values, featurenum, betam, index):
 	for i in range(featurenum):
 		betam[i][index] = feature_values[i]
+
 	return betam
 
 def read_gateway_data(gateway_letter, call_fetch_test_data=False):
@@ -216,7 +222,7 @@ def lambda_handler(event, context):
 	# Fetch the data from Gateway B's table
 	item_B = read_gateway_data('B')
 	# Why is this only working when zero?
-	betam = insert_features(item_B.features, featurenum, betam, 0)
+	betam = insert_features(item_B.features, featurenum, betam, 1)
 	dataBytesFeatures += item_B.data_bytes
 	numSensors += item_B.number_of_sensors
 
@@ -251,6 +257,11 @@ def lambda_handler(event, context):
 		item_B.Compu_pi,
 		item_C.Compu_pi
 	])
+
+	print("Printing the values of betam...\n")
+	for beta_val in betam:
+		print(beta_val)
+	print()
 
 	def prox_simplex(y):
 		# projection onto simplex
@@ -333,8 +344,11 @@ def lambda_handler(event, context):
 	resultData['gateway_B_subject'] = str(item_B.timeStamp)
 	resultData['gateway_C_subject'] = str(item_C.timeStamp)
 
-	for key in resultData.keys():
-		print(key, "\t", resultData[key])
+	print("Printing summary of results...\n")
+	print("w_1 and w_2", str(resultData["w_1"]), str(resultData["w_2"]))
+	print("Error :", str(resultData["Error"]))
+	print("Source :", str(resultData["fog_or_cloud"]))
+	print()
 	
 	record = table.getItem({'environment' : 'roomA', 'sensor' : 'cloud_vs_fog'})
 	results = record['results']
