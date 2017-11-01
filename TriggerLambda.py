@@ -31,8 +31,8 @@ paleYellow = '#fdffd0'
 
 # Initialize plot figure to make it accessible by every function
 fig, axs = plt.subplots(4, 1)
-plt.ion() # Makes the plot interactive
-plt.show()
+#plt.ion() # Makes the plot interactive
+#plt.show()
 
 def trigger_using_dynamodb():
     # The Trigger_A table makes Lambda start processing the data.
@@ -53,11 +53,10 @@ def trigger_using_lambda_client():
     startTime = time.time()
     response = lambda_client.invoke("LinearRegressionLambda")
     endTime = time.time()
-    for key in response.keys():
-        print(key, "\t:", response[key])
-    print()
-    print("Time taken on AWS Lambda :", str(endTime-startTime), "seconds.")
-    print()
+    print(response)
+    # print()
+    # print("Time taken on AWS Lambda :", str(endTime-startTime), "seconds.")
+    # print()
 
     return response
 
@@ -71,26 +70,28 @@ def tabulate_cloud_vs_fog(resultItem):
     column_labels = ["Experiment ID", "Experiment ID"]
     id_one = " ".join([
         str(cloud_results.readings_per_sensor), 
-        "readings per sensor, for", str(cloud_results.number_of_sensors, "sensors") 
+        "readings per sensor, for", str(cloud_results.number_of_sensors), "sensors" 
     ])
     id_two = " ".join([
         str(fog_results.readings_per_sensor), 
         "readings per sensor, for", str(fog_results.number_of_sensors), "sensors" 
     ])
     cell_values = [[id_one, id_two]]
-    plot_table_figure(0, cell_values, column_labels, colors)
+    # plot_table_figure(0, cell_values, column_labels, colors)
 
     column_labels = ["Cost (Cloud)", "Cost (Fog)"]
     cell_values = [[str(cloud_results.total_cost) + " $", str(fog_results.total_cost) + " $"]]
-    plot_table_figure(1, cell_values, column_labels, colors)
+    # plot_table_figure(1, cell_values, column_labels, colors)
 
     column_labels = ["Latency (Cloud)", "Latency (Fog)"]
     cell_values = [[str(cloud_results.total_latency) + " sec", str(fog_results.total_latency) + " sec"]]
-    plot_table_figure(2, cell_values, column_labels, colors)
+    # plot_table_figure(2, cell_values, column_labels, colors)
 
     column_labels = ["Mean Square Error (Cloud)", "Mean Square Error (Fog)"]
     cell_values = [[cloud_results.error, fog_results.error]]
-    plot_table_figure(3, cell_values, column_labels, colors)
+    # plot_table_figure(3, cell_values, column_labels, colors)
+
+    # return cell_values_a, cell_values_b, cell_values_c, cell_values_d
     
 def populate_values(data):
     costs = dp.estimate_costs(
@@ -166,45 +167,45 @@ tableC = Table('sensingdata_C') # I changed this since I don't see latency_C's p
 most_recent_results = {}
 tracking_counter = 0
 
-most_recent_results["fog (edge + cloud)"] = {
-    "Compu_pi"        : 13.279638052,
-    "number_of_sensors"       : 6,
-    "Lambda_ExecTime"         : 0.831784963608,
-    "w_1"     : 0.0,
-    "Time"    : 1509460488.97,
-    "gateway_A_subject"       : 1509297804.81,
-    "data_bytes_entire"       : 25600,
-    "fog_or_cloud"    : "fog (edge + cloud)",
-    "readings_per_sensor"     : 400,
-    "gateway_B_subject"       : 1509297801.35,
-    "Comm_pi_lambda"  : 1.22274494171,
-    "Error"   : 5.29851091704,
-    "data_bytes_features"     : 48,
-    "gateway_C_subject"       : 1509297790.72,
-    "Comm_pi_pi"      : 0.0526149272919,
-    "w_2"     : 1.0
-}
+# most_recent_results["fog (edge + cloud)"] = {
+#     "Compu_pi"        : 13.279638052,
+#     "number_of_sensors"       : 6,
+#     "Lambda_ExecTime"         : 0.831784963608,
+#     "w_1"     : 0.0,
+#     "Time"    : 1509460488.97,
+#     "gateway_A_subject"       : 1509297804.81,
+#     "data_bytes_entire"       : 25600,
+#     "fog_or_cloud"    : "fog (edge + cloud)",
+#     "readings_per_sensor"     : 400,
+#     "gateway_B_subject"       : 1509297801.35,
+#     "Comm_pi_lambda"  : 1.22274494171,
+#     "Error"   : 5.29851091704,
+#     "data_bytes_features"     : 48,
+#     "gateway_C_subject"       : 1509297790.72,
+#     "Comm_pi_pi"      : 0.0526149272919,
+#     "w_2"     : 1.0
+# }
 
-most_recent_results["all_cloud"] = {
-    "Compu_pi"        : 13.279638052,
-    "number_of_sensors"       : 6,
-    "Lambda_ExecTime"         : 0.831784963608,
-    "w_1"     : 0.0,
-    "Time"    : 1509460488.97,
-    "gateway_A_subject"       : 1509297804.81,
-    "data_bytes_entire"       : 25600,
-    "fog_or_cloud"    : "all_cloud",
-    "readings_per_sensor"     : 400,
-    "gateway_B_subject"       : 1509297801.35,
-    "Comm_pi_lambda"  : 1.22274494171,
-    "Error"   : 5.29851091704,
-    "data_bytes_features"     : 48,
-    "gateway_C_subject"       : 1509297790.72,
-    "Comm_pi_pi"      : 0.0526149272919,
-    "w_2"     : 1.0
-}
+# most_recent_results["all_cloud"] = {
+#     "Compu_pi"        : 13.279638052,
+#     "number_of_sensors"       : 6,
+#     "Lambda_ExecTime"         : 0.831784963608,
+#     "w_1"     : 0.0,
+#     "Time"    : 1509460488.97,
+#     "gateway_A_subject"       : 1509297804.81,
+#     "data_bytes_entire"       : 25600,
+#     "fog_or_cloud"    : "all_cloud",
+#     "readings_per_sensor"     : 400,
+#     "gateway_B_subject"       : 1509297801.35,
+#     "Comm_pi_lambda"  : 1.22274494171,
+#     "Error"   : 5.29851091704,
+#     "data_bytes_features"     : 48,
+#     "gateway_C_subject"       : 1509297790.72,
+#     "Comm_pi_pi"      : 0.0526149272919,
+#     "w_2"     : 1.0
+# }
 
-# Example of a non-blocking setup that works
+# # Example of a non-blocking setup that works
 # while True:
     
 #     while True:
@@ -214,10 +215,10 @@ most_recent_results["all_cloud"] = {
 #         most_recent_results["all_cloud"]["Error"] = 0.45
 #         most_recent_results["all_cloud"]["Lambda_ExecTime"] = 3.14
 #         most_recent_results["all_cloud"]["number_of_sensors"] = 23
-#         tabulate_cloud_vs_fog(most_recent_results)
+#         # tabulate_cloud_vs_fog(most_recent_results)
 #         plt.pause(1.0)
 
-while False:
+while True:
 
     ready = 0
 
@@ -267,6 +268,7 @@ while False:
 
     # trigger_using_dynamodb()
     response = trigger_using_lambda_client()
+    print(response)
     most_recent_results[response["fog_or_cloud"]] = response
 
     # We need a better way of handling this. At the moment, I'm using
@@ -274,6 +276,9 @@ while False:
     # This requires that TriggerLambda starts at before the all_cloud run
     tracking_counter += 1
     if tracking_counter % 2 == 0:
-        # tabulate_cloud_vs_fog(most_recent_results)
+        res = tabulate_cloud_vs_fog(most_recent_results)
+        for a in res:
+            print(a)
+        # plt.pause(3.0)
         pass
 

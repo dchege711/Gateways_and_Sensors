@@ -369,7 +369,6 @@ def main(tableLetter, sleepTime, calculateFeatures):
         else:
             calculateFeatures = cloud_configuration
 
-
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
