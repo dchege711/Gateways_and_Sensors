@@ -62,12 +62,13 @@ def gradientDescent(targetMatrix, designMatrix, featurenum, numDataPoints):
         # print("E_new", E_new, "E_old", E_old)
         if count % 20 == 0:
             # print(" ".join[count, "iterations so far..."])
-            print(str(count), " iterations so far...")
+            # print(str(count), " iterations so far...")
+            pass
 
         # Comparing E_new == E_old is tricky because of precision.
         if np.isclose(E_new, E_old)[0]:
             #print(" ".join(["Escaped loop after", count, "iterations."]))
-            print("Escaped loop after", str(count), "iterations.")
+            # print("Escaped loop after", str(count), "iterations.")
             break
 
     # Return feature_A, feature_B, feature_C
@@ -109,11 +110,11 @@ def calculate_features(aggregatedData, featurenum):
 	targetMatrix, designMatrix = convertToNumpyArrays(aggregatedData, featurenum, datanum)
 	features = gradientDescent(targetMatrix, designMatrix, featurenum, datanum)
 
-	print("Printing the calculated features...\n")
-	for feature in features:
-		print(feature, end=" ")
+	# print("Printing the calculated features...\n")
+	# for feature in features:
+	#	print(feature, end=" ")
 
-	print()
+	# print()
 	return features
 
 def insert_features(feature_values, featurenum, betam, index):
@@ -149,12 +150,12 @@ def read_gateway_data(gateway_letter, call_fetch_test_data=False):
 		if call_fetch_test_data:
 			X, y = fetch_test_data(aggregatedData, featurenum)
 			features = None
-			print("Collected test data from table", gateway_letter)
+			# print("Collected test data from table", gateway_letter)
 
 		else:
 			X, y = None, None
 			features = calculate_features(aggregatedData, featurenum)
-			print("Calculated summarized features for table", gateway_letter)
+			# print("Calculated summarized features for table", gateway_letter)
 
 
 	# Return the data obtained
@@ -258,10 +259,10 @@ def lambda_handler(event, context):
 		item_C.Compu_pi
 	])
 
-	print("Printing the values of betam...\n")
-	for beta_val in betam:
-		print(beta_val)
-	print()
+	# print("Printing the values of betam...\n")
+	# for beta_val in betam:
+		# print(beta_val)
+	# print()
 
 	def prox_simplex(y):
 		# projection onto simplex
@@ -344,7 +345,7 @@ def lambda_handler(event, context):
 	resultData['gateway_B_subject'] = str(item_B.timeStamp)
 	resultData['gateway_C_subject'] = str(item_C.timeStamp)
 
-	print("Printing summary of results...\n")
+	print("\nPrinting summary of results...\n")
 	print("w_1 and w_2", str(resultData["w_1"]), str(resultData["w_2"]))
 	print("Error :", str(resultData["Error"]))
 	print("Source :", str(resultData["fog_or_cloud"]))
@@ -355,4 +356,6 @@ def lambda_handler(event, context):
 	results.append(resultData)
 	# item = table.addItem(record)
 
-lambda_handler(35, 46)
+
+if __name__ == "__main__":
+	lambda_handler(35, 46)

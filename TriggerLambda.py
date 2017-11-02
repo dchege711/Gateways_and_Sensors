@@ -19,6 +19,7 @@ import DemoPlot as dp
 from collections import namedtuple
 
 from lambda_utility import aws_lambda
+import accuracy_test
 lambda_client = aws_lambda()
 
 #_______________________________________________________________________________
@@ -53,7 +54,7 @@ def trigger_using_lambda_client():
     startTime = time.time()
     response = lambda_client.invoke("LinearRegressionLambda")
     endTime = time.time()
-    print(response)
+    # print(response)
     # print()
     # print("Time taken on AWS Lambda :", str(endTime-startTime), "seconds.")
     # print()
@@ -94,20 +95,20 @@ def tabulate_cloud_vs_fog(resultItem):
     # return cell_values_a, cell_values_b, cell_values_c, cell_values_d
     
 def populate_values(data):
-    costs = dp.estimate_costs(
-        data['data_bytes_entire'],
-        data['Lambda_ExecTime']
-    )
-    total_cost = 0
-    for cost in costs:
-        total_cost += cost
 
     total_latency = data["Comm_pi_pi"] + data["Comm_pi_lambda"] + data["Compu_pi"] + data["Lambda_ExecTime"]
 
     if data["fog_or_cloud"] == "all_cloud":
         type_of_run = "All Cloud"
+        data_bytes_sent = data["data_bytes_entire"] * 3
     else:
         type_of_run = "Fog (Edge + Cloud)"
+        data_bytes_sent = data["data_bytes_entire"] + data["data_bytes_features"] * 2
+
+    total_cost = 0
+    costs = dp.estimate_costs(data_bytes_sent, data["Lambda_ExecTime"])
+    for cost in costs:
+        total_cost += cost
 
     error = data["Error"]
     readings_per_sensor = data["readings_per_sensor"]
@@ -144,6 +145,17 @@ def plot_table_figure(index, cellText, columnLabels, colors):
     tableBeingPlotted.scale(width, height)
 
 
+def print_results(results):
+    results = populate_values(results)
+    header = " ".join([
+        "\nResults for", str(results.readings_per_sensor), 
+        "readings per sensor for the", results.type_of_run, "setup...\n"
+    ])
+    print(header)
+    print("Estimated Cost \t\t:", results.total_cost)
+    print("Estimated Latency \t:", results.total_latency)
+    print("Estimated Error\t\t:", results.error)
+
 oldTimeA, oldTimeB, oldTimeC = 0, 0, 0
 
 queryA = {
@@ -161,62 +173,12 @@ queryC = {
 
 tableA = Table('sensingdata_A')
 tableB = Table('sensingdata_B')
-tableC = Table('sensingdata_C') # I changed this since I don't see latency_C's purpose
+tableC = Table('sensingdata_C')
 
 
-most_recent_results = {}
-tracking_counter = 0
-
-# most_recent_results["fog (edge + cloud)"] = {
-#     "Compu_pi"        : 13.279638052,
-#     "number_of_sensors"       : 6,
-#     "Lambda_ExecTime"         : 0.831784963608,
-#     "w_1"     : 0.0,
-#     "Time"    : 1509460488.97,
-#     "gateway_A_subject"       : 1509297804.81,
-#     "data_bytes_entire"       : 25600,
-#     "fog_or_cloud"    : "fog (edge + cloud)",
-#     "readings_per_sensor"     : 400,
-#     "gateway_B_subject"       : 1509297801.35,
-#     "Comm_pi_lambda"  : 1.22274494171,
-#     "Error"   : 5.29851091704,
-#     "data_bytes_features"     : 48,
-#     "gateway_C_subject"       : 1509297790.72,
-#     "Comm_pi_pi"      : 0.0526149272919,
-#     "w_2"     : 1.0
-# }
-
-# most_recent_results["all_cloud"] = {
-#     "Compu_pi"        : 13.279638052,
-#     "number_of_sensors"       : 6,
-#     "Lambda_ExecTime"         : 0.831784963608,
-#     "w_1"     : 0.0,
-#     "Time"    : 1509460488.97,
-#     "gateway_A_subject"       : 1509297804.81,
-#     "data_bytes_entire"       : 25600,
-#     "fog_or_cloud"    : "all_cloud",
-#     "readings_per_sensor"     : 400,
-#     "gateway_B_subject"       : 1509297801.35,
-#     "Comm_pi_lambda"  : 1.22274494171,
-#     "Error"   : 5.29851091704,
-#     "data_bytes_features"     : 48,
-#     "gateway_C_subject"       : 1509297790.72,
-#     "Comm_pi_pi"      : 0.0526149272919,
-#     "w_2"     : 1.0
-# }
-
-# # Example of a non-blocking setup that works
-# while True:
-    
-#     while True:
-#         tabulate_cloud_vs_fog(most_recent_results)
-
-#         plt.pause(1.0)
-#         most_recent_results["all_cloud"]["Error"] = 0.45
-#         most_recent_results["all_cloud"]["Lambda_ExecTime"] = 3.14
-#         most_recent_results["all_cloud"]["number_of_sensors"] = 23
-#         # tabulate_cloud_vs_fog(most_recent_results)
-#         plt.pause(1.0)
+# Uncomment this block to check whether you're getting desired results
+for result in accuracy_test.get_all_results():
+    print_results(result)
 
 while True:
 
@@ -267,18 +229,6 @@ while True:
             sys.exit()
 
     # trigger_using_dynamodb()
-    response = trigger_using_lambda_client()
-    print(response)
-    most_recent_results[response["fog_or_cloud"]] = response
+    results = trigger_using_lambda_client()
 
-    # We need a better way of handling this. At the moment, I'm using
-    # the fact that we do 2 consecutive runs back to back. 
-    # This requires that TriggerLambda starts at before the all_cloud run
-    tracking_counter += 1
-    if tracking_counter % 2 == 0:
-        res = tabulate_cloud_vs_fog(most_recent_results)
-        for a in res:
-            print(a)
-        # plt.pause(3.0)
-        pass
 
