@@ -1,3 +1,11 @@
+"""
+This script is not needed for the experiment. I wrote it so as to test a few
+things on the database. 
+
+There's no harm in ignoring it.
+
+"""
+
 from DynamoDBUtility import Table
 from lambda_utility import aws_lambda
 import LinearRegressionLambdaLocal as local_lambda
@@ -5,6 +13,13 @@ import LinearRegressionLambdaLocal as local_lambda
 lambda_client = aws_lambda()
 
 def fetch_data(gateway_letter, subject_val):
+	"""
+	Each set of readings is stored using "roomA" and a timeStamp string.
+	This method provides a convenient way for retrieving past readings.
+
+	The timeStamp strings are found in the items of the 'weightresults' table. 
+
+	"""
 	table = Table('sensingdata_' + gateway_letter)
 	data = table.getItem({
 		"forum" : "roomA",
@@ -14,6 +29,13 @@ def fetch_data(gateway_letter, subject_val):
 	return data["aggregated_data"]
 
 def add_data(gateway_letter, new_data):
+	"""
+	Modify the data entry that gradient descent and linear regression use
+	as the source of their data.
+
+	Useful when you wish to simulate a previous run of the experiment.
+
+	"""
 	table = Table("sensingdata_" + gateway_letter)
 	item = table.getItem({
 		"forum" : "roomA",
@@ -27,6 +49,12 @@ def add_data(gateway_letter, new_data):
 	table.addItem(item)
 
 def test_accuracy():
+	"""
+	Quite a misnomer. Doesn't really test the accuracy.
+
+	Print out the MSE observed in various runs of the experiment.
+	
+	"""
 	i = 0
 	num_tests = 1
 	while (i < num_tests):
