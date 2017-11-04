@@ -28,7 +28,7 @@
     * If you have the cloud_vs_fog branch, but the asterisk isn't on it, run `$ git checkout cloud_vs_fog`
 * Update the code on your laptop to the latest version by running `$ git pull origin cloud_vs_fog`
 
-* Remark: The Pis are on the cloud_vs_fog branch. There's no need to run these commands on the Pis. Furthermore, the code that the Pis care about hasn't changed since Fog World Congress.
+* Remark: The Pis are on the cloud_vs_fog branch. There's no need to run these commands on the Pis. Furthermore, the code that the Pis care about hasn't changed since Fog World Congress. If you need to change any of the code that runs on the Pis, do it from Github and then pull those changes. If you do it on the Pi, you might incur some merge conflicts and permission issues later on.
     * On each the Pis run `$ cd Gateways_and_Sensors` to navigate to the appropriate folder. 
     * You could also confirm that you're on the cloud_vs_fog branch by running `$ git branch`
 
@@ -52,6 +52,7 @@
         * Sometimes it's due to synchronization issues (the sensor tried sending when the gateway wasn't listening). The 5 seconds in `$ python GatewayPi.py B 5` tends to avoid such mis-timings, but it's not perfect.
         * GatewayPi.py might still be running even after SensorPi.py reports this error. 
         * The workaround is quitting the GatewayPi.py instance and then re-running the `$ python GatewayPi.py <letter> 5`, `python SensorPi.py <letter> 5` sequence.
+        * If this doesn't work, then my guess is that you're dealing with the wrong Pi as Gateway A. Remember how we had trouble updating Gateway A? So ensure that you have the right Gateway A. I don't remember how to identify it :-(
     * `Table not found. Need a new hash key...`
         * This is usually caused by the pis not reading the credentials contained in the environment variables.
         * Try running `$ source ~.bashrc` to force a refresh and then re-run the `$ python GatewayPi.py <letter> 5`, `python SensorPi.py <letter> 5` sequence.
