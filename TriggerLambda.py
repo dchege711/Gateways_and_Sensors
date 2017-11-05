@@ -177,8 +177,8 @@ tableC = Table('sensingdata_C')
 
 
 # Uncomment this block to check whether you're getting desired results
-for result in accuracy_test.get_all_results():
-    print_results(result)
+# for result in accuracy_test.get_all_results():
+#     print_results(result)
 
 while True:
 
@@ -230,5 +230,6 @@ while True:
 
     # trigger_using_dynamodb()
     results = trigger_using_lambda_client()
+    print_results(results)
 
 

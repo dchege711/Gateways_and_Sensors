@@ -20,7 +20,7 @@ from collections import namedtuple
 
 from DynamoDBUtility import Table
 
-print('Loading function')
+# print('Loading function')
 
 def gradientDescent(targetMatrix, designMatrix, featurenum, numDataPoints):
     """
@@ -355,7 +355,6 @@ def lambda_handler(event, context):
 	results = record['results']
 	results.append(resultData)
 	# item = table.addItem(record)
-
 
 if __name__ == "__main__":
 	lambda_handler(35, 46)
