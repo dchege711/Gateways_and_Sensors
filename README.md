@@ -36,6 +36,7 @@
 ### Running the Experiment
 * For each of the pairs, start from the Gateway and then finish with the Sensor. 
     * On the Gateway, set Bluetooth to 'discoverable' and ensure that Wi-Fi is on. Then run `$ python GatewayPi.py A 5`
+        * A GUI requesting that you enter the # of samples should appear. Close it without entering anything. (This GUI appears because we import Button.py in the GatewayPi.py script.)
         * On the command line, you should see "Fetched sampleSize table..."
         * On the SenseHats, you should observe the "G" symbol and then an arrow (the arrow means it's waiting for data from the sensor pi)
     * On the corresponding Sensor, ensure that Wi-Fi is on and run `$ python SensorPi.py A 5`
@@ -57,6 +58,9 @@
         * This is usually caused by the pis not reading the credentials contained in the environment variables.
         * Try running `$ source ~.bashrc` to force a refresh and then re-run the `$ python GatewayPi.py <letter> 5`, `python SensorPi.py <letter> 5` sequence.
         * If that doesn't work, reboot the Pi. Sometimes I had to reboot twice :-(
+    * The Pi flashes "G" or "S" but immediately goes back without collecting any data (no pluses nor arrows).
+        * This happens because of the # of samples specified at the most recent run before the Pis were last shut down. Run `$ python Button.py` on your laptop and set a non-zero positive number like 200.
+        * After that, re-run the `$ python GatewayPi.py <letter> 5`, `python SensorPi.py <letter> 5` sequence.
 
 * On your laptop:
     * You'll need two separate command line windows.
