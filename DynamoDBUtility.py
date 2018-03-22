@@ -15,6 +15,12 @@ dynamodb = boto3.resource(
     aws_secret_access_key = os.environ['aws_secret_access_key'],
     region_name = 'us-east-1'
 )
+client = boto3.client(
+    "dynamodb",
+    aws_access_key_id=os.environ['aws_access_key_id'],
+    aws_secret_access_key=os.environ['aws_secret_access_key'],
+    region_name='us-east-1'
+)
 
 #_______________________________________________________________________________
 
@@ -33,6 +39,7 @@ class Table:
             readCapUnits (int)  Read capacity units. 2 if not specified.
             writeCapUnits (int) Write capacity units. 2 if not specified.
         """
+        self.nameOfTable = nameOfTable
         # If the table doesn't exist, create one.
         if (not self.tableExists(nameOfTable)):
             self.table = self.createTable(nameOfTable, hashKey, rangeKey, readCapUnits, writeCapUnits)
@@ -165,6 +172,14 @@ class Table:
             tip = "The correct keys are " + self.getAttributes()
             self.log(tip)
             raise(e)
+
+    def getAllItems(self):
+        """
+        Scan all the items in this table. Return a paginator iterable.
+
+        """
+        paginator = client.get_paginator("scan")
+        return paginator.paginate(TableName=self.nameOfTable)
 
     def compareValues(self, itemKey, keyToLookUp, expectedValue, testForEquality):
         """
